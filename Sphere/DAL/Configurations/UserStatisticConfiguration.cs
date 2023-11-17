@@ -27,13 +27,13 @@ public class UserStatisticConfiguration : IEntityTypeConfiguration<UserStatistic
             .HasColumnName("draws")
             .HasDefaultValue(0);
         builder.Property(e => e.Level)
-            .HasColumnName("money")
+            .HasColumnName("level")
             .HasDefaultValue(0);
         builder.Property(e => e.Exp)
             .HasColumnName("exp")
             .HasDefaultValue(0);
         builder.Property(e => e.Money)
-            .HasColumnName("level")
+            .HasColumnName("money")
             .HasDefaultValue(0);
         builder.Property(e => e.Likes)
             .HasColumnName("likes")
