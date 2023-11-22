@@ -1,6 +1,5 @@
 import {PropsWithChildren} from "react";
-// @ts-ignore
-import style from "./style.module.css";
+import style from "./Aside.module.css";
 
 const Aside = ({children}: PropsWithChildren<{}>) => {
     return (
