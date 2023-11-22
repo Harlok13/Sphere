@@ -1,13 +1,24 @@
-import React, { Component } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import './custom.css';
+import './custom.scss';
+import {Router} from "./routes/Router";
+import Wrapper from "./shared/components/Wrapper/Wrapper";
+import {useGlobalHubConnection} from "./BL/hooks/hub-connection/use-gloabl-hub-connection";
+import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
+import {useHub} from "react-use-signalr";
 
-export default class App extends Component {
-  static displayName = App.name;
+export const signalRConnection = new HubConnectionBuilder()
+    .withUrl("https://localhost:7170/global")
+    .configureLogging(LogLevel.Information)
+    .withAutomaticReconnect()
+    .build();
 
-  render() {
+export const App = () => {
+    useGlobalHubConnection();
+
+    const { hubConnectionState, error } = useHub(signalRConnection);
+
     return (
-      <div></div>
+        <Wrapper>
+            <Router/>
+        </Wrapper>
     );
-  }
 }
