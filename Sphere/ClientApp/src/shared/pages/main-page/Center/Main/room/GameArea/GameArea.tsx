@@ -1,6 +1,6 @@
 import {PropsWithChildren} from "react";
 // @ts-ignore
-import style from "./style.module.css";
+import style from "./GameArea.module.css";
 
 export const GameArea = ({children}: PropsWithChildren) => {
     return (
