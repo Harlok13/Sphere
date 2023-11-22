@@ -1,4 +1,4 @@
-namespace Sphere.DAL.Models;
+namespace Sphere.DAL.Models.Base;
 
 public class BaseModel
 {
