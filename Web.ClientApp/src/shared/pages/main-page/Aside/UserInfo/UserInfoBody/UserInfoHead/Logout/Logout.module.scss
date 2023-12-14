@@ -1,0 +1,49 @@
+.logoutIcon {
+  cursor: pointer;
+}
+
+.confirm {
+  position: absolute;
+  cursor: pointer;
+  background: rgba(255, 0, 0, .3);
+  width: 2rem;
+  height: 1.5rem;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: .5rem;
+  right: 0;
+  top: 2rem;
+  border: 1px solid rgba(255, 255, 255, .1);
+  transition: .3s ease;
+
+  &:hover {
+    background: rgba(255, 0, 0, .5);
+  }
+}
+
+.cancel {
+  position: absolute;
+  cursor: pointer;
+  background: rgba(0, 255, 0, .3);
+  width: 2rem;
+  height: 1.5rem;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+  border: 1px solid rgba(255, 255, 255, .1);
+  transition: .3s ease;
+
+  &:hover {
+    background: rgba(0, 255, 0, .5);
+  }
+}
+
+.icon {
+  color: rgba(255, 255, 255, .8);
+  font-size: 1rem;
+}
+

@@ -1,0 +1,87 @@
+.userInfo {
+  display: flex;
+  margin-bottom: 2rem;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+.userInfo .avatar {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 8px;
+  margin-right: 0.7rem;
+  cursor: pointer;
+}
+.userInfo .body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.userInfo .body .head {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.userInfo .body .head .username {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+.userInfo .body .head .logoutIcon {
+  cursor: pointer;
+}
+.userInfo .body .head .confirm {
+  position: absolute;
+  cursor: pointer;
+  background: rgba(255, 0, 0, 0.3);
+  width: 2rem;
+  height: 1.5rem;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  right: 0;
+  top: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: 0.3s ease;
+}
+.userInfo .body .head .confirm:hover {
+  background: rgba(255, 0, 0, 0.5);
+}
+.userInfo .body .head .cancel {
+  position: absolute;
+  cursor: pointer;
+  background: rgba(0, 255, 0, 0.3);
+  width: 2rem;
+  height: 1.5rem;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: 0.3s ease;
+}
+.userInfo .body .head .cancel:hover {
+  background: rgba(0, 255, 0, 0.5);
+}
+.userInfo .body .head .icon {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+.userInfo .items {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.userInfo .items .item {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+.userInfo .items .item .scale {
+  margin-left: 1rem;
+  width: 100%;
+}
+
+/*# sourceMappingURL=RoomsSort.module.css.map */

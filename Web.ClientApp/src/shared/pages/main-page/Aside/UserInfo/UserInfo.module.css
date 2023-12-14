@@ -1,0 +1,9 @@
+.userInfo {
+  display: flex;
+  padding-bottom: 2rem;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/*# sourceMappingURL=UserInfo.module.css.map */

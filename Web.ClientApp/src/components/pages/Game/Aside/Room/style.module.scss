@@ -1,0 +1,75 @@
+.room {
+  .title {
+    flex: 0 1 auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: .8rem;
+  }
+
+  .list {
+    .item {
+      display: flex;
+      align-items: center;
+      padding: .4rem;
+      //border: 1px solid white;
+      font-size: 1rem;
+      font-weight: 100;
+      background-color: rgba(255, 228, 181, 0.05);
+      border-radius: 7px;
+      margin-bottom: .4rem;
+      position: relative;
+      cursor: pointer;
+      transition: .3s ease;
+
+      &:hover {
+        background-color: rgba(255, 228, 181, 0.1);
+      }
+
+      .iconLeader {
+        font-size: 1rem;
+        color: goldenrod;
+        margin-right: .5rem;
+      }
+
+      .iconReadiness {
+        position: absolute;
+        font-size: 1.2rem;
+        right: .5rem;
+      }
+    }
+  }
+
+  .bottom {
+    margin-top: .8rem;
+    display: flex;
+    //justify-content: space-around;
+    gap: 1rem;
+
+    .invite {
+      background: rgba(255, 255, 255, 0.9);
+
+    }
+
+    .leave {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+
+    .iconBottom {
+      font-size: 1rem;
+    }
+  }
+}
+
+.button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 2rem;
+  border-radius: 7px;
+  border: none;
+  width: 5.5rem;
+  cursor: pointer;
+}

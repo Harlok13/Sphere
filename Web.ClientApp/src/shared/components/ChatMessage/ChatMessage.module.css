@@ -1,0 +1,56 @@
+.message {
+  display: flex;
+  margin-top: 0.7rem;
+}
+.message:hover .menu {
+  display: inline-block;
+}
+.message .leftSide {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+}
+.message .avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  margin: 0 0.6rem 0.5rem 0.5rem;
+}
+.message .time {
+  font-size: 0.7rem;
+  font-weight: 100;
+  margin-right: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.message .body {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: rgba(0, 255, 186, 0.1);
+  border-radius: 5px;
+}
+.message .messageHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.message .text {
+  font-weight: 200;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.message .menu {
+  display: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.message_reverse .avatar {
+  opacity: 0;
+}
+.message_reverse .body {
+  background-color: #565656;
+}
+
+/*# sourceMappingURL=ChatMessage.module.css.map */

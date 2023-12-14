@@ -1,0 +1,27 @@
+.roomControlPanel {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 1rem;
+}
+.roomControlPanel .invite {
+  background: rgba(255, 255, 255, 0.9);
+}
+.roomControlPanel .leave {
+  background: rgba(255, 255, 255, 0.9);
+}
+.roomControlPanel .iconBottom {
+  font-size: 1rem;
+}
+
+.button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 2rem;
+  border-radius: 7px;
+  border: none;
+  width: 5.5rem;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=RoomControlPanel.module.css.map */

@@ -1,0 +1,76 @@
+.item {
+  width: 100%;
+  height: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  padding: 0 0.8rem;
+  transition: 0.3s ease-out;
+}
+.item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.item .body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.item .body .sort {
+  color: #f6c7aa;
+}
+.item .img {
+  width: 2rem;
+  border-radius: 5px;
+  margin-right: 1rem;
+}
+.item .roomName {
+  width: 11.5rem;
+  margin-right: 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+.item .roomSize {
+  width: 6rem;
+  margin-right: 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+.item .startBid {
+  width: 6rem;
+  margin-right: 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+.item .status {
+  width: 5rem;
+  text-align: center;
+  cursor: pointer;
+}
+.item .bid {
+  width: 5rem;
+  text-align: center;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+.item .value {
+  font-weight: 400;
+  color: aqua;
+}
+.item .join {
+  flex: 0 0 8%;
+  margin-left: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 100;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*# sourceMappingURL=RoomItem.module.css.map */

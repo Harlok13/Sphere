@@ -1,0 +1,27 @@
+.item {
+  margin-bottom: .5rem;
+
+  .gameState {
+    color: bisque;
+  }
+
+  .time {
+    font-size: .7rem;
+    font-weight: 100;
+    margin-right: .5rem;
+    color: rgba(255, 255, 255, .7);
+  }
+
+  .userColor {
+    color: coral;
+  }
+
+  .opponentColor {
+    color: dodgerblue;
+  }
+
+  .value {
+    font-weight: 400;
+    color: aqua;
+  }
+}
