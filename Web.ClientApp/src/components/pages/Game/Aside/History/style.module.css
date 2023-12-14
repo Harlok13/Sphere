@@ -1,0 +1,118 @@
+.history {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+.history .head {
+  margin-bottom: 0.8rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.history .title {
+  font-size: 2rem;
+}
+.history .clear {
+  cursor: pointer;
+  transition: 0.5s ease;
+  font-size: 2rem;
+}
+.history .clear_text {
+  display: none;
+  font-weight: 200;
+  font-size: 1rem;
+  position: absolute;
+  right: 27px;
+  transition: 0.5s ease;
+}
+.history .items {
+  margin-bottom: 1rem;
+  overflow-y: auto;
+  max-height: 22rem;
+}
+.history .item {
+  margin-bottom: 0.5rem;
+  width: 100%;
+  height: 4rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.5s ease;
+  cursor: pointer;
+  animation-fill-mode: forwards;
+}
+.history .item:last-child {
+  margin: 0;
+}
+.history .item_win {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+.history .item_win:hover {
+  background-color: rgba(0, 255, 0, 0.4);
+}
+.history .item_lose {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+.history .item_lose:hover {
+  background-color: rgba(255, 0, 0, 0.4);
+}
+.history .item_draw {
+  background-color: rgba(0, 0, 255, 0.2);
+}
+.history .item_draw:hover {
+  background-color: rgba(0, 0, 255, 0.4);
+}
+.history .leftImage {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 6px;
+}
+.history .body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+.history .versusTitle .vs {
+  color: red;
+}
+.history .info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.history .state {
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.history .score {
+  font-size: 0.7rem;
+}
+.history .rightImage {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 6px;
+}
+.history .showMore {
+  margin-bottom: 2rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  font-size: 1.3rem;
+  font-weight: 200;
+  border: none;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+.history .showMore:hover {
+  background-color: rgb(255, 255, 255);
+}
+
+/*# sourceMappingURL=RoomsSort.module.css.map */

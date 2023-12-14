@@ -1,0 +1,61 @@
+.room .title {
+  flex: 0 1 auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+.room .list .item {
+  display: flex;
+  align-items: center;
+  padding: 0.4rem;
+  font-size: 1rem;
+  font-weight: 100;
+  background-color: rgba(255, 228, 181, 0.05);
+  border-radius: 7px;
+  margin-bottom: 0.4rem;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.room .list .item:hover {
+  background-color: rgba(255, 228, 181, 0.1);
+}
+.room .list .item .iconLeader {
+  font-size: 1rem;
+  color: goldenrod;
+  margin-right: 0.5rem;
+}
+.room .list .item .iconReadiness {
+  position: absolute;
+  font-size: 1.2rem;
+  right: 0.5rem;
+}
+.room .bottom {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 1rem;
+}
+.room .bottom .invite {
+  background: rgba(255, 255, 255, 0.9);
+}
+.room .bottom .leave {
+  background: rgba(255, 255, 255, 0.9);
+}
+.room .bottom .iconBottom {
+  font-size: 1rem;
+}
+
+.button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 2rem;
+  border-radius: 7px;
+  border: none;
+  width: 5.5rem;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=RoomsSort.module.css.map */

@@ -1,0 +1,24 @@
+
+.registerVia{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  & .title{
+    font-weight: 200;
+    font-size: 1rem;
+    color: #c4c4c4;
+    margin-bottom: 1rem;
+  }
+  & .items{
+    display: flex;
+    gap: 1.2rem;
+  }
+  span{
+    font-size: 2.8rem;
+  }
+
+  //& .icon{
+  //  font-size: 5rem;
+  //}
+}
+

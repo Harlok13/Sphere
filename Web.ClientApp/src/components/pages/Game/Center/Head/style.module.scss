@@ -1,0 +1,53 @@
+.head{
+  flex: 0 0 8%;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, .1);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.nav{
+  flex: 1;
+  margin-left: 1rem;
+  & .items{
+    display: flex;
+    align-items: center;
+  }
+
+  & .item{
+    margin-right: 1rem;
+  }
+
+  & .link{
+    display: flex;
+    align-items: center;
+
+    &:hover .nav__label{
+      display: block;
+    }
+  }
+
+  & .icon{
+    transition: all .3s ease;
+    font-size: 2rem;
+  }
+
+  & .label{
+    transition: all .3s ease;
+    display: none;
+  }
+}
+
+.lightToggle {
+  flex: 0;
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+
+  & .icon{
+    font-size: 2rem;
+  }
+}
+

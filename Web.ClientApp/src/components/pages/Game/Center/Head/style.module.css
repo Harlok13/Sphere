@@ -1,0 +1,48 @@
+.head {
+  flex: 0 0 8%;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.nav {
+  flex: 1;
+  margin-left: 1rem;
+}
+.nav .items {
+  display: flex;
+  align-items: center;
+}
+.nav .item {
+  margin-right: 1rem;
+}
+.nav .link {
+  display: flex;
+  align-items: center;
+}
+.nav .link:hover .nav__label {
+  display: block;
+}
+.nav .icon {
+  transition: all 0.3s ease;
+  font-size: 2rem;
+}
+.nav .label {
+  transition: all 0.3s ease;
+  display: none;
+}
+
+.lightToggle {
+  flex: 0;
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+.lightToggle .icon {
+  font-size: 2rem;
+}
+
+/*# sourceMappingURL=RoomsSort.module.css.map */

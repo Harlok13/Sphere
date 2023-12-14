@@ -1,0 +1,138 @@
+.bottom {
+  flex: 0 0 22%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1rem;
+  display: flex;
+}
+
+.controlPanel {
+  flex: 0 0 15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.controlPanel .button {
+  box-shadow: 1px 1px 8px 3px rgba(255, 255, 255, 0.2);
+  border: none;
+  height: 2rem;
+  width: 9rem;
+  border-radius: 10px;
+  background: linear-gradient(45deg, aqua, white, aqua);
+  transition: 0.3s ease;
+  font-size: 1.2rem;
+}
+.controlPanel .button:hover {
+  box-shadow: none;
+}
+.controlPanel .button:active {
+  box-shadow: none;
+  height: calc(2rem - 2%);
+  width: calc(9rem - 2%);
+  font-size: calc(1.2rem - 2%);
+}
+
+.notificationPanel {
+  flex: 0 0 4rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.notificationPanel .iconChat {
+  cursor: pointer;
+}
+.notificationPanel .iconMessages {
+  cursor: pointer;
+}
+.notificationPanel .iconNotifications {
+  cursor: pointer;
+}
+.notificationPanel .iconFriends {
+  cursor: pointer;
+}
+
+.roomInfo {
+  flex: 0 1 12rem;
+  min-width: 10rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 1rem;
+}
+.roomInfo .body .title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.roomInfo .body .info {
+  font-size: 0.9rem;
+  font-weight: 200;
+}
+.roomInfo .body .info .list .item {
+  margin-bottom: 0.5rem;
+}
+.roomInfo .body .value {
+  font-weight: 400;
+  color: aqua;
+}
+
+.gameHistory {
+  position: relative;
+  flex: 1;
+  min-width: 20rem;
+  max-height: 10.5rem;
+  overflow-y: auto;
+  padding: 0 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+.gameHistory:before {
+  position: absolute;
+  content: "";
+  height: 100%;
+  width: 6px;
+  left: 0;
+}
+.gameHistory:hover:before {
+  cursor: col-resize;
+}
+.gameHistory .title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.gameHistory .info {
+  font-size: 0.9rem;
+  font-weight: 200;
+}
+.gameHistory .info .list .item {
+  margin-bottom: 0.5rem;
+}
+.gameHistory .info .list .gameState {
+  color: bisque;
+}
+.gameHistory .info .list .time {
+  font-size: 0.7rem;
+  font-weight: 100;
+  margin-right: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.gameHistory .info .list .userColor {
+  color: coral;
+}
+.gameHistory .info .list .opponentColor {
+  color: dodgerblue;
+}
+.gameHistory .value {
+  font-weight: 400;
+  color: aqua;
+}
+
+/*# sourceMappingURL=RoomsSort.module.css.map */
