@@ -4,16 +4,28 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Infra.Data.Configurations;
 
-public class PlayerStatisticConfiguration : IEntityTypeConfiguration<PlayerStatistic>
+public class PlayerInfoConfiguration : IEntityTypeConfiguration<PlayerInfo>
 {
-    public void Configure(EntityTypeBuilder<PlayerStatistic> builder)
+    public void Configure(EntityTypeBuilder<PlayerInfo> builder)
     {
-        builder.HasKey(e => e.Id).HasName("player_statistics_pkey");
+        builder.HasKey(e => e.Id).HasName("player_infos_pkey");
 
-        builder.ToTable("player_statistics");
+        builder.ToTable("player_infos");
 
         builder.Property(e => e.Id)
             .HasColumnName("id")
+            .IsRequired();
+
+        builder.Property(e => e.AvatarUrl)
+            .HasColumnName("avatar_url")
+            .IsRequired();
+
+        builder.Property(e => e.PlayerName)
+            .HasColumnName("player_name")
+            .IsRequired();
+
+        builder.Property(e => e.UserId)
+            .HasColumnName("user_id")
             .IsRequired();
 
         builder.Property(e => e.Matches)
@@ -58,7 +70,7 @@ public class PlayerStatisticConfiguration : IEntityTypeConfiguration<PlayerStati
 
         builder.Property(e => e.Money)
             .HasColumnName("money")
-            .HasDefaultValue(0)
+            .HasDefaultValue(1000)
             .IsRequired();
 
         builder.Property(e => e.Likes)
