@@ -2,14 +2,17 @@ using App.Domain.Primitives;
 
 namespace App.Domain.Entities;
 
-public sealed class PlayerStatistic : Entity
+public sealed class PlayerInfo : Entity   
 {
-    internal PlayerStatistic(
+    private PlayerInfo(
         Guid id,
-        Guid playerId
+        Guid userId, 
+        string playerName
     ) : base(id)
     {
-        PlayerId = playerId;
+        UserId = userId;
+        AvatarUrl = "img/avatars/default_avatar.png";
+        PlayerName = playerName;
         Matches = default;
         Loses = default;
         Wins = default;
@@ -23,7 +26,11 @@ public sealed class PlayerStatistic : Entity
         Has21 = default;
     }
 
-    public Guid PlayerId { get; private init; }
+    public Guid UserId { get; private init; }
+    
+    public string AvatarUrl { get; private set; }
+
+    public string PlayerName { get; private set; }
     
     public int Matches { get; private set; }
 
@@ -49,10 +56,21 @@ public sealed class PlayerStatistic : Entity
     
     // public UserStatisticModel(int id) => Id = id;
 
-    public static PlayerStatistic Create(
+    public static PlayerInfo Create(
         Guid id,
-        Guid playerId)
+        Guid userId,
+        string playerName)
     {
-        return new PlayerStatistic(id, playerId);
+        return new PlayerInfo(id, userId, playerName);
+    }
+    
+    public void IncrementMoney(int value)
+    {
+        Money += value;
+    }
+
+    public void DecrementMoney(int value)
+    {
+        Money -= value;  // TODO: validation
     }
 }
