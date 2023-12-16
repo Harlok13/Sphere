@@ -6,7 +6,7 @@ public interface IAppUnitOfWork : IUnitOfWorkFactory
     
     IPlayerHistoryRepository PlayerHistoryRepository { get; }
     
-    IPlayerStatisticRepository PlayerStatisticRepository { get; }
+    IPlayerInfoRepository PlayerInfoRepository { get; }
     
     IRoomRepository RoomRepository { get; }
 }
