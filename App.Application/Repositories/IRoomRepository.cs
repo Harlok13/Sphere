@@ -9,4 +9,5 @@ public interface IRoomRepository
     Task<Room?> GetRoomByIdAsync(Guid roomId, CancellationToken cT);
 
     Task<ICollection<Room>?> GetFirstPageAsync(CancellationToken cT);
+    Task RemoveRoomAsync(Guid roomId, CancellationToken cT);
 }
