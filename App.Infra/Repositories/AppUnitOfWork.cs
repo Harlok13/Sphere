@@ -11,6 +11,6 @@ public class AppUnitOfWork : UnitOfWorkFactory<ApplicationContext>, IAppUnitOfWo
 
     public IPlayerRepository PlayerRepository => new PlayerRepository(Context);
     public IPlayerHistoryRepository PlayerHistoryRepository => new PlayerHistoryRepository(Context);
-    public IPlayerStatisticRepository PlayerStatisticRepository => new PlayerStatisticRepository(Context);
+    public IPlayerInfoRepository PlayerInfoRepository => new PlayerInfoRepository(Context);
     public IRoomRepository RoomRepository => new RoomRepository(Context);
 }
