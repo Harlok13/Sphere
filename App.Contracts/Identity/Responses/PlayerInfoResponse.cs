@@ -1,6 +1,9 @@
 namespace App.Contracts.Identity.Responses;
 
-public sealed record PlayerStatisticResponse(
+public sealed record PlayerInfoResponse(
+    Guid Id,
+    string AvatarUrl,
+    string PlayerName,
     int Matches,
     int Loses,
     int Wins,
