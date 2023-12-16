@@ -2,34 +2,26 @@ using App.Domain.Primitives;
 
 namespace App.Domain.Entities;
 
-public sealed class Player : Entity
+public class Player : Entity
 {
     private readonly List<Card> _cards = new();
 
     private Player(
         Guid id,
         string playerName,
-        bool isLeader,
-        Guid roomId
-        // Guid roomId,
-        // bool isLeader,
-        // bool readiness,
-        // string playerName,
-        // int score
+        Guid roomId,
+        int money
     ) : base(id)
     {
         PlayerName = playerName;
-        IsLeader = isLeader;
         AvatarUrl = "img/avatars/default_avatar.png";  // TODO: hardcode
         RoomId = roomId;
-        Readiness = false;
-        Score = 0;
-        Cards = null;
-        // RoomId = roomId;
-        // IsLeader = isLeader;
-        // Readiness = readiness;
-        // PlayerName = playerName;
-        // Score = score;
+        Money = money;
+        IsLeader = default;
+        Readiness = default;
+        Score = default;
+        Cards = default;
+        Move = default;
     }
 
     public Guid RoomId { get; set; }
@@ -49,29 +41,31 @@ public sealed class Player : Entity
     // public IReadOnlyCollection<Card> Cards => _cards;
     public string? Cards { get; set; }
 
-    // public static Player Create(
-    //     Guid id,
-    //     Guid roomId,
-    //     bool isLeader,
-    //     bool readiness,
-    //     string playerName,
-    //     int score)
-    // {
-    //     return new Player(
-    //         id,
-    //         roomId,
-    //         isLeader,
-    //         readiness,
-    //         playerName,
-    //         score);
-    // }
-    public static Player Create(Guid id, string playerName, bool isLeader, Guid roomId)
+    public bool Move { get; private set; }
+
+    public int Money { get; private set; }
+
+    public static Player Create(
+        Guid id,
+        string playerName,
+        Guid roomId,
+        int money)
     {
-        return new Player(id, playerName, isLeader, roomId);
+        return new Player(id, playerName, roomId, money);
     }
 
     public void SetRoomId(Guid roomId)
     {
         RoomId = roomId;
+    }
+
+    public void SetIsLeader(bool value)
+    {
+        IsLeader = value;
+    }
+
+    public void ToggleReadiness()
+    {
+        Readiness = !Readiness;
     }
 }
