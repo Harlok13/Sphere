@@ -3,10 +3,10 @@ using App.Domain.Entities;
 
 namespace App.Application.Repositories;
 
-public interface IPlayerStatisticRepository
+public interface IPlayerInfoRepository
 {
-    Task CreatePlayerStatisticAsync(Guid userId, CancellationToken cT);
-    Task<PlayerStatistic?> GetPlayerStatisticAsync(Guid userId, CancellationToken cT);
+    Task CreatePlayerInfoAsync(Guid userId, string playerName, CancellationToken cT);
+    Task<PlayerInfo?> GetPlayerInfoByIdAsync(Guid userId, CancellationToken cT);
 
     Task PlayerWinActionAsync(Guid userId, CancellationToken cT);
     Task PlayerLoseActionAsync(Guid userId, CancellationToken cT);
