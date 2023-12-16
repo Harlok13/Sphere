@@ -2,27 +2,28 @@ using App.Application.Repositories;
 using App.Contracts.Identity.Responses;
 using App.Domain.Entities;
 using App.Infra.Data.Context;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.Infra.Repositories;
 
-public class PlayerStatisticRepository : IPlayerStatisticRepository
+public class PlayerInfoRepository : IPlayerInfoRepository
 {
     private readonly ApplicationContext _context;
 
-    public PlayerStatisticRepository(ApplicationContext context)
+    public PlayerInfoRepository(ApplicationContext context)
     {
         _context = context;
     }
-    public async Task CreatePlayerStatisticAsync(Guid userId, CancellationToken cT)
+    public async Task CreatePlayerInfoAsync(Guid userId, string playerName, CancellationToken cT)
     {
-        var statistic = PlayerStatistic.Create(Guid.NewGuid(), userId);
-        await _context.PlayerStatistics.AddAsync(statistic, cT);
+        var playerInfo = PlayerInfo.Create(id: Guid.NewGuid(), userId: userId, playerName: playerName);
+        await _context.PlayerInfos.AddAsync(playerInfo, cT);
     }
 
-    public async Task<PlayerStatistic?> GetPlayerStatisticAsync(Guid userId, CancellationToken cT)
+    public async Task<PlayerInfo?> GetPlayerInfoByIdAsync(Guid playerId, CancellationToken cT)
     {
-        return await _context.PlayerStatistics.SingleOrDefaultAsync(x => x.PlayerId == userId, cT);
+        return await _context.PlayerInfos.SingleOrDefaultAsync(x => x.UserId == playerId, cT);
     }
 
     public Task PlayerWinActionAsync(Guid userId, CancellationToken cT)
