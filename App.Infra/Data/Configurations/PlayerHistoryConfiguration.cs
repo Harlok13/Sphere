@@ -13,11 +13,12 @@ public class PlayerHistoryConfiguration : IEntityTypeConfiguration<PlayerHistory
         builder.ToTable("player_histories");
 
         builder.Property(e => e.Id)
+            .ValueGeneratedNever()
             .HasColumnName("id")
             .IsRequired();
 
         builder.Property(e => e.CardsPlayed)
-            .HasColumnType("jsonb")  // TODO: text?
+            // .HasColumnType("jsonb")  // TODO: text?
             .HasColumnName("cards_played")
             .IsRequired();
 
@@ -27,18 +28,17 @@ public class PlayerHistoryConfiguration : IEntityTypeConfiguration<PlayerHistory
             .IsRequired();
 
         builder.Property(e => e.Result)
-            .HasMaxLength(24)
             .HasColumnName("result")
             .IsRequired();
 
         builder.Property(e => e.Score)
             .HasMaxLength(10)
+            .HasColumnType("VARCHAR")
             .HasColumnName("score")
-            // .HasColumnType("TEXT")
             .IsRequired();
 
         builder.Property(e => e.PlayerId)
-            .HasColumnName("user_id")
+            .HasColumnName("player_id")
             .IsRequired();
         // builder.Property(e => e.CreatedAt)
         //     .HasColumnName("created_at")

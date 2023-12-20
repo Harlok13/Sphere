@@ -16,6 +16,7 @@
     "axios": "^1.6.2",
     "bootstrap": "^5.2.3",
     "http-proxy-middleware": "^2.0.6",
+    "immer": "^10.0.3",
     "jquery": "^3.6.4",
     "merge": "^2.1.1",
     "oidc-client": "^1.11.5",

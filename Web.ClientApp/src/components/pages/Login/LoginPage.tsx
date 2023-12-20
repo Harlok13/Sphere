@@ -1,6 +1,4 @@
-// @ts-ignore
-import style from "./style.module.css";
-import Head from "./Head/Head";
+import style from "./LoginPage.module.css";
 import Main from "./Main/Main";
 
 const LoginPage = () => {

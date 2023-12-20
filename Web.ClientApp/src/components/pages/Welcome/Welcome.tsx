@@ -1,6 +1,5 @@
 import Main from "./Main/Main";
-// @ts-ignore
-import style from "./style.module.css"
+import style from "./Welcome.module.css"
 import Header from "./Header/Header";
 
 const Welcome = () => {

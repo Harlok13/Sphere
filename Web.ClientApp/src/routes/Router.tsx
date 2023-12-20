@@ -2,7 +2,6 @@ import {Route, Routes} from "react-router-dom";
 import Welcome from "../components/pages/Welcome/Welcome";
 import LoginPage from "../components/pages/Login/LoginPage";
 import RegisterPage from "../components/pages/Register/RegisterPage";
-import GamePage from "../components/pages/Game/GamePage";
 import ProfilePage from "../components/pages/ProfilePage/ProfilePage";
 import {RoomPage} from "../components/pages/RoomPage/RoomPage";
 import {SettingsPage} from "../components/pages/SettingsPage/SettingsPage";
@@ -23,7 +22,6 @@ export const Router = () => {
                 <Route key={v4()} path="lobby" element={<LobbyPage/>}/>
                 <Route key="settings" path="settings" element={<SettingsPage/>}/>
                 <Route key="leaderboards" path="leaderboards" element={<LeaderboardsPage/>}/>
-                <Route key="game" path="game" element={<GamePage/>}/>
                 <Route key="profile" path="profile" element={<ProfilePage/>}/>
             </Route>
             <Route key="*" path="*" element={<div>Page Not Found</div>}/>

@@ -1,26 +1,26 @@
 import {useHubMethod} from "react-use-signalr";
 import {signalRConnection} from "../../../../App";
 
-export const useCreateRoomHub = () => {
-    return useHubMethod(signalRConnection, "CreateRoom");
-}
+export const useCreateRoomHub = () =>
+    useHubMethod(signalRConnection, "CreateRoom");
 
-export const useJoinToRoomHub = () => {
-    return useHubMethod(signalRConnection, "JoinToRoom");
-}
+export const useJoinToRoomHub = () =>
+    useHubMethod(signalRConnection, "JoinToRoom");
 
-export const useRemoveFromRoomHub = () => {
-    return useHubMethod(signalRConnection, "RemoveFromRoom");
-}
+export const useRemoveFromRoomHub = () =>
+    useHubMethod(signalRConnection, "RemoveFromRoom");
 
-export const useTestMethodHub = () => {
-    return useHubMethod(signalRConnection, "GetTest");
-}
+export const useToggleReadinessHub = () =>
+    useHubMethod(signalRConnection, "ToggleReadiness");
 
-// export const useSendOwnDataHub = () => {
-//     return useHubMethod(signalRConnection, "SendOwnData");
-// }
+export const useSelectStartGameMoneyHub = () =>
+    useHubMethod(signalRConnection, "SelectStartGameMoney");
 
-// export const useSetNewLeaderHub = () => {
-//     return useHubMethod(signalRConnection, "SetNewLeader");
-// }
+export const useStartGameHub = () =>
+    useHubMethod(signalRConnection, "StartGame");
+
+export const useStartTimerHub = () =>
+    useHubMethod(signalRConnection, "StartTimer");
+
+export const useStopTimerHub = () =>
+    useHubMethod(signalRConnection, "StopTimer");

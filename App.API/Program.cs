@@ -1,11 +1,9 @@
+using App.Application;
 using App.Application.Identity;
-using App.Application.SignalR.Hubs;
 using App.Infra;
-// using App.Infrastructure;
-// using App.Infrastructure;
+using App.SignalR.Hubs;
+using Scrutor;
 using Sphere.Exceptions.CorsExceptions;
-using Sphere.SignalR;
-using Sphere.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(
     new WebApplicationOptions { Args = args, ContentRootPath = Directory.GetCurrentDirectory()});
@@ -14,11 +12,6 @@ builder.Configuration.AddJsonFile("appsettings.Secrets.json");
 
 builder.Services.AddControllers();
 
-// builder.Services.AddAuthenticationWithOptions(builder);
-//
-// builder.Services.AddAuthorizationWithOptions();
-//
-// builder.Services.AddIdentityWithOptions();
 builder.Services.AddInfrastructure(builder);
 
 builder.Services.AddMediator(options => 
@@ -73,27 +66,39 @@ builder.Services.AddCors(options =>
 );
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-    
-// builder.Services.AddScoped<IUserStatisticDbApi, UserStatisticDbApi>();
-// builder.Services.AddScoped<IUserHistoryDbApi, UserHistoryDbApi>();
-// builder.Services.AddScoped<IAuthDbApi, AuthDbApi>();
-// builder.Services.AddScoped<ILobbyDbApi, LobbyDbApi>();
-// builder.Services.AddScoped<IUserInfoDbApi, UserInfoDbApi>();
 
-// builder.Services.AddInfrastructure();
+// builder.Services.Scan(scan => scan
+//     .FromAssemblyOf<IInfrastructureAssemblyMarker>()
+//     .AddClasses(classes =>
+//         classes.Where(type => type.Name.EndsWith("Repository") || type.Name.EndsWith("Work")))
+//     .UsingRegistrationStrategy(RegistrationStrategy.Skip)
+//     .AsImplementedInterfaces()
+//     .WithScopedLifetime());
 
-// builder.Services.AddScoped<IGame21Service, Game21Service>();
-// builder.Services.AddSingleton<IJwtService, JwtService>();
-builder.Services.AddIdentityServices();
-// builder.Services.AddTransient<ICacheService, RedisService>();
+builder.Services.Scan(scan => scan
+    .FromAssemblies(
+        typeof(IApplicationAssemblyMarker).Assembly,
+        typeof(IInfrastructureAssemblyMarker).Assembly)
+    .AddClasses(classes =>
+        classes.Where(type => type.Name.EndsWith("Repository") || type.Name.EndsWith("Work")))
+    .UsingRegistrationStrategy(RegistrationStrategy.Skip)
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
 
-// builder.Services.AddSingleton<ICardDeck, CardDeck>();
-// builder.Services.AddSingleton<IGame, Game>();
-// builder.Services.AddSingleton<IGameOnline, GameOnline>();
-// builder.Services.AddTransient<ILevelComputed, LevelComputed>();
-// builder.Services.AddApplicationDbContext(builder);
 
-// builder.Services.AddScoped<IGlobalHubContext, GlobalHubContext>();
+builder.Services
+    .AddIdentityServices()
+    .AddApplication();
+
+
+    // .AddClasses(classes => classes
+    //     .Where(type => type.Name.EndsWith("Work")))
+    // .UsingRegistrationStrategy(RegistrationStrategy.Skip)
+    // .AsImplementedInterfaces()
+    // .WithScopedLifetime()
+    //
+    // .FromAssemblyOf<IApplicationAssemblyMarker>()
+    // .AddClasses(classes => classes.Where(type => type.IsClass)));
 
 
 var app = builder.Build();
@@ -110,10 +115,9 @@ app.UseCors(builder.Configuration["CorsPolicy"]
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.MapHub<RoomHub>("/room");
 app.MapHub<GlobalHub>("/hubs/global");
-// GlobalHub
 
 app.MapControllers();
 
 await app.RunAsync();
+

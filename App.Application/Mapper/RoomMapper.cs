@@ -1,27 +1,10 @@
-using App.Contracts.Requests;
 using App.Contracts.Responses;
-using App.Domain.Entities;
-using App.Domain.Enums;
+using App.Domain.Entities.RoomEntity;
 
 namespace App.Application.Mapper;
 
 public class RoomMapper
 {
-    public static RoomResponse MapRoomToRoomResponse(Room entity, IEnumerable<PlayerResponse> playersResponse)
-    {
-        return new RoomResponse(
-            Id: entity.Id,
-            RoomName: entity.RoomName,
-            RoomSize: entity.RoomSize,
-            StartBid: entity.StartBid,
-            MinBid: entity.MinBid,
-            MaxBid: entity.MaxBid,
-            ImgUrl: entity.AvatarUrl,
-            Status: entity.Status,
-            PlayersInRoom: entity.PlayersInRoom,
-            Players: playersResponse);
-    }
-
     public static IEnumerable<RoomResponse> MapManyRoomsToManyRoomsResponse(ICollection<Room> rooms)
     {
         var roomsResponse = new List<RoomResponse>(rooms.Count);
@@ -34,7 +17,7 @@ public class RoomMapper
                 playersResponse.Add(pResponse);
             }
 
-            var roomResponse = RoomMapper.MapRoomToRoomResponse(room, playersResponse);
+            var roomResponse = MapRoomToRoomResponse(room, playersResponse);
             roomsResponse.Add(roomResponse);
         }
 
@@ -48,10 +31,38 @@ public class RoomMapper
             RoomName: entity.RoomName,
             RoomSize: entity.RoomSize,
             StartBid: entity.StartBid,
+            MaxBid: entity.MaxBid,
+            MinBid: entity.MinBid,
+            ImgUrl: entity.AvatarUrl,
+            Status: entity.Status,
+            PlayersInRoom: entity.PlayersInRoom,
+            Bank: entity.Bank);
+    }
+
+    public static InitRoomDataResponse MapRoomToInitRoomDataResponse(Room entity)
+    {
+        return new InitRoomDataResponse(
+            Id: entity.Id,
+            RoomName: entity.RoomName,
+            RoomSize: entity.RoomSize,
+            StartBid: entity.StartBid,
+            MinBid: entity.MinBid,
+            MaxBid: entity.MaxBid);
+    }
+    
+    private static RoomResponse MapRoomToRoomResponse(Room entity, IEnumerable<PlayerResponse> playersResponse)
+    {
+        return new RoomResponse(
+            Id: entity.Id,
+            RoomName: entity.RoomName,
+            RoomSize: entity.RoomSize,
+            StartBid: entity.StartBid,
             MinBid: entity.MinBid,
             MaxBid: entity.MaxBid,
             ImgUrl: entity.AvatarUrl,
             Status: entity.Status,
-            PlayersInRoom: entity.PlayersInRoom);
+            PlayersInRoom: entity.PlayersInRoom,
+            Bank: entity.Bank,
+            Players: playersResponse);
     }
 }

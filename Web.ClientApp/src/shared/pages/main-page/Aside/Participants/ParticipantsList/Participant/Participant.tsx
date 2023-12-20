@@ -1,16 +1,20 @@
-// @ts-ignore
 import style from "./Participant.module.css";
-import {IParticipant} from "../../../../../../../interfaces/participant";
+import {Player} from "../../../../../../../contracts/player-response";
+import {FC} from "react";
 
-export const Participant = (data: IParticipant) => {
+interface IParticipantProps {
+    playerData: Player;
+}
+
+export const Participant: FC<IParticipantProps> = ({playerData}) => {
     return (
         <li className={style.item}>
             <span className={`${style.iconLeader} material-icons-outlined`}>
-                {data.isLeader ? "star" : null}
+                {playerData.isLeader ? "star" : null}
             </span>
-            {data.playerName}
+            {playerData.playerName}
             <span className={`${style.iconReadiness} material-icons-outlined`}>
-                {data.readiness ? "done" : "close"}
+                {playerData.readiness ? "done" : "close"}
             </span>
         </li>
     )

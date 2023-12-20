@@ -1,14 +1,19 @@
 using App.Contracts.Identity.Responses;
 using App.Contracts.Responses;
 using App.Domain.Entities;
+using Player = App.Domain.Entities.PlayerEntity.Player;
+using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace App.Application.Mapper;
 
 public class PlayerMapper
 {
-    public static PlayerStatisticResponse MapPlayerStatisticToPlayerStatisticResponse(PlayerStatistic entity)
+    public static PlayerInfoResponse MapPlayerInfoToPlayerInfoResponse(PlayerInfo entity)
     {
-        return new PlayerStatisticResponse(
+        return new PlayerInfoResponse(
+            Id: entity.UserId,
+            AvatarUrl: entity.AvatarUrl,
+            PlayerName: entity.PlayerName,
             Matches: entity.Matches,
             Loses: entity.Loses,
             Wins: entity.Wins,
@@ -32,7 +37,10 @@ public class PlayerMapper
             PlayerName: entity.PlayerName,
             Score: entity.Score,
             AvatarUrl: entity.AvatarUrl,
-            Cards: entity.Cards);
+            Cards: entity.Cards,
+            Move: entity.Move,
+            Money: entity.Money,
+            InGame: entity.InGame);
     }
 
     public static PlayerHistoryResponse MapPlayerHistoryToPlayerHistoryResponse(PlayerHistory entity)
@@ -58,7 +66,7 @@ public class PlayerMapper
         return playerHistoriesResponse;
     }
 
-    public static IEnumerable<PlayerResponse> MapManyPlayersToManyPlayersResponse(ICollection<Player> players)
+    public static IEnumerable<PlayerResponse> MapManyPlayersToManyPlayersResponse(IReadOnlyCollection<Player> players)
     {
         var playersResponse = new List<PlayerResponse>(players.Count);
 

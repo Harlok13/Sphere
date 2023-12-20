@@ -1,5 +1,3 @@
-import Aside from "../Game/Aside/Aside";
-import Head from "../Game/Center/Head/Head";
 import {ContentContainer} from "../../../shared/pages/main-page/ContentContainer/ContentContainer";
 import {GlobalAside} from "../../layout/GlobalAside/GlobalAside";
 import {Main} from "../../../shared/pages/main-page/Center/Main/Main";

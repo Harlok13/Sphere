@@ -1,6 +1,96 @@
 .gameArea{
   width: 100%;
   height: 100%;
+}
+
+.container{
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
+
+
+
+  .raw{
+    width: 100%;
+    display: flex;
+    flex: 1 1 33.33333%;
+
+    .cell{
+      flex: 1 1 33.33333%;
+      display: flex;
+      flex-direction: column;
+
+      .cardZone{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 60%;
+      }
+
+      .playerInfoZone{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 40%;
+
+
+
+        .avatar{
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 5rem;
+          height: 5rem;
+          margin-right: 1rem;
+
+          .img{
+            width: 4rem;
+            height: 4rem;
+          }
+
+          svg{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5rem;
+            height: 5rem;
+            transform: rotateY(-180deg) rotateZ(-90deg);
+
+            .timer {
+              stroke-dasharray: 220;
+              stroke-dashoffset: 0;
+              stroke-linecap: round;
+              stroke-width: 4px;
+              stroke: white;
+              fill: none;
+              animation: countdown 10s linear infinite forwards;
+            }
+          }
+        }
+
+        .playerInfo{
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 70%;
+        }
+      }
+    }
+  }
+}
+
+@keyframes countdown {
+  0% {
+    stroke-dashoffset: 0;
+    stroke: green;
+  }
+  50%{
+    stroke: yellow;
+  }
+  100% {
+    stroke-dashoffset: 220;
+    stroke: red;
+  }
 }

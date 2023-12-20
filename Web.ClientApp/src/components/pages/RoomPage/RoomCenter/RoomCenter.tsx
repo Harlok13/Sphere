@@ -6,7 +6,7 @@ import {GlobalHead} from "../../../layout/GlobalHead/GlobalHead";
 export const RoomCenter = () => {
     return (
         <Center>
-            <GlobalHead/>
+            {/*<GlobalHead/>*/}
             <RoomMain/>
             <RoomBottom/>
         </Center>

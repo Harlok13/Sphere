@@ -1,6 +1,5 @@
 import Main from "./Main/Main";
-// @ts-ignore
-import style from "./style.module.css";
+import style from "./RegisterPage.module.css";
 
 const RegisterPage = () => {
     return (

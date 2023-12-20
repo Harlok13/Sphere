@@ -13,21 +13,39 @@ import {
 import {Main} from "../../../../../shared/pages/main-page/Center/Main/Main";
 import {v4} from "uuid";
 import {useRoomsList} from "../../../../../BL/hooks/lobby/rooms-list/use-rooms-list";
+import {MoneySelectorModal} from "../../../../../shared/pages/main-page/Center/Main/lobby/MoneySelectorModal/MoneySelectorModal";
+import {
+    MoneySelectorInput
+} from "../../../../../shared/pages/main-page/Center/Main/lobby/MoneySelectorModal/MoneySelectorInput/MoneySelectorInput";
+import {
+    MoneySelectorButtons
+} from "../../../../../shared/pages/main-page/Center/Main/lobby/MoneySelectorModal/MoneySelectorButtons/MoneySelectorButtons";
+import {useSelectStartMoney} from "../../../../../BL/hooks/lobby/select-start-money/use-select-start-money";
+import {useShowModalSelector} from "../../../../../BL/slices/money/use-money-selector";
 
 export const LobbyMain = () => {
     const {rooms, joinToRoomHandler} = useRoomsList();
-    // debugger
+    const {selectStartMoney, handlers} = useSelectStartMoney();
+    const showModal = useShowModalSelector();
     return (
         <Main>
             <Lobby>
                 <RoomsHead>
                     <RoomsSearch/>
                 </RoomsHead>
+                {showModal
+                    ? (
+                        <MoneySelectorModal>
+                            <MoneySelectorInput selector={selectStartMoney} selectStartMoneyHandler={handlers.selectStartMoneyHandler}/>
+                            <MoneySelectorButtons handlers={handlers}/>
+                        </MoneySelectorModal>
+                    )
+                    : null
+                }
                 <RoomsList>
                     <RoomItemHead/>
                     {rooms.length
-                        // ? rooms.map(l => (<RoomItem key={v4()} guid={l.guid} joinToRoomHandler={joinToRoomHandler} imgUrl={l.imgUrl} roomName={l.roomName} roomSize={l.roomSize} startBid={l.startBid} minBid={l.minBid} maxBid={l.maxBid} status={l.status} playersInRoom={l.playersInRoom}/>))
-                        ? rooms.map(l => (<RoomItem key={v4()} joinToRoomHandler={joinToRoomHandler} props={l}/>))
+                        ? rooms.map(room => (<RoomItem key={v4()} joinToRoomHandler={joinToRoomHandler} roomData={room}/>))
                         : null}
                 </RoomsList>
                 {/*<RoomsPagination>*/}

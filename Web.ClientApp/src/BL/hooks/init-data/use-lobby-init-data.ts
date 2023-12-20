@@ -1,18 +1,16 @@
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {useEffect} from "react";
-import {setImgUrl} from "../../slices/lobby.slice";
-import {v4} from "uuid";
+import {setImgUrl} from "../../slices/lobby/lobby.slice";
+import {usePlayerInfoSelector} from "../../slices/player-info/use-player-info-selector";
 
 export const useLobbyInitData = () => {
     const dispatch = useDispatch();
-    // @ts-ignore
-    const userInfo = useSelector(state => state.userInfo);
+    const playerInfo = usePlayerInfoSelector();
 
     useEffect(() => {
         // remove <Participants/> component
 
         // initialize data for creating a room
-        // dispatch(setRoomGuid(v4()));
-        dispatch(setImgUrl(userInfo.avatar));
+        dispatch(setImgUrl(playerInfo.avatarUrl));
     }, []);
 }

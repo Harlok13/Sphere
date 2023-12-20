@@ -1,8 +1,11 @@
 using App.Domain.Entities;
+using App.Domain.Entities.RoomEntity;
 using App.Domain.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Player = App.Domain.Entities.PlayerEntity.Player;
+using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace App.Infra.Data.Context;
 

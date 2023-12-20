@@ -1,41 +1,35 @@
-import {useDispatch, useSelector} from "react-redux";
-import {setInRoom} from "../../../slices/game21.slice";
 import {useNavigate} from "react-router-dom";
 import {NavigateEnum} from "../../../../constants/navigate.enum";
-import {useJoinToRoomHub} from "../../hub-connection/server-methods/server-methods";
+import {useJoinToRoomHub, useSelectStartGameMoneyHub} from "../../hub-connection/server-methods/server-methods";
+import React from "react";
+import {useRoomsSelector} from "../../../slices/lobby/use-lobby-selector";
+import {usePlayerInfoSelector} from "../../../slices/player-info/use-player-info-selector";
+import {Room} from "../../../../contracts/room-in-lobby-response";
+import {PlayerInfo} from "../../../../contracts/player-info-response";
+import {useSelectStartMoney} from "../select-start-money/use-select-start-money";
+
+
+export type JoinToRoomHandler = (e: React.MouseEvent<HTMLButtonElement>, roomData: Room) => Promise<void>;
 
 export const useRoomsList = () => {
-    // @ts-ignore
-    const lobby = useSelector(state => state.lobby);
-    // @ts-ignore
-    const player = useSelector(state => state.player);
+    const rooms: Array<Room> = useRoomsSelector();
+    const playerInfo: PlayerInfo = usePlayerInfoSelector();
 
-    // @ts-ignore
-    const userInfo = useSelector(state => state.userInfo);
+    // const joinToRoom = useJoinToRoomHub();
+    const selectStartMoney = useSelectStartGameMoneyHub();
 
-    const joinToRoom = useJoinToRoomHub();
+    // const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-    const dispatch = useDispatch();
-
-    const joinToRoomHandler = async (e: React.MouseEvent<HTMLButtonElement>, guid: string) => {
+    const joinToRoomHandler: JoinToRoomHandler = async (e: React.MouseEvent<HTMLButtonElement>, roomData: Room): Promise<void> => {
         e.preventDefault();
 
-        // await joinToRoom.invoke(guid, {
-        //     playerId: userInfo.userId,
-        //     playerName: userInfo.userName,
-        //     avatar: userInfo.avatar,
-        //     isLeader: false,
-        //     readiness: false
-        // });
-        console.log(guid, userInfo.userId, userInfo.userName, "join to room data");
-        await joinToRoom.invoke(guid, userInfo.userId, userInfo.userName);
+        // await joinToRoom.invoke(roomId, playerInfo.id, playerInfo.playerName);
+        await selectStartMoney
+            .invoke(roomData.id, playerInfo.id, roomData.startBid, roomData.minBid, roomData.maxBid)
+            .catch(err => console.error(err.toString()));
 
-        navigate(NavigateEnum.Room);  // TODO: check response. if not ok -> prohibit navigate
+        // navigate(NavigateEnum.Room);  // TODO: check response. if not ok -> prohibit navigate
     }
-
-    const rooms = lobby.rooms;
 
     return {rooms, joinToRoomHandler};
 }

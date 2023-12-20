@@ -1,3 +1,5 @@
+using App.Domain.Entities;
+
 namespace App.Contracts.Responses;
 
 public sealed record PlayerResponse(
@@ -8,4 +10,7 @@ public sealed record PlayerResponse(
     string PlayerName,
     int Score,
     string AvatarUrl,
-    string? Cards);
+    IEnumerable<Card> Cards,
+    bool Move,
+    int Money,
+    bool InGame);

@@ -1,5 +1,6 @@
 using App.Domain.Entities;
 using App.Domain.Identity.Entities;
+using Player = App.Domain.Entities.PlayerEntity.Player;
 
 namespace App.Application.Repositories;
 

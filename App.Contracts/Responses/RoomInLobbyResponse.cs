@@ -2,8 +2,7 @@ using App.Domain.Enums;
 
 namespace App.Contracts.Responses;
 
-public sealed record RoomInLobbyResponse
-(
+public sealed record RoomInLobbyResponse(
     Guid Id,
     string RoomName,
     int RoomSize,
@@ -12,4 +11,5 @@ public sealed record RoomInLobbyResponse
     int MaxBid,
     string ImgUrl,
     RoomStatus Status,
-    int PlayersInRoom);
+    int PlayersInRoom,
+    int Bank);

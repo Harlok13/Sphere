@@ -1,5 +1,4 @@
-// @ts-ignore
-import style from "./style.module.css";
+import style from "./LoginVia.module.css";
 
 const LoginVia = () => {
     return (

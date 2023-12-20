@@ -1,5 +1,4 @@
-// @ts-ignore
-import style from "./style.module.css";
+import style from "./Main.module.css";
 import RegisterVia from "./RegisterVia/RegisterVia";
 import {Link, useNavigate} from "react-router-dom";
 import React, { useState} from "react";

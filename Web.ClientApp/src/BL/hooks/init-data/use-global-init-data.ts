@@ -1,25 +1,18 @@
 import {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import InitDataService from "../../../services/api/init-data.service";
-import {setUser} from "../../slices/user-info.slice";
-import {initRooms} from "../../slices/lobby.slice";
+import {initPlayerInfo} from "../../slices/player-info/player-info.slice";
+import {initRooms} from "../../slices/lobby/lobby.slice";
 
 export const useGlobalInitData = () => {
-    // @ts-ignore
     const dispatch = useDispatch();
 
     useEffect(() => {
         const setInitData = async() => {
             const data = await InitDataService.getInitData();
-            console.log(data);
-
-            dispatch(setUser(data));
-            if (!data.roomResponse) data.roomResponse = [];
-            dispatch(initRooms(data.roomResponse));
-
-            // if (data.room){
-            //     dispatch()
-            // }
+            dispatch(initPlayerInfo(data.playerInfoResponse));
+            if (!data.roomsResponse) data.roomsResponse = [];
+            dispatch(initRooms(data.roomsResponse));
         }
 
         setInitData();

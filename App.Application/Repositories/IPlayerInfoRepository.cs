@@ -1,5 +1,6 @@
 using App.Contracts.Identity.Responses;
 using App.Domain.Entities;
+using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace App.Application.Repositories;
 

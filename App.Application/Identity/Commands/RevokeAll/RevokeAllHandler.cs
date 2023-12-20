@@ -15,7 +15,7 @@ public class RevokeAllHandler : ICommandHandler<RevokeAllCommand, bool>
     private readonly ILogger<RevokeAllHandler> _logger;
     private readonly IJwtService _jwtService;
     private readonly IPlayerRepository _playerRepository;
-    private readonly IPlayerStatisticRepository _playerStatisticRepository;
+    private readonly IPlayerInfoRepository _playerInfoRepository;
     private readonly IApplicationUserRepository _applicationUserRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAppUnitOfWork _appUnitOfWork;
@@ -25,7 +25,7 @@ public class RevokeAllHandler : ICommandHandler<RevokeAllCommand, bool>
         ILogger<RevokeAllHandler> logger,
         IJwtService jwtService,
         IPlayerRepository playerRepository,
-        IPlayerStatisticRepository playerStatisticRepository,
+        IPlayerInfoRepository playerInfoRepository,
         IApplicationUserRepository applicationUserRepository,
         IAppUnitOfWork appUnitOfWork,
         UserManager<ApplicationUser> userManager,
@@ -34,7 +34,7 @@ public class RevokeAllHandler : ICommandHandler<RevokeAllCommand, bool>
         _logger = logger;
         _jwtService = jwtService;
         _playerRepository = playerRepository;
-        _playerStatisticRepository = playerStatisticRepository;
+        _playerInfoRepository = playerInfoRepository;
         _applicationUserRepository = applicationUserRepository;
         _appUnitOfWork = appUnitOfWork;
         _userManager = userManager;

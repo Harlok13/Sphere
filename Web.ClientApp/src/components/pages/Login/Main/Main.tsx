@@ -1,10 +1,7 @@
-// @ts-ignore
-import style from "./style.module.css";
+import style from "./Main.module.css";
 import LoginVia from "./LoginVia/LoginVia";
 import {Link, useNavigate} from "react-router-dom";
-import {useContext, useEffect, useRef, useState} from "react";
-import axios from "axios";
-import {UserContext} from "../../../../contexts/UserProvider";
+import {useRef, useState} from "react";
 import AuthService from "../../../../services/api/auth.service";
 
 const Main = () => {

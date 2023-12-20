@@ -1,6 +1,7 @@
 using App.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace App.Infra.Data.Configurations;
 
@@ -13,15 +14,25 @@ public class PlayerInfoConfiguration : IEntityTypeConfiguration<PlayerInfo>
         builder.ToTable("player_infos");
 
         builder.Property(e => e.Id)
+            .ValueGeneratedNever()
             .HasColumnName("id")
+            .IsRequired();
+
+        builder.Property(e => e.UserId)
+            .HasColumnName("user_id")
             .IsRequired();
 
         builder.Property(e => e.AvatarUrl)
             .HasColumnName("avatar_url")
+            .HasMaxLength(64)
+            .HasColumnType("VARCHAR")
+            .HasDefaultValueSql("'img/avatars/default_avatar.png'::text")
             .IsRequired();
 
         builder.Property(e => e.PlayerName)
             .HasColumnName("player_name")
+            .HasColumnType("VARCHAR")
+            .HasMaxLength(25)
             .IsRequired();
 
         builder.Property(e => e.UserId)

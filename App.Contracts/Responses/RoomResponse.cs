@@ -13,4 +13,5 @@ public sealed record RoomResponse(
     string ImgUrl,
     RoomStatus Status,
     int PlayersInRoom,
-    IEnumerable<PlayerResponse> Players);
+    IEnumerable<PlayerResponse> Players, 
+    int Bank);

@@ -6,11 +6,19 @@ import {GlobalRightSide} from "../../layout/GlobalRightSide/GlobalRightSide";
 import {useLobbyInitData} from "../../../BL/hooks/init-data/use-lobby-init-data";
 import {LobbyBottom} from "./center/LobbyBottom/LobbyBottom";
 import {LobbyMain} from "./center/LobbyMain/LobbyMain";
-import {signalRConnection} from "../../../App";
+import {useEffect} from "react";
+import {useDispatch} from "react-redux";
+import {setShowModal} from "../../../BL/slices/money/money.slice";
 
 export const LobbyPage = () => {
     useLobbyInitData();
-    console.log(signalRConnection.connectionId);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        return () => {
+            dispatch(setShowModal(false));
+        }
+    }, []);
 
     return (
         <ContentContainer>

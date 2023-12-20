@@ -1,5 +1,4 @@
-// @ts-ignore
-import style from "./style.module.css";
+import style from "./Main.module.css";
 import LoginVia from "./LoginVia/LoginVia";
 import {Link} from "react-router-dom";
 import {useState} from "react";

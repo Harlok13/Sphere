@@ -3,15 +3,15 @@ import {RoomCenter} from "./RoomCenter/RoomCenter";
 import {GlobalAside} from "../../layout/GlobalAside/GlobalAside";
 import {GlobalRightSide} from "../../layout/GlobalRightSide/GlobalRightSide";
 import {useEffect} from "react";
-import {signalRConnection} from "../../../App";
-import {useHubMethod} from "react-use-signalr";
 import {useRoomInitData} from "../../../BL/hooks/init-data/use-room-init-data";
 import {useRemoveFromRoomHub} from "../../../BL/hooks/hub-connection/server-methods/server-methods";
-import {useDispatch, useSelector} from "react-redux";
-import {clearPlayers, setInRoom} from "../../../BL/slices/game21.slice";
+import {useDispatch} from "react-redux";
+import {clearPlayersList, resetGame21State, setInRoom} from "../../../BL/slices/game21/game21.slice";
 import {BeforeUnload} from "./BeforeUnload/BeforeUnload";
 import {useNavigate} from "react-router-dom";
 import {NavigateEnum} from "../../../constants/navigate.enum";
+import {usePlayerSelector} from "../../../BL/slices/player/use-player-selector";
+import {setShowModal} from "../../../BL/slices/money/money.slice";
 
 
 export const RoomPage = () => {
@@ -23,31 +23,21 @@ export const RoomPage = () => {
 
     const dispatch = useDispatch();
 
-    // @ts-ignore
-    const game21 = useSelector(state => state.game21);
-    // @ts-ignore
-    const player = useSelector(state => state.player);
+    const player = usePlayerSelector();
 
     useEffect(() => {
-        // setInterval(() => {
-        //
-        // }, 3000);
-        // if (game21.player.roomGuid === ""){
-        console.log(player);
-        console.log(game21)
-        if (player.roomGuid === ""){
+        if (player.roomId === ""){  // TODO: finish validation
             navigate(NavigateEnum.Lobby);
         }
-
 
         return () => {
             console.log("removed from room");
             const query = async () => {
-                await removeFromRoom.invoke(player.roomGuid, player.id);
+                await removeFromRoom.invoke(player.roomId, player.id);
             }
-            // dispatch(removePlayerData());  // TODO finish
-            dispatch(setInRoom(false));
-            dispatch(clearPlayers())
+            // dispatch(setInRoom(false));
+            // dispatch(clearPlayersList());
+            dispatch(resetGame21State());
             query();
         }
     }, []);

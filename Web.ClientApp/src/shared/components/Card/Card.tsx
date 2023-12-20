@@ -1,8 +1,7 @@
 import {useEffect, useRef} from "react";
-// @ts-ignore
 import style from "./Card.module.css";
 
-const Card = ({cardData}) => {
+export const Card = ({cardData}) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
@@ -15,8 +14,8 @@ const Card = ({cardData}) => {
             const cropWidth = cardData.width;
             const cropHeight = cardData.height;
 
-            canvas.width = cropWidth / 2;
-            canvas.height = cropHeight / 2;
+            canvas.width = cropWidth / 4;
+            canvas.height = cropHeight / 4;
 
             // context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(
@@ -27,8 +26,8 @@ const Card = ({cardData}) => {
                 cropHeight,
                 0,
                 0,
-                cropWidth / 2,
-                cropHeight / 2
+                cropWidth / 4,
+                cropHeight / 4
             );
         };
 
@@ -37,5 +36,3 @@ const Card = ({cardData}) => {
 
     return <canvas className={style.card} ref={canvasRef} />;
 }
-
-export default Card;

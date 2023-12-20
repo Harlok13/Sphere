@@ -2,6 +2,7 @@ using System.Text;
 using App.Application.Identity.Extensions;
 using App.Application.Identity.Repositories;
 using App.Application.Repositories;
+using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
 using App.Domain.Identity.Entities;
 using App.Infra.Data.Context;
@@ -24,13 +25,13 @@ public static class DependencyInjection
         this IServiceCollection services,
         WebApplicationBuilder builder)
     {
-        services
-            .AddScoped<IPlayerRepository, PlayerRepository>()
-            .AddScoped<IRoomRepository, RoomRepository>()
-            .AddScoped<IPlayerHistoryRepository, PlayerHistoryRepository>()
-            .AddScoped<IPlayerStatisticRepository, PlayerStatisticRepository>()
-            .AddScoped<IApplicationUserRepository, ApplicationUserRepository>()
-            .AddScoped<IAppUnitOfWork, AppUnitOfWork>();
+        // services
+        //     // .AddScoped<IPlayerRepository, PlayerRepository>()
+        //     // .AddScoped<IRoomRepository, RoomRepository>()
+        //     // .AddScoped<IPlayerHistoryRepository, PlayerHistoryRepository>()
+        //     // .AddScoped<IPlayerInfoRepository, PlayerInfoRepository>()
+        //     // .AddScoped<IApplicationUserRepository, ApplicationUserRepository>()
+        //     .AddScoped<IAppUnitOfWork, AppUnitOfWork>();
 
         services
             .AddIdentityWithOptions(builder)
@@ -41,13 +42,13 @@ public static class DependencyInjection
 
         return services;
     }
-    
+
     private static IServiceCollection AddIdentityWithOptions(
         this IServiceCollection services,
         WebApplicationBuilder builder)
     {
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<ApplicationContext>()  // TODO: Identity context
+            .AddEntityFrameworkStores<ApplicationContext>() // TODO: Identity context
             .AddUserManager<UserManager<ApplicationUser>>()
             .AddSignInManager<SignInManager<ApplicationUser>>();
 

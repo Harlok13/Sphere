@@ -13,10 +13,11 @@ export const SettingsPage = () => {
             <Center>
                 <GlobalHead/>
                 <Main>
+                    control buttons settings
                 </Main>
-                <Bottom>
+                {/*<Bottom>*/}
 
-                </Bottom>
+                {/*</Bottom>*/}
             </Center>
             <GlobalRightSide/>
         </ContentContainer>

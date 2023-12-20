@@ -6,6 +6,7 @@ import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
 import {useHub} from "react-use-signalr";
 import {useDispatch, useSelector} from "react-redux";
 import {useRemoveFromRoomHub} from "./BL/hooks/hub-connection/server-methods/server-methods";
+import {Notifications} from "./shared/components/Notifications/Notifications";
 
 export const signalRConnection = new HubConnectionBuilder()
     .withUrl("https://localhost:7170/hubs/global")
@@ -38,8 +39,10 @@ export const App = () => {
     const {hubConnectionState, error} = useHub(signalRConnection);
 
     return (
-        <Wrapper>
-            <Router/>
-        </Wrapper>
+        <Notifications>
+            <Wrapper>
+                <Router/>
+            </Wrapper>
+        </Notifications>
     );
 }

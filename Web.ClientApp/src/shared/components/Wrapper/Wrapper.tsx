@@ -1,7 +1,7 @@
-// @ts-ignore
 import style from "./Wrapper.module.css";
+import {PropsWithChildren} from "react";
 
-const Wrapper = ({children}) => {
+const Wrapper = ({children}: PropsWithChildren) => {
     return (
         <div className={style.wrapper}>
             {children}

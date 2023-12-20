@@ -23,27 +23,31 @@ import {RoomControlPanel} from "../../../shared/pages/main-page/Aside/Participan
 import {LeaveButton} from "../../../shared/pages/main-page/Aside/Participants/RoomControlPanel/LeaveButton/LeaveButton";
 import {InviteButton} from "../../../shared/pages/main-page/Aside/Participants/RoomControlPanel/InviteButton/InviteButton";
 import {Aside} from "../../../shared/pages/main-page/Aside/Aside";
-import {useSelector} from "react-redux";
 import {v4} from "uuid";
+import {usePlayerInfoSelector} from "../../../BL/slices/player-info/use-player-info-selector";
+import {
+    useGame21PlayersSelector,
+    useInRoomSelector, useRoomDataSelector
+} from "../../../BL/slices/game21/use-game21-selector";
 
 export const GlobalAside = () => {
-    // @ts-ignore
-    const game21 = useSelector(state => state.game21);
-    // @ts-ignore
-    const userInfo = useSelector(state => state.userInfo);
+    const players = useGame21PlayersSelector();
+    const inRoom = useInRoomSelector();
+    const playerInfo = usePlayerInfoSelector();
+    const roomData = useRoomDataSelector();
 
     return (
         <Aside>
             <UserInfo>
-                <UserInfoAvatar props={userInfo}/>
+                <UserInfoAvatar avatarUrl={playerInfo.avatarUrl}/>
                 <UserInfoBody>
                     <UserInfoHead>
-                        <UserName props={userInfo}/>
+                        <UserName name={playerInfo.playerName}/>
                         <Logout/>
                     </UserInfoHead>
                     <UserInfoItems>
-                        <Money props={userInfo}/>
-                        <Level props={userInfo}/>
+                        <Money money={playerInfo.money}/>
+                        <Level playerInfo={playerInfo}/>
                     </UserInfoItems>
                 </UserInfoBody>
             </UserInfo>
@@ -56,12 +60,12 @@ export const GlobalAside = () => {
                 </HistoryBody>
                 <HistoryShowMore/>
             </History>
-            {game21.inRoom
+            {inRoom
                 ? (<Participants>
-                    <ParticipantsTitle roomName="Game 21"/>
+                    <ParticipantsTitle roomName={roomData.roomName}/>
                     <ParticipantsList>
-                        {game21.players.length
-                            ? game21.players.map(p => (<Participant key={v4()} isLeader={p.isLeader} playerName={p.playerName} readiness={p.readiness}/>)) : null}
+                        {players.length
+                            ? players.map(p => (<Participant key={v4()} playerData={p}/>)) : null}
                     </ParticipantsList>
                     <RoomControlPanel>
                         <LeaveButton/>

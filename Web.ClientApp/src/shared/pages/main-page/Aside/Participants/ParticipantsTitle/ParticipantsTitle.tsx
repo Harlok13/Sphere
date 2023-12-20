@@ -1,7 +1,12 @@
-// @ts-ignore
 import style from "./ParticipantsTitle.module.css";
+import {FC} from "react";
 
-export const ParticipantsTitle = ({roomName}) => {
+
+interface IParticipantsTitleProps {
+    roomName: string;
+}
+
+export const ParticipantsTitle: FC<IParticipantsTitleProps> = ({roomName}) => {
     return (
         <div className={style.title}>
             Room: {roomName}

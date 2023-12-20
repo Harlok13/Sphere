@@ -17,7 +17,7 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
     private readonly ILogger<AuthenticateHandler> _logger;
     private readonly IJwtService _jwtService;
     private readonly IPlayerRepository _playerRepository;
-    private readonly IPlayerStatisticRepository _playerStatisticRepository;
+    private readonly IPlayerInfoRepository _playerInfoRepository;
     private readonly IApplicationUserRepository _applicationUserRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAppUnitOfWork _appUnitOfWork;
@@ -26,7 +26,7 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
         ILogger<AuthenticateHandler> logger,
         IJwtService jwtService,
         IPlayerRepository playerRepository,
-        IPlayerStatisticRepository playerStatisticRepository,
+        IPlayerInfoRepository playerInfoRepository,
         IApplicationUserRepository applicationUserRepository,
         IAppUnitOfWork appUnitOfWork,
         UserManager<ApplicationUser> userManager)
@@ -34,7 +34,7 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
         _logger = logger;
         _jwtService = jwtService;
         _playerRepository = playerRepository;
-        _playerStatisticRepository = playerStatisticRepository;
+        _playerInfoRepository = playerInfoRepository;
         _applicationUserRepository = applicationUserRepository;
         _appUnitOfWork = appUnitOfWork;
         _userManager = userManager;
@@ -79,8 +79,8 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenValidityInDays);
 
         await _appUnitOfWork.SaveChangesAsync(cT);
-        var statistic = await _playerStatisticRepository.GetPlayerStatisticAsync(user.Id, cT);
-        var statisticResponse = PlayerMapper.MapPlayerStatisticToPlayerStatisticResponse(statistic);
+        var statistic = await _playerInfoRepository.GetPlayerInfoByIdAsync(user.Id, cT);
+        var statisticResponse = PlayerMapper.MapPlayerInfoToPlayerInfoResponse(statistic);
 
         return new AuthenticateResponse(
             PlayerId: user.Id,
@@ -88,6 +88,6 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
             Email: user.Email,
             Token: accessToken,
             RefreshToken: user.RefreshToken,
-            PlayerStatistic: statisticResponse);
+            PlayerInfo: statisticResponse);
     }
 }

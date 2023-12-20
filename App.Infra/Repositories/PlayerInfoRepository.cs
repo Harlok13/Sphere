@@ -4,6 +4,7 @@ using App.Domain.Entities;
 using App.Infra.Data.Context;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace App.Infra.Repositories;
 

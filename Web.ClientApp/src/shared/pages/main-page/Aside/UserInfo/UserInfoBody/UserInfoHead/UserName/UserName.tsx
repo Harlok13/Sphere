@@ -1,11 +1,15 @@
 import {Link} from "react-router-dom";
-// @ts-ignore
 import style from "./UserName.module.css";
+import {FC} from "react";
 
-export const UserName = ({props}) => {
+interface IUserNameProps {
+    name: string;
+}
+
+export const UserName: FC<IUserNameProps> = ({name}) => {
     return (
         <Link to="/profile">
-            <div className={style.username}>{props.userName}</div>
+            <div className={style.username}>{name}</div>
         </Link>
     )
 }

@@ -1,4 +1,3 @@
-// @ts-ignore
 import style from "../RoomItem/RoomItem.module.css";  // inherited styles
 
 export const RoomItemHead = (props) => {

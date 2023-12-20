@@ -7,7 +7,7 @@ public abstract class Entity : IEquatable<Entity>
     protected Entity(Guid id) => Id = id;
     
     public Guid Id { get; private init; }
-
+    
     public static bool operator ==(Entity? first, Entity? second) =>
         first is not null && second is not null && first.Equals(second);
     

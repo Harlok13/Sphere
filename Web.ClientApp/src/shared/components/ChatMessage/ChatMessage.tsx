@@ -1,7 +1,18 @@
 import style from "./ChatMessage.module.css";
+import {FC} from "react";
 // TODO: example {currentTime: "21:35", userName: "Harlok", text: "hello world"}
 
-export const ChatMessage = ({msgData}) => {
+export type Message = {
+    currentTime: string;  // TODO: fix type
+    playerName: string;
+    msgText: string;
+}
+
+interface IChatMessageProps {
+    msgData: Message
+}
+
+export const ChatMessage: FC<IChatMessageProps> = ({msgData}) => {
     return (
         <div className={style.message}>
             <div className={style.leftSide}>
@@ -10,12 +21,12 @@ export const ChatMessage = ({msgData}) => {
             </div>
             <div className={style.body}>
                 <div className={style.messageHead}>
-                    <div className={style.username}>{msgData.userName}</div>
+                    <div className={style.username}>{msgData.playerName}</div>
                     <span className={`${style.menu} material-icons-outlined`}>
                         more_vert
                     </span>
                 </div>
-                <div className={style.text}>{msgData.text}</div>
+                <div className={style.text}>{msgData.msgText}</div>
             </div>
         </div>
     )

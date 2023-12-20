@@ -1,4 +1,4 @@
-import {ChangeEvent} from "react";
+import React, {ChangeEvent} from "react";
 import {
     setHighBid,
     setLowBid,
@@ -8,69 +8,72 @@ import {
     setRoomName,
     setRoomSize,
     setStartBid
-} from "../../../slices/lobby.slice";
-import {useDispatch, useSelector} from "react-redux";
+} from "../../../slices/lobby/lobby.slice";
+import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {
     useCreateRoomHub,
-    useJoinToRoomHub,
-    useTestMethodHub
 } from "../../hub-connection/server-methods/server-methods";
 import {NavigateEnum} from "../../../../constants/navigate.enum";
-import {signalRConnection} from "../../../../App";
-import {useHubMethod} from "react-use-signalr";
+import {useNewRoomConfigSelector} from "../../../slices/lobby/use-lobby-selector";
+import {usePlayerInfoSelector} from "../../../slices/player-info/use-player-info-selector";
+import {RoomSize} from "../../../../constants/configure-room-constants";
+
+
+export type LobbyPanelHandlers = {
+    minBidHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+    maxBidHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+    startBidHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+    roomSizeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+    roomNameHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+    createRoomHandler: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
+    lowBidHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    mediumBidHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    highBidHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
 
 export const useConfigureRoom = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // @ts-ignore
-    const lobby = useSelector(state => state.lobby);
-
-    // @ts-ignore
-    const userInfo = useSelector(state => state.userInfo);
+    const newRoomData = useNewRoomConfigSelector();
+    const playerInfo = usePlayerInfoSelector();
 
     const createRoom = useCreateRoomHub();
-    const joinToRoom = useJoinToRoomHub();
 
-
-    // const a = useHubMethod(signalRConnection, "GetTest");
-    const a = useTestMethodHub();
     const createRoomHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        console.log(newRoomData, playerInfo.id, playerInfo.playerName, "inv")
+        await createRoom
+            .invoke(newRoomData, playerInfo.id, playerInfo.playerName)
+            .catch(err => console.error(err.toString()));
 
-        console.log("inv")
-        // const data = JSON.stringify(lobby.roomSettings);
-        // await createRoom.invoke(data);
-        // await createRoom.invoke(lobby.roomSettings, {
-        //     playerId: userInfo.userId,
-        //     playerName: userInfo.userName,
-        //     avatar: userInfo.avatar,
-        //     isLeader:true,
-        //     readiness: false
-        // });
-        await createRoom.invoke(lobby.roomSettings, userInfo.userId, userInfo.userName);
-        // await
-        // console.log(userInfo.userId, userInfo.money);
-        // await a.invoke(userInfo.userId);
-
-        navigate(NavigateEnum.Room);  // TODO: check response. if not ok -> prohibit navigate
+        // navigate(NavigateEnum.Room);  // TODO: check response. if not ok -> prohibit navigate
     }
 
     const minBidHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        dispatch(setMinBid(e.target.value));
+        dispatch(setMinBid(parseInt(e.target.value)));
     }
 
     const maxBidHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        dispatch(setMaxBid(e.target.value));
+        dispatch(setMaxBid(parseInt(e.target.value)));
     }
 
     const startBidHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        dispatch(setStartBid(e.target.value));
+        dispatch(setStartBid(parseInt(e.target.value)));
     }
 
     const roomSizeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        dispatch(setRoomSize(e.target.value));
+        let val = parseInt(e.target.value);
+        if (isNaN(val)) val = 2;
+
+        val = val > RoomSize.MAX_SIZE
+            ? RoomSize.MAX_SIZE
+            : val < RoomSize.MIN_SIZE
+                ? RoomSize.MIN_SIZE
+                : val;
+
+        dispatch(setRoomSize(val));
     }
 
     const roomNameHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +95,7 @@ export const useConfigureRoom = () => {
         dispatch(setHighBid());
     }
 
-    const handlers = {
+    const handlers: LobbyPanelHandlers = {
         minBidHandler,
         maxBidHandler,
         startBidHandler,
@@ -104,7 +107,5 @@ export const useConfigureRoom = () => {
         highBidHandler
     }
 
-    const roomSettings = lobby.roomSettings;
-
-    return {handlers, roomSettings}
+    return {handlers, newRoomData}
 }
