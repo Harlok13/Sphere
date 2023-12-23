@@ -6,3 +6,4 @@ export const usePlayerSelector = () =>
 
 export const useTimerSelector = () =>
     useTypedSelector(state => state.player.timer);
+

@@ -4,9 +4,6 @@ using Mediator;
 namespace App.SignalR.Commands.LobbyCommands;
 
 public sealed record CreateRoomCommand(
-    RoomRequest RoomRequest,
-    Guid PlayerId,
-    string PlayerName,
-    string ConnectionId,
-    bool IsLeader = true
+    CreateRoomRequest Request,
+    string ConnectionId
 ) : ICommand<bool>;

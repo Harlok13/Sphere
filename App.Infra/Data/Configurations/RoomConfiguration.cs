@@ -59,5 +59,13 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
 
         builder.Property(e => e.Bank)
             .HasColumnName("bank");
+
+        builder.Property(e => e.LowerStartMoneyBound)
+            .HasColumnName("lower_start_money_bound")
+            .IsRequired();
+
+        builder.Property(e => e.UpperStartMoneyBound)
+            .HasColumnName("upper_start_money_bound")
+            .IsRequired();
     }
 }

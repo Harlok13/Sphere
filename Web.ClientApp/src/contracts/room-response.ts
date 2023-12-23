@@ -7,7 +7,7 @@ export interface IRoomResponse{
     startBid: number;
     minBid: number;
     maxBid: number;
-    imgUrl: string;
+    avatarUrl: string;
     status: string | number;  // TODO: fix type, must be only string
     playersInRoom: number;
     bank: number;

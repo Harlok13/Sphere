@@ -1,9 +1,6 @@
-using App.Application.Mapper;
 using App.Application.Repositories;
 using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
-using App.Domain.Entities.RoomEntity;
-using App.SignalR.Commands;
 using App.SignalR.Commands.RoomCommands;
 using App.SignalR.Hubs;
 using Mediator;
@@ -39,51 +36,28 @@ public class RemoveFromRoomHandler : ICommandHandler<RemoveFromRoomCommand, bool
 
     public async ValueTask<bool> Handle(RemoveFromRoomCommand command, CancellationToken cT)
     {
-        command.Deconstruct(out Guid roomId, out Guid playerId, out string connectionId);
+        command.Request.Deconstruct(out Guid roomId, out Guid playerId);
+        var connectionId = command.ConnectionId;
 
-        // _roomRepository is RoomRepositoryNotifyDecorator rep;
         if (_roomRepository is RoomRepositoryNotifyDecorator rep)
         {
-            rep.NotifyRemoveRoom += RemoveFromRoom;
+            rep.NotifyRemoveRoom += RemoveRoomAsync;
         }
         
-        var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
-        var player = await _playerRepository.GetPlayerByIdAsync(playerId, cT);
-        playerInfo.IncrementMoney(player.Money);
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_UpdatedMoney(playerInfo.Money, cT);
+        var playerInfo = await _unitOfWork.PlayerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
+        var player = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(playerId, cT);  // TODO: as not tracking
+        playerInfo.IncrementMoney(player.Money, connectionId);
 
-        var room = await _roomRepository.GetRoomByIdAsync(roomId, cT);
-        room.RemovePlayer(playerId);
+        var room = await _unitOfWork.RoomRepository.GetRoomByIdAsync(roomId, cT);
+        room.RemovePlayer(playerId, connectionId);
         
-        // await _playerRepository.RemovePlayerAsync(playerId, cT);
+        if (room.PlayersInRoom > 0) room.SetNewRoomLeader();
+        else await _roomRepository.RemoveRoomAsync(roomId, cT);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_RemoveFromRoom(cT);
-
-        if (room.PlayersInRoom > 0)
-        {
-            var newRoomLeader = room.SetNewRoomLeader();
-
-            var roomInLobbyResponse = RoomMapper.MapRoomToRoomInLobbyResponse(room);
-            var newLeaderResponse = PlayerMapper.MapPlayerToPlayerResponse(newRoomLeader);
-            
-            await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_RemovedPlayer(playerId, cT);
-            await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_NewRoomLeader(newLeaderResponse, cT);  // TODO: receive player id only
-            await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_NewRoomName(room.RoomName, cT);
-            await _hubContext.Clients.All.ReceiveAll_UpdatedRoom(roomInLobbyResponse, cT);
-        }
-        else
-        {
-            
-            await _roomRepository.RemoveRoomAsync(roomId, cT);
-            // await _hubContext.Clients.All.ReceiveAll_RemovedRoom(roomId, cT);
-        }
-
-        await _unitOfWork.SaveChangesAsync(cT);
-        
-        return true;
+        return await _unitOfWork.SaveChangesAsync(cT);
     }
 
-    private async Task RemoveFromRoom(RoomRepositoryNotifyDecorator.RemoveRoomEventArgs e, CancellationToken cT)
+    private async Task RemoveRoomAsync(RoomRepositoryNotifyDecorator.RemoveRoomEventArgs e, CancellationToken cT)
     {
         _logger.LogInformation("Receive remove room in event.");
         await _hubContext.Clients.All.ReceiveAll_RemovedRoom(e.RoomId, cT);

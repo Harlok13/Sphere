@@ -13,6 +13,8 @@ public class PlayerInfoConfiguration : IEntityTypeConfiguration<PlayerInfo>
 
         builder.ToTable("player_infos");
 
+        builder.Ignore(e => e.DomainEvents);
+
         builder.Property(e => e.Id)
             .ValueGeneratedNever()
             .HasColumnName("id")

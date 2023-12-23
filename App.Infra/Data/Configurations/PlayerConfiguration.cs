@@ -12,6 +12,8 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
 
         builder.ToTable("players");
 
+        builder.Ignore(e => e.DomainEvents);
+
         builder.Property(e => e.Id)
             .ValueGeneratedNever()
             .HasColumnName("id");
@@ -55,6 +57,11 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .HasColumnName("in_game")
             .IsRequired()
             .HasDefaultValue(false);
+        
+        builder.Property(e => e.MoveStatus)
+            .HasColumnName("move_status")
+            .IsRequired()
+            .HasDefaultValue(0);
 
         builder
             .HasOne(e => e.Room)

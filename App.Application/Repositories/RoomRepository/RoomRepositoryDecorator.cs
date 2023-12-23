@@ -1,5 +1,4 @@
 using App.Domain.Entities.RoomEntity;
-using App.Domain.Primitives;
 
 namespace App.Application.Repositories.RoomRepository;
 
@@ -11,7 +10,9 @@ public abstract class RoomRepositoryDecorator : IRoomRepository
     {
         RoomRepository = roomRepository;
     }
-    
+
+    public abstract Task RemoveRoomAsync(Guid roomId, CancellationToken cT);
+
     public virtual async Task AddNewRoomAsync(Room room, CancellationToken cT)
     {
         await RoomRepository.AddNewRoomAsync(room, cT);
@@ -22,10 +23,13 @@ public abstract class RoomRepositoryDecorator : IRoomRepository
         return await RoomRepository.GetRoomByIdAsync(roomId, cT);
     }
 
-    public virtual async Task<ICollection<Room>?> GetFirstPageAsync(CancellationToken cT)
+    public virtual async Task<Room?> GetRoomByIdAsNoTrackingAsync(Guid roomId, CancellationToken cT)
     {
-        return await RoomRepository.GetFirstPageAsync(cT);
+        return await RoomRepository.GetRoomByIdAsNoTrackingAsync(roomId, cT);
     }
 
-    public abstract Task RemoveRoomAsync(Guid roomId, CancellationToken cT);
+    public virtual async Task<ICollection<Room>?> GetFirstPageAsNoTrackingAsync(CancellationToken cT)
+    {
+        return await RoomRepository.GetFirstPageAsNoTrackingAsync(cT);
+    }
 }

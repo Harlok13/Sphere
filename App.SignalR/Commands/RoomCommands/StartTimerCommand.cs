@@ -1,9 +1,9 @@
+using App.Contracts.Requests;
 using Mediator;
 
 namespace App.SignalR.Commands.RoomCommands;
 
 public sealed record StartTimerCommand(
-    Guid RoomId,
-    Guid PlayerId,
+    StartTimerRequest Request,
     string ConnectionId,
     CancellationTokenSource Cts) : ICommand<bool>;

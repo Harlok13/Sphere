@@ -19,7 +19,15 @@ public class PlayerRepository : IPlayerRepository
     public async Task<Player?> GetPlayerByIdAsync(Guid id, CancellationToken cT)
     {
         return await _context.Set<Player>()
-            // .Include(p => p.PlayerInfo)
+            .Include(p => p.Room)
+            .SingleOrDefaultAsync(p => p.Id == id, cT);
+    }
+
+    public async Task<Player?> GetPlayerByIdAsNoTrackingAsync(Guid id, CancellationToken cT)
+    {
+        return await _context.Set<Player>()
+            .AsNoTracking()
+            .Include(p => p.Room)
             .SingleOrDefaultAsync(p => p.Id == id, cT);
     }
 

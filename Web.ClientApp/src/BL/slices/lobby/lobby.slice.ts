@@ -1,6 +1,10 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import UserService from "../../../services/user/user.service";
-import {IRoomInLobbyResponse, Room} from "../../../contracts/room-in-lobby-response";
+import {ICreatedRoomResponse, IRoomInLobbyDto, Room} from "../../../contracts/room-in-lobby-response";
+import {IUpdatedRoomStatusResponse} from "../../../contracts/updated-room-status-response";
+import {IUpdatedRoomPlayersInRoomResponse} from "../../../contracts/updated-room-players-in-room-response";
+import {IChangedRoomRoomNameResponse} from "../../../contracts/changed-room-room-name-response";
+import {IChangedRoomAvatarUrlResponse} from "../../../contracts/changed-room-avatar-response";
 
 
 const userName = UserService.getUser().userName;
@@ -8,7 +12,7 @@ const userAvatar = UserService.getUser().userAvatar;
 
 export type NewRoomConfig = {
     roomName: string;
-    imgUrl: string;
+    avatarUrl: string;
     roomSize: number;
     startBid: number;
     minBid: number;
@@ -28,7 +32,7 @@ export interface LobbyState {
 const initialState: LobbyState = {
     newRoomConfig: {
         roomName: `${userName}'s Room`,
-        imgUrl: userAvatar,
+        avatarUrl: userAvatar,
         roomSize: 2,
         startBid: 100,
         minBid: 10,
@@ -56,17 +60,18 @@ const computeStartMoney = (state: LobbyState) => {
     return {lowerBound: lowerBound, upperBound: upperBound};
 }
 
+// TODO: add resetNewRoomConfig | use in room useEffect
 export const lobbySlice = createSlice({
     name: "lobby",
     initialState,
     reducers: {
-        addNewRoom: (state, action: PayloadAction<IRoomInLobbyResponse>) => {
-            state.rooms = [action.payload, ...state.rooms];
+        addNewRoom: (state, action: PayloadAction<ICreatedRoomResponse>) => {
+            state.rooms = [action.payload.roomInLobbyDto, ...state.rooms];
         },
         removeRoom: (state, action: PayloadAction<string>) => {
             state.rooms = [...state.rooms.filter(r => r.id !== action.payload)];
         },
-        updateRoom: (state, action: PayloadAction<IRoomInLobbyResponse>) => {
+        updateRoom: (state, action: PayloadAction<IRoomInLobbyDto>) => {
             state.rooms = [...state.rooms.filter(r => r.id !== action.payload.id), action.payload]
         },
 
@@ -102,8 +107,8 @@ export const lobbySlice = createSlice({
             state.newRoomConfig.lowerBound = lowerBound;
             state.newRoomConfig.upperBound = upperBound;
         },
-        setImgUrl: (state, action: PayloadAction<string>) => {
-            state.newRoomConfig.imgUrl = action.payload;
+        setRoomAvatarUrl: (state, action: PayloadAction<IChangedRoomAvatarUrlResponse>) => {
+            state.newRoomConfig.avatarUrl = action.payload.avatarUrl;
         },
 
         setLowBid: (state) => {  // TODO: reloc to constants
@@ -134,9 +139,23 @@ export const lobbySlice = createSlice({
             state.newRoomConfig.upperBound = upperBound;
         },
 
-        initRooms: (state, action: PayloadAction<Array<IRoomInLobbyResponse>>) => {
+        initRooms: (state, action: PayloadAction<Array<IRoomInLobbyDto>>) => {
             state.rooms = [...action.payload].reverse();
         },
+
+        updateRoomStatus: (state, action: PayloadAction<IUpdatedRoomStatusResponse>) => {
+            const index = state.rooms.findIndex(r => r.id === action.payload.roomId)
+            state.rooms[index].status = action.payload.status;
+        },
+        updatePlayersInRoom: (state, action: PayloadAction<IUpdatedRoomPlayersInRoomResponse>) => {
+            const index = state.rooms.findIndex(r => r.id === action.payload.roomId);
+            state.rooms[index].playersInRoom = action.payload.playersInRoom;
+        },
+        updateRoomNameInRooms: (state, action: PayloadAction<IChangedRoomRoomNameResponse>) => {
+            const index = state.rooms.findIndex(r => r.id === action.payload.roomId);
+            state.rooms[index].roomName = action.payload.roomName;
+        },
+
     }
 });
 
@@ -151,9 +170,12 @@ export const {
     setLowBid,
     setMediumBid,
     setHighBid,
-    setImgUrl,
+    setRoomAvatarUrl,
     initRooms,
     updateRoom,
+    updateRoomStatus,
+    updatePlayersInRoom,
+    updateRoomNameInRooms,
 } = lobbySlice.actions;
 
 export default lobbySlice.reducer;

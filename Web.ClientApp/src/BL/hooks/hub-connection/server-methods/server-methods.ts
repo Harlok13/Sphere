@@ -1,26 +1,35 @@
-import {useHubMethod} from "react-use-signalr";
 import {signalRConnection} from "../../../../App";
+import {useHubMethod} from "../../../../react-signalr/use-hub-method";
+import {ISelectStartGameMoneyRequest} from "../../../../contracts/requests/select-start-game-money-request";
+import {ICreateRoomRequest} from "../../../../contracts/requests/create-room-request";
+import {IJoinToRoomRequest} from "../../../../contracts/requests/join-to-room-request";
+import {IRemoveFromRoomRequest} from "../../../../contracts/requests/remove-from-room-request";
+import {IToggleReadinessRequest} from "../../../../contracts/requests/toggle-readiness-request";
+import {IStartGameRequest} from "../../../../contracts/requests/start-game-request";
+import {IStartTimerRequest} from "../../../../contracts/requests/start-timer-request";
+import {IStopTimerRequest} from "../../../../contracts/requests/stop-timer-request";
+
 
 export const useCreateRoomHub = () =>
-    useHubMethod(signalRConnection, "CreateRoom");
+    useHubMethod<boolean, ICreateRoomRequest>(signalRConnection, "CreateRoom");
 
 export const useJoinToRoomHub = () =>
-    useHubMethod(signalRConnection, "JoinToRoom");
+    useHubMethod<boolean, IJoinToRoomRequest>(signalRConnection, "JoinToRoom");
 
 export const useRemoveFromRoomHub = () =>
-    useHubMethod(signalRConnection, "RemoveFromRoom");
+    useHubMethod<boolean, IRemoveFromRoomRequest>(signalRConnection, "RemoveFromRoom");
 
 export const useToggleReadinessHub = () =>
-    useHubMethod(signalRConnection, "ToggleReadiness");
+    useHubMethod<boolean, IToggleReadinessRequest>(signalRConnection, "ToggleReadiness");
 
 export const useSelectStartGameMoneyHub = () =>
-    useHubMethod(signalRConnection, "SelectStartGameMoney");
+    useHubMethod<boolean, ISelectStartGameMoneyRequest>(signalRConnection, "SelectStartGameMoney");
 
 export const useStartGameHub = () =>
-    useHubMethod(signalRConnection, "StartGame");
+    useHubMethod<boolean, IStartGameRequest>(signalRConnection, "StartGame");
 
 export const useStartTimerHub = () =>
-    useHubMethod(signalRConnection, "StartTimer");
+    useHubMethod<boolean, IStartTimerRequest>(signalRConnection, "StartTimer");
 
 export const useStopTimerHub = () =>
-    useHubMethod(signalRConnection, "StopTimer");
+    useHubMethod<boolean, IStopTimerRequest>(signalRConnection, "StopTimer");

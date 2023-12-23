@@ -40,7 +40,9 @@ public abstract class UnitOfWorkFactory<TContext> : IUnitOfWorkFactory
             @event.IsPublished = true;
             
             _logger.LogInformation(
-                $"Receive new domain event \"{@event.GetType().Name}\".");
+                "{InvokedMethod} | Receive new domain event \"{EventName}\".",
+                nameof(SaveChangesAsync),
+                @event.GetType().Name);
 
             await _publisher.Publish(@event, cT);
         }

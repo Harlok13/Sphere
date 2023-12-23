@@ -3,11 +3,19 @@ import {ISelectStartGameMoneyResponse, SelectStartGameMoney} from "../../../cont
 
 interface MoneyState {
     showModal: boolean;
+    type: SelectStartMoneyType;
     selectStartMoney: SelectStartGameMoney;
+}
+
+export enum SelectStartMoneyType{
+    None,
+    Create,
+    Join
 }
 
 const initialState: MoneyState = {
     showModal: false,
+    type: SelectStartMoneyType.None,
     selectStartMoney: {
         roomId: "",
         lowerBound: 0,
@@ -17,6 +25,7 @@ const initialState: MoneyState = {
     }
 }
 
+// TODO: add resetInitialState
 export const moneySlice = createSlice({
     name: "money",
     initialState,
@@ -30,7 +39,10 @@ export const moneySlice = createSlice({
         },
         setShowModal: (state, action: PayloadAction<boolean>) => {
             state.showModal = action.payload;
-        }
+        },
+        setType: (state, action: PayloadAction<SelectStartMoneyType>) => {
+            state.type = action.payload;
+        }  // TODO: also add reset type in useEffect
     }
 });
 
@@ -38,6 +50,7 @@ export const {
     initSelectStartMoney,
     setRecommendedValue,
     setShowModal,
+    setType,
 } = moneySlice.actions;
 
 export default moneySlice.reducer;

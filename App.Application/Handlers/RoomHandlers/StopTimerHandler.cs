@@ -25,7 +25,8 @@ public class StopTimerHandler : ICommandHandler<StopTimerCommand, bool>
     
     public async ValueTask<bool> Handle(StopTimerCommand command, CancellationToken cT)
     {
-        command.Deconstruct(out Guid roomId, out Guid userId, out string connectionId, out CancellationTokenSource cts);
+        // command.Deconstruct(out Guid roomId, out Guid userId, out string connectionId, out CancellationTokenSource cts);
+        var cts = command.Cts;
 
         cts.Cancel();
         return true;

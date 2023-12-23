@@ -7,3 +7,6 @@ export const useSelectStartMoneySelector = () => {
 export const useShowModalSelector = () => {
     return useTypedSelector(state => state.money.showModal);
 }
+
+export const useSelectStartMoneyTypeSelector = () =>
+    useTypedSelector(state => state.money.type)

@@ -1,9 +1,13 @@
+using App.Domain.DomainEvents.PlayerInfoDomainEvents;
 using App.Domain.Primitives;
 
 namespace App.Domain.Entities.PlayerInfoEntity;
 
-public sealed partial class PlayerInfo : Entity   
+public sealed partial class PlayerInfo : Entity, IHasDomainEvent
 {
+    private readonly List<DomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents;
+
     private PlayerInfo(
         Guid id,
         Guid userId, 
@@ -64,25 +68,27 @@ public sealed partial class PlayerInfo : Entity
         return new PlayerInfo(id, userId, playerName);
     }
     
-    public void IncrementMoney(int value)
+    public void IncrementMoney(int value, string connectionId)
     {
         Money += value;
+        _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, connectionId));
     }
 
-    public async Task IncrementMoneyNotifyAsync(int value, CancellationToken cT)
-    {
-        IncrementMoney(value);
-        await NotifyMoney?.Invoke(this, cT)!;
-    }
+    // public async Task IncrementMoneyNotifyAsync(int value, CancellationToken cT)
+    // {
+    //     IncrementMoney(value);
+    //     await NotifyMoney?.Invoke(this, cT)!;
+    // }
 
-    public void DecrementMoney(int value)
+    public void DecrementMoney(int value, string connectionId)
     {
         Money -= value;  // TODO: validation
+        _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, connectionId));
     }
 
-    public async Task DecrementMoneyNotifyAsync(int value, CancellationToken cT)
-    {
-        DecrementMoney(value);
-        await NotifyMoney?.Invoke(this, cT)!;
-    }
+    // public async Task DecrementMoneyNotifyAsync(int value, string connectionId, CancellationToken cT)
+    // {
+    //     DecrementMoney(value, connectionId);
+    //     await NotifyMoney?.Invoke(this, cT)!;
+    // }
 }

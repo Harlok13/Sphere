@@ -3,12 +3,18 @@ using App.Application.Identity;
 using App.Infra;
 using App.SignalR.Hubs;
 using Scrutor;
+using Serilog;
+using Sphere;
 using Sphere.Exceptions.CorsExceptions;
 
 var builder = WebApplication.CreateBuilder(
     new WebApplicationOptions { Args = args, ContentRootPath = Directory.GetCurrentDirectory()});
 
 builder.Configuration.AddJsonFile("appsettings.Secrets.json");
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration)
+        .Enrich.With(new AbbreviatedSourceContextEnricher(50, 50)));
 
 builder.Services.AddControllers();
 
@@ -106,6 +112,8 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment()) app.UseHsts();
 
+app.UseSerilogRequestLogging();
+
 app.UseHttpsRedirection();
 app.UseRouting();
 
@@ -120,4 +128,3 @@ app.MapHub<GlobalHub>("/hubs/global");
 app.MapControllers();
 
 await app.RunAsync();
-

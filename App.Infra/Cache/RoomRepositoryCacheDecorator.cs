@@ -27,9 +27,9 @@ public class RoomRepositoryCacheDecorator : RoomRepositoryDecorator
         return await RoomRepository.GetRoomByIdAsync(roomId, cT);
     }
 
-    public override async Task<ICollection<Room>?> GetFirstPageAsync(CancellationToken cT)
+    public override async Task<ICollection<Room>?> GetFirstPageAsNoTrackingAsync(CancellationToken cT)
     {
-        return await RoomRepository.GetFirstPageAsync(cT);
+        return await RoomRepository.GetFirstPageAsNoTrackingAsync(cT);
     }
 
     public override async Task RemoveRoomAsync(Guid roomId, CancellationToken cT)

@@ -20,4 +20,5 @@ public class AppUnitOfWork : UnitOfWorkFactory<ApplicationContext>, IAppUnitOfWo
     public IPlayerHistoryRepository PlayerHistoryRepository => new PlayerHistoryRepository(Context);
     public IPlayerInfoRepository PlayerInfoRepository => new PlayerInfoRepository(Context);
     public IRoomRepository RoomRepository => new RoomRepository(Context);
+    // public IRoomRepository RoomRepository => new RoomRepositoryNotifyDecorator(new RoomRepository(Context));
 }

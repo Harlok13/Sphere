@@ -10,7 +10,7 @@ public sealed record RoomResponse(
     int StartBid,
     int MinBid,
     int MaxBid,
-    string ImgUrl,
+    string AvatarUrl,
     RoomStatus Status,
     int PlayersInRoom,
     IEnumerable<PlayerResponse> Players, 

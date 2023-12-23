@@ -1,5 +1,5 @@
 import style from "../UserInfoItems.module.css";
-import {FC} from "react";
+import React, {FC, useEffect, useRef} from "react";
 
 interface IMoneyProps {
     money: number;

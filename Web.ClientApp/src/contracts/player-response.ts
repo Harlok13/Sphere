@@ -1,4 +1,4 @@
-import {Card} from "./card-response";
+import {Card} from "./added-card-response";
 
 export interface IPlayerResponse{
     id: string;

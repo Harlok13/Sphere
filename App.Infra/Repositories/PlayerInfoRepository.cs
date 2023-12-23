@@ -1,8 +1,5 @@
 using App.Application.Repositories;
-using App.Contracts.Identity.Responses;
-using App.Domain.Entities;
 using App.Infra.Data.Context;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
@@ -25,6 +22,13 @@ public class PlayerInfoRepository : IPlayerInfoRepository
     public async Task<PlayerInfo?> GetPlayerInfoByIdAsync(Guid playerId, CancellationToken cT)
     {
         return await _context.PlayerInfos.SingleOrDefaultAsync(x => x.UserId == playerId, cT);
+    }
+
+    public async Task<PlayerInfo?> GetPlayerInfoByIdAsNoTrackingAsync(Guid playerId, CancellationToken cT)
+    {
+        return await _context.PlayerInfos
+            .AsNoTracking()
+            .SingleOrDefaultAsync(e => e.UserId == playerId, cT);
     }
 
     public Task PlayerWinActionAsync(Guid userId, CancellationToken cT)

@@ -9,8 +9,10 @@ public interface IRoomRepository
     Task AddNewRoomAsync(Room room, CancellationToken cT);
 
     Task<Room?> GetRoomByIdAsync(Guid roomId, CancellationToken cT);
+    
+    Task<Room?> GetRoomByIdAsNoTrackingAsync(Guid roomId, CancellationToken cT);
 
-    Task<ICollection<Room>?> GetFirstPageAsync(CancellationToken cT);
+    Task<ICollection<Room>?> GetFirstPageAsNoTrackingAsync(CancellationToken cT);
 
     Task RemoveRoomAsync(Guid roomId, CancellationToken cT);
 }

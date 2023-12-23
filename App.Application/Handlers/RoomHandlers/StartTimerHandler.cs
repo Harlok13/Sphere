@@ -11,28 +11,25 @@ public class StartTimerHandler : ICommandHandler<StartTimerCommand, bool>
 {
     private readonly ILogger<StartTimerHandler> _logger;
     private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
-    private readonly IDistributedCache _cache;
     private const int StartTimerValue = 1;
     private const int SecondsCount = 10;
 
     public StartTimerHandler(
         ILogger<StartTimerHandler> logger,
-        IHubContext<GlobalHub, IGlobalHub> hubContext,
-        IDistributedCache cache)
+        IHubContext<GlobalHub, IGlobalHub> hubContext)
     {
         _logger = logger;
         _hubContext = hubContext;
-        _cache = cache;
     }
 
     public async ValueTask<bool> Handle(StartTimerCommand command, CancellationToken cT)
     {
-        command.Deconstruct(
+        command.Request.Deconstruct(
             out Guid roomId, 
-            out Guid playerId,
-            out string connectionId, 
-            out CancellationTokenSource cts);
-        
+            out Guid playerId);
+        var connectionId = command.ConnectionId;
+        var cts = command.Cts;
+
         _ = Task.Run(async () =>
         {
             foreach (var i in Enumerable.Range(StartTimerValue, SecondsCount))

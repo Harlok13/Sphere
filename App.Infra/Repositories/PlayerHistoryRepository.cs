@@ -14,9 +14,10 @@ public class PlayerHistoryRepository : IPlayerHistoryRepository
         _context = context;
     }
 
-    public async Task<ICollection<PlayerHistory>?> GetFirstFiveRecordsAsync(Guid playerId, CancellationToken cT)
+    public async Task<ICollection<PlayerHistory>?> GetFirstFiveRecordsAsNoTrackingAsync(Guid playerId, CancellationToken cT)
     {
         return await _context.PlayerHistories
+            .AsNoTracking()
             .Where(e => e.PlayerId == playerId)
             .OrderByDescending(e => e.PlayedAt)
             .Take(5)

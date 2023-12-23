@@ -1,7 +1,12 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Player} from "../../../contracts/player-response";
-import {ICardResponse} from "../../../contracts/card-response";
+import {IAddedCardResponse, ICardDto} from "../../../contracts/added-card-response";
 import {produce} from "immer";
+import {IUpdatedPlayerIsLeader} from "../../../contracts/updated-player-is-leader";
+import {IChangedPlayerReadinessResponse} from "../../../contracts/changed-player-readiness-response";
+import {IChangedPlayerMoneyResponse} from "../../../contracts/responses/changed-player-money-response";
+import {IChangedPlayerInGameResponse} from "../../../contracts/responses/changed-player-in-game-response";
+import {IChangedPlayerMoveResponse} from "../../../contracts/responses/changed-player-move-response";
 
 export interface PlayerState {
     timer: number;
@@ -25,20 +30,21 @@ const initialState: PlayerState = {
     }
 }
 
+
 const playerSlice = createSlice({
     name: "player",
     initialState,
     reducers: {
-        setIsLeader: (state) =>
+        setIsLeader: (state, action: PayloadAction<IUpdatedPlayerIsLeader>) =>
             produce(state, draft => {
-                draft.player.isLeader = true;
+                draft.player.isLeader = action.payload.isLeader;
             }),
         // {
         //     state.player.isLeader = true
         // },
-        setReadiness: (state, action: PayloadAction<boolean>) =>
+        setReadiness: (state, action: PayloadAction<IChangedPlayerReadinessResponse>) =>
             produce(state, draft => {
-                draft.player.readiness = action.payload;
+                draft.player.readiness = action.payload.readiness;
             }),
         // {
         //     state.player.readiness = action.payload;
@@ -76,23 +82,23 @@ const playerSlice = createSlice({
         // {
         //     state.player = action.payload;
         // },
-        setMove: (state, action: PayloadAction<boolean>) =>
+        setMove: (state, action: PayloadAction<IChangedPlayerMoveResponse>) =>
             produce(state, draft => {
-                draft.player.move = action.payload;
+                draft.player.move = action.payload.move;
             }),
         // {
         //     state.player.move = action.payload;
         // },
-        setGameMoney: (state, action: PayloadAction<number>) =>
+        setGameMoney: (state, action: PayloadAction<IChangedPlayerMoneyResponse>) =>
             produce(state, draft => {
-                draft.player.money = action.payload;
+                draft.player.money = action.payload.money;
             }),
         // {
         //     state.player.money = action.payload;
         // },
-        setNewCard: (state, action: PayloadAction<ICardResponse>) => {
+        setNewCard: (state, action: PayloadAction<IAddedCardResponse>) => {
             return produce(state, draft => {
-                draft.player.cards.push(action.payload);
+                draft.player.cards.push(action.payload.cardDto);
             });
 
             // state.player = newState.player;
@@ -104,8 +110,8 @@ const playerSlice = createSlice({
             });
             // state.timer = newState.timer;
         },
-        setInGame: (state, action: PayloadAction<boolean>) => {
-            state.player.inGame = action.payload;
+        setInGame: (state, action: PayloadAction<IChangedPlayerInGameResponse>) => {
+            state.player.inGame = action.payload.inGame;
         }
     }
 });

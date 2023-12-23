@@ -1,8 +1,8 @@
 using App.Application.Repositories;
 using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Requests;
 using App.Contracts.Responses;
-using App.SignalR.Commands;
 using App.SignalR.Commands.LobbyCommands;
 using App.SignalR.Hubs;
 using Mediator;
@@ -38,33 +38,33 @@ public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyC
         _playerInfoRepository = playerInfoRepository;
     }
 
-    public async ValueTask<bool> Handle(SelectStartGameMoneyCommand moneyCommand, CancellationToken cT)
+    public async ValueTask<bool> Handle(SelectStartGameMoneyCommand command, CancellationToken cT)
     {
-        moneyCommand.Deconstruct(
-            out Guid roomId,
-            out Guid playerId,
-            out int startBid,
-            out int minBid,
-            out int maxBid,
+        command.Deconstruct(
+            out SelectStartGameMoneyRequest request,
             out string connectionId);
 
-        var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
+        var roomRequest = request.RoomRequest;
+        var roomId = request.RoomId;
+
+
+        var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsNoTrackingAsync(request.PlayerId, cT);
 
         var selectorResult = ComputeSelectStartGameMoney(
-            startBid: startBid, minBid: minBid, maxBid: maxBid, playerMoney: playerInfo.Money, roomId: roomId);
+            startBid: roomRequest.StartBid,
+            minBid: roomRequest.MinBid,
+            maxBid: roomRequest.MaxBid,
+            playerMoney: playerInfo.Money,
+            roomId: roomId);
 
         if (selectorResult.Success)
         {
             await _hubContext.Clients.Client(connectionId).ReceiveOwn_SelectStartGameMoney(selectorResult.Selector!, cT);
-
-            // var confirmStartGameMoneyCommand = new ConfirmStartGameMoneyCommand();
-            // var response = await _mediator.Send(confirmStartGameMoneyCommand, cT);
-
-            // if (response) return true;
+            
             return true;
         }
 
-        var notificationResponse = new NotificationResponse(Id: Guid.NewGuid(), NotificationText: selectorResult.ErrorMessage!);
+        var notificationResponse = new NotEnoughMoneyNotificationResponse(NotificationId: Guid.NewGuid(), NotificationText: selectorResult.ErrorMessage!);
         await _hubContext.Clients.Client(connectionId).ReceiveOwn_NotEnoughMoneyNotification(notificationResponse, cT);
 
         return false;
@@ -75,7 +75,7 @@ public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyC
     // 240 lower bound
     // 540 upper bound
 
-    private Result ComputeSelectStartGameMoney(int startBid, int minBid, int maxBid, int playerMoney, Guid roomId)
+    private Result ComputeSelectStartGameMoney(int startBid, int minBid, int maxBid, int playerMoney, Guid? roomId)
     {
         var recommendedValue = startBid * 2 + minBid * 5 + maxBid * 5;
         var lowerBound = startBid * 1.5 + minBid * 3 + maxBid * 3;

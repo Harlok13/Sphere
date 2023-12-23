@@ -1,9 +1,9 @@
 using App.Application.Identity.Repositories;
 using App.Application.Identity.Services;
-using App.Application.Mapper;
 using App.Application.Repositories;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Identity.Responses;
+using App.Contracts.Mapper;
 using App.Domain.Entities;
 using App.Domain.Identity.Entities;
 using Mediator;

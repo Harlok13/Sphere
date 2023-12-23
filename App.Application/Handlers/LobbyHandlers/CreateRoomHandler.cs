@@ -1,5 +1,6 @@
 using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Requests;
 using App.Domain.Entities.RoomEntity;
 using App.SignalR.Commands;
 using App.SignalR.Commands.LobbyCommands;
@@ -24,7 +25,7 @@ public class CreateRoomHandler : ICommandHandler<CreateRoomCommand, bool>
         IRoomRepository roomRepository,
         IAppUnitOfWork unitOfWork,
         IMediator mediator
-        )
+    )
     {
         _hubContext = hubContext;
         _logger = logger;
@@ -32,33 +33,42 @@ public class CreateRoomHandler : ICommandHandler<CreateRoomCommand, bool>
         _unitOfWork = unitOfWork;
         _mediator = mediator;
     }
-    
+
     public async ValueTask<bool> Handle(CreateRoomCommand command, CancellationToken cT)
     {
-        var (requestRoom, userId, userName, connectionId, isLeader) = command;
-        
-        _logger.LogInformation($"Room request\nMinBid: {requestRoom.MinBid}\nMaxBid: {requestRoom.MaxBid}");
+        command.Request.Deconstruct(
+            out RoomRequest roomRequest,
+            out Guid playerId,
+            out int selectedStartMoney,
+            out int upperBound,
+            out int lowerBound);
+
+        var connectionId = command.ConnectionId;
 
         var room = Room.Create(
             id: Guid.NewGuid(),
-            roomName: requestRoom.RoomName,  // TODO: valid roomName, must be unique
-            roomSize: requestRoom.RoomSize,
-            startBid: requestRoom.StartBid,
-            minBid: requestRoom.MinBid,
-            maxBid: requestRoom.MaxBid,
-            avatarUrl: requestRoom.ImgUrl);
-
-        var selectStartGameMoneyCommand =
-            new SelectStartGameMoneyCommand(room.Id, userId, room.StartBid, room.MinBid, room.MaxBid, connectionId);
-        var response = await _mediator.Send(selectStartGameMoneyCommand, cT);
-
-        if (response)
-        {
-            await _roomRepository.AddNewRoomAsync(room, cT);
+            roomName: roomRequest.RoomName, // TODO: valid roomName, must be unique
+            roomSize: roomRequest.RoomSize,
+            startBid: roomRequest.StartBid,
+            minBid: roomRequest.MinBid,
+            maxBid: roomRequest.MaxBid,
+            avatarUrl: roomRequest.AvatarUrl,
+            lowerStartMoneyBound: lowerBound,
+            upperStartMoneyBound: upperBound);
         
-            await _unitOfWork.SaveChangesAsync(cT);
-        }
+        await _unitOfWork.RoomRepository.AddNewRoomAsync(room, cT);
+
+        var joinToRoomRequest = new JoinToRoomRequest(
+            RoomId: room.Id,
+            PlayerId: playerId,
+            SelectedStartMoney: selectedStartMoney);
+
+        await _unitOfWork.SaveChangesAsync(cT);
         
+        var joinToRoomCommand = new JoinToRoomCommand(joinToRoomRequest, connectionId);
+        await _mediator.Send(joinToRoomCommand, cT);
+
+
         return true;
     }
 }

@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using App.Domain.DomainEvents.RoomEvents;
+using App.Domain.DomainEvents.RoomDomainEvents;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Enums;
 using App.Domain.Primitives;
@@ -15,7 +15,13 @@ public sealed partial class Room : Entity, IHasDomainEvent
     
     private readonly object _lock = new();
 
-    public ICollection<DomainEvent> DomainEvents { get; set; } = new List<DomainEvent>();
+    private readonly List<DomainEvent> _domainEvents = new(); 
+    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents;
+    
+    public Player this[int index]
+    {
+        get { lock(_lock) return _players[index]; }
+    }
 
     private Room(
         Guid id,
@@ -24,7 +30,9 @@ public sealed partial class Room : Entity, IHasDomainEvent
         int startBid,
         int minBid,
         int maxBid,
-        string avatarUrl
+        string avatarUrl,
+        int upperStartMoneyBound,
+        int lowerStartMoneyBound
     ) : base(id)
     {
         RoomName = roomName;
@@ -33,11 +41,11 @@ public sealed partial class Room : Entity, IHasDomainEvent
         MinBid = minBid;
         MaxBid = maxBid;
         AvatarUrl = avatarUrl;
+        UpperStartMoneyBound = upperStartMoneyBound;
+        LowerStartMoneyBound = lowerStartMoneyBound;
         Status = DefaultRoomStatus;
         PlayersInRoom = DefaultPlayersInRoom;
         Bank = default;
-        
-        DomainEvents.Add(new CreateRoomEvent(this));
     }
 
     public int RoomSize { get; private init; }
@@ -58,6 +66,10 @@ public sealed partial class Room : Entity, IHasDomainEvent
 
     public int Bank { get; private set; }
 
+    public int LowerStartMoneyBound { get; private init; }
+
+    public int UpperStartMoneyBound { get; private init; }
+
     public IReadOnlyCollection<Player> Players => _players;
 
     // TODO: add created at (for GetFirstPageAsync)
@@ -69,7 +81,9 @@ public sealed partial class Room : Entity, IHasDomainEvent
         int startBid,
         int minBid,
         int maxBid,
-        string avatarUrl)
+        string avatarUrl,
+        int lowerStartMoneyBound,
+        int upperStartMoneyBound)
     {
         var room = new Room(
             id: id,
@@ -78,37 +92,55 @@ public sealed partial class Room : Entity, IHasDomainEvent
             startBid: startBid,
             minBid: minBid,
             maxBid: maxBid,
-            avatarUrl: avatarUrl);
+            avatarUrl: avatarUrl,
+            lowerStartMoneyBound: lowerStartMoneyBound,
+            upperStartMoneyBound: upperStartMoneyBound);
         
+        room._domainEvents.Add(new CreatedRoomDomainEvent(room));
         return room;
     }
 
     public void AddNewPlayer(Player player) // TODO: validation
     {
-        player.SetRoomId(Id);
         lock (_lock)
         {
             _players.Add(player);
-            PlayersInRoom = _players.Count;
+            _domainEvents.Add(new AddedPlayerDomainEvent(player, this));
+            SetPlayersInRoom(_players.Count);
 
             if (PlayersInRoom == RoomSize)
             {
-                Status = RoomStatus.Full;
+                SetRoomStatus(RoomStatus.Full);
             }
         }
     }
 
-    public void RemovePlayer(Guid playerId)
+    internal void SetPlayersInRoom(int playerCount)
+    {
+        PlayersInRoom = playerCount;
+        _domainEvents.Add(new ChangedRoomPlayersInRoomDomainEvent(RoomId: Id, PlayersInRoom: PlayersInRoom));
+    }
+
+    internal void SetRoomStatus(RoomStatus status)
+    {
+        Status = status;
+        _domainEvents.Add(new ChangedRoomStatusDomainEvent(RoomId: Id, RoomStatus: Status));
+    }
+
+    public void RemovePlayer(Guid playerId, string connectionId)
     {
         lock (_lock)
         {
             var player = _players.Single(p => p.Id == playerId);
             _players.Remove(player);
-            PlayersInRoom = Players.Count;
+            SetPlayersInRoom(Players.Count);
+            
+            _domainEvents.Add(new RemovedPlayerDomainEvent(
+                RoomId: Id, PlayerId: playerId, ConnectionId: connectionId, PlayersInRoom: PlayersInRoom));
         }
     }
 
-    public Player SetNewRoomLeader(Guid? playerId = null)
+    public void SetNewRoomLeader(Guid? playerId = null)
     {
         lock (_lock)
         {
@@ -116,24 +148,31 @@ public sealed partial class Room : Entity, IHasDomainEvent
                 ? _players.FirstOrDefault()
                 : _players.Single(p => p.Id == playerId);
 
-            newLeader.SetIsLeader(true);
-            RoomName = $"{newLeader.PlayerName}'s Room";
-            AvatarUrl = newLeader.AvatarUrl;
-
-            return newLeader;
+            newLeader.SetIsLeader(value: true, playersInRoom: PlayersInRoom);
+            SetRoomName(name: newLeader.PlayerName, withPostfix: true);
+            SetAvatarUrl(newLeader.AvatarUrl);
         }
     }
 
-    public record BankEventArgs(int Value);
+    internal void SetAvatarUrl(string avatarUrl)
+    {
+        AvatarUrl = avatarUrl;
+        _domainEvents.Add(new ChangedRoomAvatarUrlDomainEvent(RoomId: Id, AvatarUrl: AvatarUrl));
+    }
+    
+    internal void SetRoomName(string name, bool withPostfix = false)
+    {
+        RoomName = withPostfix
+            ? $"{name}'s Room"
+            : name;
+        
+        _domainEvents.Add(new ChangedRoomRoomNameDomainEvent(RoomId: Id, RoomName: RoomName));
+    }
 
-    public delegate Task BankHandlerAsync(Room sender, BankEventArgs e, CancellationToken cT);
-
-    public event BankHandlerAsync? Notify;
-
-    public async Task IncreaseBank(int value, CancellationToken cT)
+    public void IncreaseBank(int value)
     {
         Bank += value;
-        await Notify?.Invoke(this, new BankEventArgs(Bank), cT)!;
+        _domainEvents.Add(new ChangedRoomBankDomainEvent(RoomId: Id, Bank: Bank));
     }
 
     public record StartGameResult(bool CanStart, string? MovePlayerConnectionId, string? ErrorMsg);
@@ -150,7 +189,7 @@ public sealed partial class Room : Entity, IHasDomainEvent
 
             if (canStartGame)
             {
-                Status = RoomStatus.Playing;
+                SetRoomStatus(RoomStatus.Playing);
 
                 // foreach (var player in Players)
                 // {

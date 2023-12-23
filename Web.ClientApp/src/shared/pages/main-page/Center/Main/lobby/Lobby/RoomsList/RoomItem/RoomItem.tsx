@@ -14,13 +14,14 @@ export const RoomItem: FC<ILobbyItemProps> = ({roomData, joinToRoomHandler}) => 
     return (
         <li className={style.item}>
             <div className={style.body}>
-                <img className={style.img} src={roomData.imgUrl} alt="ava"/>
+                <img className={style.img} src={roomData.avatarUrl} alt="ava"/>
                 <div className={style.roomName}>{roomData.roomName}</div>
                 <div className={style.roomSize}><span className={style.value}>{roomData.playersInRoom}/{roomData.roomSize}</span></div>
                 <div className={style.startBid}><span className={style.value}>{roomData.startBid}$</span></div>
                 <div className={style.bid}><span className={style.value}>{roomData.minBid}/{roomData.maxBid}$</span></div>
                 <div className={style.status}>{roomData.status}</div>
             </div>
+            <button>Info</button>
             {roomData.playersInRoom < roomData.roomSize
                 ? (<button onClick={(e) => joinToRoomHandler(e, roomData)} className={style.join}>Join</button>)
                 : null}

@@ -25,13 +25,23 @@ public class RoomRepository : IRoomRepository
     public async Task<Room?> GetRoomByIdAsync(Guid roomId, CancellationToken cT)
     {
         return await _context.Set<Room>()
+            .Include(e => e.Players
+                .OrderBy(p => p.Id))
+            .SingleOrDefaultAsync(r => r.Id == roomId, cT);
+    }
+
+    public async Task<Room?> GetRoomByIdAsNoTrackingAsync(Guid roomId, CancellationToken cT)
+    {
+        return await _context.Set<Room>()
+            .AsNoTracking()
             .Include(e => e.Players)
             .SingleOrDefaultAsync(r => r.Id == roomId, cT);
     }
 
-    public async Task<ICollection<Room>?> GetFirstPageAsync(CancellationToken cT)
+    public async Task<ICollection<Room>?> GetFirstPageAsNoTrackingAsync(CancellationToken cT)
     {
         return await _context.Rooms
+            .AsNoTracking()
             .Take(15)
             .Include(e => e.Players)
             .ToArrayAsync(cT); // TODO: 15 - const 

@@ -1,5 +1,4 @@
 using App.Contracts.Requests;
-using App.SignalR.Commands;
 using App.SignalR.Commands.LobbyCommands;
 using App.SignalR.Commands.RoomCommands;
 using Mediator;
@@ -18,96 +17,84 @@ public class GlobalHub : Hub<IGlobalHub>
         _logger = logger;
         _mediator = mediator;
     }
-    public async Task CreateRoom(RoomRequest roomRequest, Guid playerId, string playerName)
+    public async ValueTask<bool> CreateRoom(CreateRoomRequest request)
     {
-        _logger.LogInformation($"Invoke method \"CreateRoom\" by user {playerId}. Create room {roomRequest.RoomName}");
+        _logger.LogInformation($"Invoke method \"CreateRoom\" by user {request.PlayerId}. Create room {request.RoomRequest.RoomName}");
         var command = new CreateRoomCommand(
-            RoomRequest: roomRequest,
-            PlayerId: playerId,
-            PlayerName: playerName,
+            Request: request,
             ConnectionId: Context.ConnectionId);
-        await _mediator.Send(command);
+        return await _mediator.Send(command);
     }
-
-    public async Task JoinToRoom(Guid roomId, Guid playerId, int selectedStartMoney)
+    
+    public async ValueTask<bool> JoinToRoom(JoinToRoomRequest request)
     {
-        _logger.LogInformation($"Invoke method \"JoinToRoom\" by user {playerId} in room {roomId}.");
+        _logger.LogInformation($"Invoke method \"JoinToRoom\" by user {request.PlayerId} in room {request.RoomId}.");
         var command = new JoinToRoomCommand(
-            RoomId: roomId,
-            PlayerId: playerId,
-            // PlayerName: playerName,
-            SelectedStartMoney: selectedStartMoney,
-            ConnectionId:Context.ConnectionId);
-        await _mediator.Send(command);
+            Request: request,
+            ConnectionId: Context.ConnectionId);
+        return await _mediator.Send(command);
     }
 
-    public async Task RemoveFromRoom(Guid roomId, Guid playerId)
+    public async ValueTask<bool> RemoveFromRoom(RemoveFromRoomRequest request)
     {
-        _logger.LogInformation($"Invoke method \"RemoveFromRoom\" by user {playerId} in room {roomId}.");
+        _logger.LogInformation($"Invoke method \"RemoveFromRoom\" by user {request.PlayerId} in room {request.RoomId}.");
         var command = new RemoveFromRoomCommand(
-            RoomId: roomId,
-            PlayerId: playerId,
+            Request: request,
             ConnectionId: Context.ConnectionId);
-        await _mediator.Send(command);
+        return await _mediator.Send(command);
     }
 
-    public async Task SelectStartGameMoney(Guid roomId, Guid playerId, int startBid, int minBid, int maxBid)
+    public async ValueTask<bool> SelectStartGameMoney(SelectStartGameMoneyRequest request)
     {
+        _logger.LogInformation($"Invoke method \"{nameof(SelectStartGameMoney)}\" by user {request.PlayerId}.");
         var command = new SelectStartGameMoneyCommand(
-            RoomId: roomId,
-            PlayerId: playerId,
-            ConnectionId: Context.ConnectionId,
-            StartBid: startBid,
-            MinBid: minBid,
-            MaxBid: maxBid);
-        await _mediator.Send(command);
-    }
-
-    public async Task ToggleReadiness(Guid roomId, Guid playerId)
-    {
-        _logger.LogInformation($"Invoke method \"ToggleReadiness\" by user {playerId} in room {roomId}.");
-        var command = new ToggleReadinessCommand(
-            RoomId: roomId, 
-            PlayerId: playerId,
+            Request: request,
             ConnectionId: Context.ConnectionId);
-        await _mediator.Send(command);
+        return await _mediator.Send(command);
     }
 
-    public async Task StartGame(Guid roomId, Guid playerId)
+    public async ValueTask<bool> ToggleReadiness(ToggleReadinessRequest request)
     {
-        _logger.LogInformation($"Invoke method \"StartGame\" by user {playerId} in room {roomId}");
-        var command = new StartGameCommand(RoomId: roomId, PlayerId: playerId);
-        await _mediator.Send(command);
+        _logger.LogInformation($"Invoke method \"ToggleReadiness\" by user {request.PlayerId} in room {request.RoomId}.");
+        var command = new ToggleReadinessCommand(
+            Request: request);
+        return await _mediator.Send(command);
     }
 
-    public async Task StartTimer(Guid roomId, Guid playerId)
+    public async ValueTask<bool> StartGame(StartGameRequest request)
     {
-        _logger.LogInformation($"Invoke method \"StartTimer\" by user {playerId} in room {roomId}");
+        _logger.LogInformation($"Invoke method \"StartGame\" by user {request.PlayerId} in room {request.RoomId}");
+        var command = new StartGameCommand(Request: request);
+        return await _mediator.Send(command);
+    }
+
+    public async ValueTask<bool> StartTimer(StartTimerRequest request)
+    {
+        _logger.LogInformation($"Invoke method \"StartTimer\" by user {request.PlayerId} in room {request.RoomId}");
         
         var cts = new CancellationTokenSource();
         Context.Items.TryAdd(Context.ConnectionId, cts);
 
         var command = new StartTimerCommand(
-            RoomId: roomId,
-            PlayerId: playerId,
+            Request: request,
             ConnectionId: Context.ConnectionId, 
             Cts: cts);
-        await _mediator.Send(command);
+        return await _mediator.Send(command);
     }
 
-    public async Task StopTimer(Guid roomId, Guid playerId)
+    public async ValueTask<bool> StopTimer(StopTimerRequest request)
     {
-        _logger.LogInformation($"Invoke method \"StopTimer\" by user {playerId} in room {roomId}.");
+        _logger.LogInformation($"Invoke method \"StopTimer\" by user {request.PlayerId} in room {request.RoomId}.");
+        
         var result = Context.Items.TryGetValue(Context.ConnectionId, out var cts);
         Context.Items.Remove(Context.ConnectionId);
         
         _logger.LogInformation($"Result of getting cts is {result}. Cts is null? {cts is null}.");
         
         var command = new StopTimerCommand(
-            RoomId: roomId,
-            PlayerId: playerId,
+            Request: request,
             ConnectionId: Context.ConnectionId,
             Cts: (cts as CancellationTokenSource)!);
-        await _mediator.Send(command);
+        return await _mediator.Send(command);
     }
 }

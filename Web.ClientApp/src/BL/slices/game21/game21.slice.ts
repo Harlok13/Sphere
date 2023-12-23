@@ -2,7 +2,14 @@ import {createSlice, current, PayloadAction} from "@reduxjs/toolkit";
 import {IInitRoomDataResponse} from "../../../contracts/init-room-data-response";
 import {IPlayerResponse, Player} from "../../../contracts/player-response";
 import {produce} from "immer";
-import {PlayerInGame} from "../../hooks/hub-connection/use-gloabl-hub-connection";
+import {IRemovedPlayerResponse} from "../../../contracts/removed-player-from-response";
+import {IUpdatedPlayerIsLeader} from "../../../contracts/updated-player-is-leader";
+import {IChangedRoomRoomNameResponse} from "../../../contracts/changed-room-room-name-response";
+import {IChangedPlayerReadinessResponse} from "../../../contracts/changed-player-readiness-response";
+import {IChangedPlayerMoneyResponse} from "../../../contracts/responses/changed-player-money-response";
+import {IChangedPlayerInGameResponse} from "../../../contracts/responses/changed-player-in-game-response";
+import {IChangedRoomBankResponse} from "../../../contracts/responses/changed-room-bank-response";
+import {IAddedCardResponse} from "../../../contracts/added-card-response";
 
 
 type RoomData = IInitRoomDataResponse;
@@ -68,14 +75,14 @@ export const game21Slice = createSlice({
         clearPlayersList: (state) => {
             state.players = [];
         },
-        removePlayerFromPlayers: (state, action: PayloadAction<string>) => {
-            state.players = [...state.players.filter(p => p.id !== action.payload)];
+        removePlayerFromPlayers: (state, action: PayloadAction<IRemovedPlayerResponse>) => {
+            state.players = [...state.players.filter(p => p.id !== action.payload.playerId)];
         },
         updateRoomName: (state, action: PayloadAction<string>) => {
             state.roomData.roomName = action.payload;
         },
-        updateBankValue: (state, action: PayloadAction<number>) => {
-            state.bank = action.payload;
+        updateBankValue: (state, action: PayloadAction<IChangedRoomBankResponse>) => {
+            state.bank = action.payload.bank;
         },
         resetGame21State: (state) => {
             // state.bank = 0;
@@ -102,6 +109,29 @@ export const game21Slice = createSlice({
         // setPlayerInGame: (state, action: PayloadAction<PlayerInGame>) => {
         //     state.players.fil
         // }
+        updateIsLeaderInPlayers: (state, action: PayloadAction<IUpdatedPlayerIsLeader>) => {
+            const index = state.players.findIndex(p => p.id === action.payload.playerId);
+            state.players[index].isLeader = action.payload.isLeader;
+        },
+        updateRoomNameInRoomData: (state, action: PayloadAction<IChangedRoomRoomNameResponse>) => {
+            state.roomData.roomName = action.payload.roomName;
+        },
+        updateReadinessInPlayers: (state, action: PayloadAction<IChangedPlayerReadinessResponse>) => {
+            const index = state.players.findIndex(p => p.id === action.payload.playerId);
+            state.players[index].readiness = action.payload.readiness;
+        },
+        updateMoneyInPlayers: (state, action: PayloadAction<IChangedPlayerMoneyResponse>) => {
+            const index = state.players.findIndex(p => p.id === action.payload.playerId);
+            state.players[index].money = action.payload.money;
+        },
+        updateInGameInPlayers: (state, action: PayloadAction<IChangedPlayerInGameResponse>) => {
+            const index = state.players.findIndex(p => p.id === action.payload.playerId);
+            state.players[index].inGame = action.payload.inGame;
+        },
+        setCardInPlayersCards: (state, action: PayloadAction<IAddedCardResponse>) => {
+            const index = state.players.findIndex((p => p.id === action.payload.playerId));
+            state.players[index].cards.push(action.payload.cardDto);
+        }
     }
 });
 
@@ -117,6 +147,12 @@ export const {
     updateBankValue,
     resetGame21State,
     setGameStarted,
+    updateIsLeaderInPlayers,
+    updateRoomNameInRoomData,
+    updateReadinessInPlayers,
+    updateMoneyInPlayers,
+    updateInGameInPlayers,
+    setCardInPlayersCards,
 } = game21Slice.actions;
 
 export default game21Slice.reducer;

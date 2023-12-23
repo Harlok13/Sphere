@@ -1,8 +1,8 @@
+using App.Contracts.Requests;
 using Mediator;
 
 namespace App.SignalR.Commands.RoomCommands;
 
 public sealed record RemoveFromRoomCommand(
-    Guid RoomId,
-    Guid PlayerId,
+    RemoveFromRoomRequest Request,
     string ConnectionId) : ICommand<bool>;

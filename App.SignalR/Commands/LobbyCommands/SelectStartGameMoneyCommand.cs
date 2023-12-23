@@ -1,11 +1,8 @@
+using App.Contracts.Requests;
 using Mediator;
 
 namespace App.SignalR.Commands.LobbyCommands;
 
 public sealed record SelectStartGameMoneyCommand(
-    Guid RoomId,
-    Guid PlayerId,
-    int StartBid,
-    int MinBid,
-    int MaxBid,
+    SelectStartGameMoneyRequest Request,
     string ConnectionId) : ICommand<bool>;

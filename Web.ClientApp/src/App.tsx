@@ -1,12 +1,10 @@
-import './custom.scss';
-import {Router} from "./routes/Router";
-import Wrapper from "./shared/components/Wrapper/Wrapper";
-import {useGlobalHubConnection} from "./BL/hooks/hub-connection/use-gloabl-hub-connection";
+import 'index.scss';
+import {Router} from "routes/Router";
+import Wrapper from "shared/components/Wrapper/Wrapper";
+import {useGlobalHubConnection} from "BL/hooks/hub-connection/use-gloabl-hub-connection";
 import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
 import {useHub} from "react-use-signalr";
-import {useDispatch, useSelector} from "react-redux";
-import {useRemoveFromRoomHub} from "./BL/hooks/hub-connection/server-methods/server-methods";
-import {Notifications} from "./shared/components/Notifications/Notifications";
+import {Notifications} from "shared/components/Notifications/Notifications";
 
 export const signalRConnection = new HubConnectionBuilder()
     .withUrl("https://localhost:7170/hubs/global")
@@ -23,12 +21,6 @@ export const signalRConnection = new HubConnectionBuilder()
 
 export const App = () => {
     useGlobalHubConnection();
-
-    // @ts-ignore
-    const game21 = useSelector(state => state.game21);
-    const removeFromRoom = useRemoveFromRoomHub();
-
-    const dispatcher = useDispatch();
 
     // const handleBeforeUnload = () => {
     //     removeFromRoom.invoke(game21.guid, game21.player.playerId)

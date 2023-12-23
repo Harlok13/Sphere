@@ -1,6 +1,6 @@
-using App.Application.Mapper;
 using App.Application.Repositories;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Mapper;
 using App.SignalR.Commands.RoomCommands;
 using App.SignalR.Hubs;
 using Mediator;
@@ -31,23 +31,13 @@ public class ToggleReadinessHandler : ICommandHandler<ToggleReadinessCommand, bo
     
     public async ValueTask<bool> Handle(ToggleReadinessCommand command, CancellationToken cT)
     {
-        command.Deconstruct(out Guid roomId, out Guid playerId, out string connectionId);
+        command.Request.Deconstruct(out Guid _, out Guid playerId);
         
-        var player = await _playerRepository.GetPlayerByIdAsync(playerId, cT);
+        var player = await _unitOfWork.PlayerRepository.GetPlayerByIdAsync(playerId, cT);
         player.ToggleReadiness();
-
-        var playerResponse = PlayerMapper.MapPlayerToPlayerResponse(player);
-        await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_UpdatedPlayer(playerResponse, cT);  // TODO: receive player id only
-        // await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_UpdatedReadiness(playerId, cT);
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_Readiness(player.Readiness, cT);
 
         await _unitOfWork.SaveChangesAsync(cT);
 
         return true;
-    }
-
-    private async Task NotifyReadinessAsync(Player player, CancellationToken cT)
-    {
-        await _hubContext.Clients.Client(player.ConnectionId).ReceiveOwn_Readiness(player.Readiness, cT);
     }
 }
