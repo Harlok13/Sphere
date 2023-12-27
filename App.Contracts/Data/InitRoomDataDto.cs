@@ -1,6 +1,6 @@
-namespace App.Contracts.Responses;
+namespace App.Contracts.Data;
 
-public sealed record InitRoomDataResponse(
+public sealed record InitRoomDataDto(
     Guid Id,
     int RoomSize,
     string RoomName,
