@@ -36,4 +36,8 @@ public interface IGlobalHub
     Task ReceiveAll_ChangedRoomRoomName(ChangedRoomRoomNameResponse response, CancellationToken cT);
     Task ReceiveGroup_ChangedRoomRoomName(ChangedRoomRoomNameResponse response, CancellationToken cT);
     Task ReceiveAll_ChangedRoomAvatarUrl(ChangedRoomAvatarUrlResponse response, CancellationToken cT);
+    Task ReceiveClient_TimeOut(CancellationToken cT);
+    Task ReceiveUser_ReconnectToRoom(CancellationToken cT);
+    Task ReceiveGroup_ChangedPlayerOnline(ChangedPlayerOnlineResponse response, CancellationToken cT);
+    Task ReceiveClient_ChangedPlayerOnline(ChangedPlayerOnlineResponse response, CancellationToken cT);
 }
