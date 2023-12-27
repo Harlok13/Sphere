@@ -5,7 +5,7 @@ namespace App.Application.Repositories;
 public interface IPlayerInfoRepository
 {
     Task CreatePlayerInfoAsync(Guid userId, string playerName, CancellationToken cT);
-    Task<PlayerInfo?> GetPlayerInfoByIdAsync(Guid playerId, CancellationToken cT);
+    Task<PlayerInfo?> GetPlayerInfoByIdAsync(Guid playerId, CancellationToken cT = default);
     Task<PlayerInfo?> GetPlayerInfoByIdAsNoTrackingAsync(Guid playerId, CancellationToken cT);
 
     Task PlayerWinActionAsync(Guid userId, CancellationToken cT);
