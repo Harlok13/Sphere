@@ -28,6 +28,7 @@ public sealed partial class PlayerInfo : Entity, IHasDomainEvent
         Likes = default;
         Level = default;
         Has21 = default;
+        HasGold21 = default;
     }
 
     public Guid UserId { get; private init; }
@@ -58,7 +59,10 @@ public sealed partial class PlayerInfo : Entity, IHasDomainEvent
 
     public int Has21 { get; private set; }
     
+    public int HasGold21 { get; private set; }
+    
     // TODO: max money win prop
+    
 
     public static PlayerInfo Create(
         Guid id,
@@ -68,27 +72,48 @@ public sealed partial class PlayerInfo : Entity, IHasDomainEvent
         return new PlayerInfo(id, userId, playerName);
     }
     
-    public void IncrementMoney(int value, string connectionId)
+    public void IncrementMoney(int value)
     {
         Money += value;
-        _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, connectionId));
+        _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, UserId));
     }
 
-    // public async Task IncrementMoneyNotifyAsync(int value, CancellationToken cT)
-    // {
-    //     IncrementMoney(value);
-    //     await NotifyMoney?.Invoke(this, cT)!;
-    // }
-
-    public void DecrementMoney(int value, string connectionId)
+    public void DecrementMoney(int value)
     {
         Money -= value;  // TODO: validation
-        _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, connectionId));
+        _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, UserId));
     }
 
-    // public async Task DecrementMoneyNotifyAsync(int value, string connectionId, CancellationToken cT)
-    // {
-    //     DecrementMoney(value, connectionId);
-    //     await NotifyMoney?.Invoke(this, cT)!;
-    // }
+    private void IncreaseMatches() => Matches += 1;
+    private void IncreaseWins() => Wins += 1;
+    private void IncreaseLoses() => Loses += 1;
+    private void IncreaseDraws() => Draws += 1;
+    private void IncreaseHas21() => Has21 += 1;
+    private void IncreaseHasGold21() => HasGold21 += 1;
+
+    public void Win(bool has21 = default, bool hasGold21 = default)
+    {
+        IncreaseMatches();
+        IncreaseWins();
+        if (has21) IncreaseHas21();
+        if (hasGold21) IncreaseHas21();
+    }
+
+    public void Lose()
+    {
+        IncreaseMatches();
+        IncreaseLoses();
+    }
+
+    public void Draw(bool has21 = default, bool hasGold21 = default)
+    {
+        IncreaseMatches();
+        IncreaseDraws();
+        if (has21) IncreaseHas21();
+        if (hasGold21)
+        {
+            IncreaseHasGold21();
+            // TODO: give achievements
+        }
+    }
 }
