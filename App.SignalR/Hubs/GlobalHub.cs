@@ -1,12 +1,16 @@
 using App.Contracts.Requests;
+using App.SignalR.Commands.ConnectionCommands;
 using App.SignalR.Commands.LobbyCommands;
 using App.SignalR.Commands.RoomCommands;
+using App.SignalR.Commands.RoomCommands.GameActionCommands;
 using Mediator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace App.SignalR.Hubs;
 
+[Authorize]
 public class GlobalHub : Hub<IGlobalHub>
 {
     private readonly ILogger<GlobalHub> _logger;
@@ -17,6 +21,33 @@ public class GlobalHub : Hub<IGlobalHub>
         _logger = logger;
         _mediator = mediator;
     }
+    
+    public override async Task OnConnectedAsync()
+    {
+        var user = Context.ToAuthUser();
+        _logger.LogInformation(
+            "User {UserName}: Connected To GlobalHub. {ConnectionId}",
+            user.UserName,
+            Context.ConnectionId
+        );
+
+        await _mediator.Send(new ConnectPlayerCommand(user));
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var user = Context.ToAuthUser();
+        _logger.LogInformation(
+            "User {UserName}: Disconnected From GlobalHub. {ConnectionId}",
+            user.UserName,
+            Context.ConnectionId
+        );
+
+        await _mediator.Send(new DisconnectPlayerCommand(user));
+        await base.OnDisconnectedAsync(exception);
+    }
+    
     public async ValueTask<bool> CreateRoom(CreateRoomRequest request)
     {
         _logger.LogInformation($"Invoke method \"CreateRoom\" by user {request.PlayerId}. Create room {request.RoomRequest.RoomName}");
