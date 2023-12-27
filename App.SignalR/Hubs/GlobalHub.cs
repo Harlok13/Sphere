@@ -107,4 +107,16 @@ public class GlobalHub : Hub<IGlobalHub>
             Cts: (cts as CancellationTokenSource)!);
         return await _mediator.Send(command);
     }
+
+    public async ValueTask<bool> Hit(HitRequest request) =>
+        await _mediator.Send(new HitCommand(request));
+
+    public async ValueTask<bool> Stay(StayRequest request) => 
+        await _mediator.Send(new StayCommand(request));
+
+    public async ValueTask<bool> ConfirmReconnectingToRoom() =>
+        await _mediator.Send(new ConfirmReconnectingToRoomCommand(Context.ToAuthUser()));
+
+    public async ValueTask<bool> CancelReconnectingToRoom() =>
+        await _mediator.Send(new CancelReconnectingToRoomCommand(Context.ToAuthUser()));
 }
