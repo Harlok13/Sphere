@@ -1,3 +1,4 @@
+using App.Contracts.Data;
 using App.Contracts.Identity.Responses;
 using App.Contracts.Responses;
 using App.Domain.Entities;
@@ -27,9 +28,9 @@ public class PlayerMapper
             Has21: entity.Has21);
     }
 
-    public static PlayerResponse MapPlayerToPlayerResponse(Player entity)
+    public static PlayerDto MapPlayerToPlayerDto(Player entity)
     {
-        return new PlayerResponse(
+        return new PlayerDto(
             Id: entity.Id,
             RoomId: entity.RoomId,
             IsLeader: entity.IsLeader,
@@ -40,7 +41,8 @@ public class PlayerMapper
             Cards: entity.Cards,
             Move: entity.Move,
             Money: entity.Money,
-            InGame: entity.InGame);
+            InGame: entity.InGame,
+            Online: entity.Online);
     }
 
     public static PlayerHistoryResponse MapPlayerHistoryToPlayerHistoryResponse(PlayerHistory entity)
@@ -66,13 +68,13 @@ public class PlayerMapper
         return playerHistoriesResponse;
     }
 
-    public static IEnumerable<PlayerResponse> MapManyPlayersToManyPlayersResponse(IReadOnlyCollection<Player> players)
+    public static IEnumerable<PlayerDto> MapManyPlayersToManyPlayersDto(IReadOnlyCollection<Player> players)
     {
-        var playersResponse = new List<PlayerResponse>(players.Count);
+        var playersResponse = new List<PlayerDto>(players.Count);
 
         foreach (var player in players)
         {
-            var playerResponse = MapPlayerToPlayerResponse(player);
+            var playerResponse = MapPlayerToPlayerDto(player);
             playersResponse.Add(playerResponse);
         }
 
