@@ -1,4 +1,5 @@
 using App.Contracts.Mapper;
+using App.Contracts.Responses.RoomResponses;
 using App.Domain.DomainEvents.RoomDomainEvents;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.RoomEntity;
@@ -26,12 +27,13 @@ public class AddedPlayerDomainEventHandler : INotificationHandler<AddedPlayerDom
     {
         notification.Deconstruct(out Player player, out Room room);
 
-        var playerResponse = PlayerMapper.MapPlayerToPlayerResponse(player);  // TODO: playerDto ?
-        // TODO: response and change naming to AddedPlayer
-        await _hubContext.Clients.GroupExcept(room.Id.ToString(), player.ConnectionId).ReceiveGroup_NewPlayer(playerResponse, cT);
+        var playerResponse = PlayerMapper.MapPlayerToPlayerDto(player); 
+        var response = new AddedPlayerResponse(playerResponse);
+        
+        await _hubContext.Clients.GroupExcept(room.Id.ToString(), player.ConnectionId).ReceiveGroup_AddedPlayer(response, cT);
         _logger.LogInformation(
             "{InvokedMethod} | The data of new player \"{ConnectionId}\" has been sent to the room \"{RoomId}\", except \"{ExceptedConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveGroup_NewPlayer),
+            nameof(_hubContext.Clients.All.ReceiveGroup_AddedPlayer),
             player.ConnectionId,
             room.Id,
             player.ConnectionId);
