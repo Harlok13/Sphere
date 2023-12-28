@@ -57,11 +57,15 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .HasColumnName("in_game")
             .IsRequired()
             .HasDefaultValue(false);
-        
+
         builder.Property(e => e.MoveStatus)
             .HasColumnName("move_status")
-            .IsRequired()
-            .HasDefaultValue(0);
+            .IsRequired();
+            // .HasDefaultValueSql(0);
+
+        builder.Property(e => e.Online)
+            .HasColumnName("online")
+            .IsRequired();
 
         builder
             .HasOne(e => e.Room)
