@@ -1,7 +1,10 @@
 using App.Application.Repositories;
-using App.Domain.Entities;
-using App.Domain.Identity.Entities;
+using App.Contracts.Data;
+using App.Contracts.Mapper;
+using App.Domain.Shared;
+using App.Domain.Shared.ResultImplementations;
 using App.Infra.Data.Context;
+using App.Infra.Messages;
 using Microsoft.EntityFrameworkCore;
 using Player = App.Domain.Entities.PlayerEntity.Player;
 
@@ -11,35 +14,45 @@ public class PlayerRepository : IPlayerRepository
 {
     private readonly ApplicationContext _context;
 
-    public PlayerRepository(ApplicationContext context)
-    {
-        _context = context;
-    }
-    
-    public async Task<Player?> GetPlayerByIdAsync(Guid id, CancellationToken cT)
-    {
-        return await _context.Set<Player>()
-            .Include(p => p.Room)
-            .SingleOrDefaultAsync(p => p.Id == id, cT);
-    }
+    public PlayerRepository(ApplicationContext context) => _context = context;
 
-    public async Task<Player?> GetPlayerByIdAsNoTrackingAsync(Guid id, CancellationToken cT)
+    public async Task<Result<PlayerDto>> GetPlayerByIdAsNoTrackingAsync(Guid? id, CancellationToken cT)
     {
-        return await _context.Set<Player>()
-            .AsNoTracking()
-            .Include(p => p.Room)
-            .SingleOrDefaultAsync(p => p.Id == id, cT);
-    }
+        try
+        {
+            if (id is null) return InvalidResult<PlayerDto>.Create(
+                new Error(ErrorMessages.Player.IdIsNull()));
 
-    public async Task CreatePlayerAsync(Player player, CancellationToken cT)
-    {
-        // var player = Player.Create(applicationUser.Id, applicationUser.UserName!);
-        await _context.AddAsync(player, cT);
-    }
+            var playerDto = await _context.Set<Player>()
+                .AsNoTracking()
+                .Include(p => p.Room)
+                .Where(p => p.Id == id)
+                .Select(p => PlayerMapper.MapPlayerToPlayerDto(p))
+                .SingleOrDefaultAsync(cT);
 
-    public async Task RemovePlayerAsync(Guid playerId, CancellationToken cT)
-    {
-        var player = await _context.Set<Player>().SingleOrDefaultAsync(p => p.Id == playerId, cT);
-        if (player is not null) _context.Set<Player>().Remove(player);
+            if (playerDto is null) return NotFoundResult<PlayerDto>.Create(
+                new Error(ErrorMessages.Player.NotFound(id.ToString()!)));
+
+            return SuccessResult<PlayerDto>.Create(playerDto);
+        }
+        catch (InvalidOperationException _)
+        {
+            return InvalidResult<PlayerDto>.Create(
+                new Error(ErrorMessages.Player.ContainsMtOne(id.ToString()!)));
+        }
+        catch (ArgumentNullException _)
+        {
+            return InvalidResult<PlayerDto>.Create(
+                new Error(ErrorMessages.Player.SourceIsNull()));
+        }
+        catch (OperationCanceledException _)
+        {
+            return InvalidResult<PlayerDto>.Create(
+                new Error(ErrorMessages.Player.OperationCanceled()));
+        }
+        catch (Exception _)
+        {
+            return UnexpectedResult<PlayerDto>.Create();
+        }
     }
 }
