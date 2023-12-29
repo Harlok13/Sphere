@@ -1,8 +1,13 @@
+using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Data;
 using App.Contracts.Mapper;
 using App.Contracts.Responses;
 using App.Domain.Entities;
+using App.Domain.Entities.PlayerEntity;
+using App.Domain.Shared;
 using App.SignalR.Commands.ConnectionCommands;
+using App.SignalR.Events;
 using App.SignalR.Hubs;
 using Mediator;
 using Microsoft.AspNetCore.SignalR;
@@ -28,22 +33,41 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
         _hubContext = hubContext;
         _publisher = publisher;
     }
-    
+
     public async ValueTask<bool> Handle(ConfirmReconnectingToRoomCommand command, CancellationToken cT)
     {
-        command.Deconstruct(out IUser user);
-        var authUser = user as AuthUser;
+        command.Deconstruct(out AuthUser authUser);
+        if (authUser.ConnectionId is null)
+        {
+            _logger.LogError("Unable to perform \"{CommandName}\" operation because connection id is null.",
+                nameof(DisconnectPlayerCommand));
 
-        var player = await _unitOfWork.PlayerRepository.GetPlayerByIdAsync(authUser.Id, cT);
-        player.SetOnline(true, authUser.ConnectionId);
+            return false;
+        }
 
-        /* save the changes to send the correct data. can be done through room, but why? */
-        var saveChangesResult = await _unitOfWork.SaveChangesAsync(cT);
-        if (!saveChangesResult) return false;
+        var playerResult = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
+        if (!playerResult.TryFromResult(out PlayerDto? playerNoTrack, out var errors))
+        {
+            return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
+        }
+           
+
+        var room = await _unitOfWork.RoomRepository.GetRoomByIdAsync(playerNoTrack!.RoomId, cT);
+        var reconnectPlayerResult = room.ReconnectPlayer(playerId: authUser.Id, newConnectionId: authUser.ConnectionId);
+
+        if (!reconnectPlayerResult.TryFromResult(out Player? reconnectPlayer, out var reconnectErrors))
+        {
+            return await SendSomethingWentWrongNotification(reconnectErrors, authUser.ConnectionId, cT);
+        }
         
-        var room = await _unitOfWork.RoomRepository.GetRoomByIdAsNoTrackingAsync(player.RoomId, cT);
+        var saveChangesResult = await _unitOfWork.SaveChangesAsync(cT);
+        if (!saveChangesResult)
+        {
+            var errorMsg = new Error($"Transaction failed when calling {nameof(ConfirmReconnectingToRoomCommand)}");
+            return await SendSomethingWentWrongNotification(new List<Error>(1) { errorMsg }, authUser.ConnectionId, cT);
+        }
 
-        var playerDto = PlayerMapper.MapPlayerToPlayerDto(player);
+        var playerDto = PlayerMapper.MapPlayerToPlayerDto(reconnectPlayer!);  // TODO: RoomMapper.MapToReconnectingInitRoomDataResponse
         var initRoomDataDto = RoomMapper.MapRoomToInitRoomDataDto(room);
         var playersDto = PlayerMapper.MapManyPlayersToManyPlayersDto(room.Players);
 
@@ -51,10 +75,25 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
             Player: playerDto,
             InitRoomData: initRoomDataDto,
             Players: playersDto);
-        
-        await _hubContext.Clients.Client(player.ConnectionId).ReceiveClient_ReconnectingInitRoomData(response, cT);
+
+        await _hubContext.Clients.Client(reconnectPlayer!.ConnectionId).ReceiveClient_ReconnectingInitRoomData(response, cT);
         _logger.LogInformation("");
 
         return saveChangesResult;
+    }
+
+    private async ValueTask<bool> SendSomethingWentWrongNotification(
+        IEnumerable<Error> errors,
+        string targetConnectionId,
+        CancellationToken cT)
+    {
+        foreach (var error in errors) _logger.LogError(error.Message);
+            
+        await _publisher.Publish(new ClientNotificationEvent(
+                NotificationText: NotificationMessages.SomethingWentWrong(),
+                TargetConnectionId: targetConnectionId),
+            cT);
+            
+        return false;
     }
 }
