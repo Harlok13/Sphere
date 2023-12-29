@@ -1,12 +1,14 @@
-using System.Collections.Immutable;
-using App.Application.Repositories.RoomRepository;
+using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Data;
+using App.Contracts.Requests;
 using App.Domain.Entities;
+using App.Domain.Entities.RoomEntity;
+using App.Domain.Shared;
 using App.SignalR.Commands.ConnectionCommands;
-using App.SignalR.Commands.LobbyCommands;
-using App.SignalR.Hubs;
+using App.SignalR.Commands.RoomCommands;
+using App.SignalR.Events;
 using Mediator;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace App.Application.Handlers.ConnectionHandlers;
@@ -15,89 +17,70 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
 {
     private readonly IAppUnitOfWork _unitOfWork;
     private readonly ILogger<DisconnectPlayerHandler> _logger;
-    private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
     private readonly IPublisher _publisher;
-    private readonly IRoomRepository _roomRepository;
     private readonly IMediator _mediator;
 
     public DisconnectPlayerHandler(
         IAppUnitOfWork unitOfWork,
         ILogger<DisconnectPlayerHandler> logger,
-        IHubContext<GlobalHub, IGlobalHub> hubContext,
         IPublisher publisher,
-        IRoomRepository roomRepository, 
         IMediator mediator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _hubContext = hubContext;
         _publisher = publisher;
-        _roomRepository = roomRepository;
         _mediator = mediator;
     }
 
     public async ValueTask<bool> Handle(DisconnectPlayerCommand command, CancellationToken cT)
     {
-        command.Deconstruct(out IUser authUser);
+        command.Deconstruct(out AuthUser authUser);
+        if (authUser.ConnectionId is null)
+        {
+            _logger.LogError("Unable to perform \"{CommandName}\" operation because connection id is null.",
+                nameof(DisconnectPlayerCommand));
 
-        var disconnectedPlayer = await _unitOfWork.PlayerRepository.GetPlayerByIdAsync(authUser.Id, cT);
-        if (disconnectedPlayer is null)
+            return false;
+        }
+
+        var disconnectedPlayerNoTrack = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
+        if (!disconnectedPlayerNoTrack.TryFromResult(out PlayerDto? disconnectedPlayerDto, out _))
         {
             _logger.LogInformation("The player {Name} is not in the room.", authUser.UserName);
-            return true;
+            return false;
         }
 
-        disconnectedPlayer.SetOnline(false);
-
-        var room = await _roomRepository.GetRoomByIdAsNoTrackingAsync(disconnectedPlayer.RoomId, cT);
-        var playersOnline = room.Players
-            .Where(p => p.Online && p.Id != disconnectedPlayer.Id)
-            .ToImmutableArray();
+        var room = await _unitOfWork.RoomRepository.GetRoomByIdAsync(disconnectedPlayerDto!.RoomId, cT);
         
-        _logger.LogInformation(
-            "Players online in room {RoomId}: {PlayerCount}",
-            room.Id,
-            playersOnline.Length);
-
-        /* cuz the transaction has not been applied */
-        if (playersOnline.Length < 1)
+        var disconnectPlayerResult = room.DisconnectPlayer(disconnectedPlayerDto.Id);
+        if (!disconnectPlayerResult.TryFromResult(out Room.DisconnectPlayerDto? disconnectData, out var errors))
         {
-            // await _mediator.Send(new DeadRoomCommand(), cT);
-            // _ = Task.Run(async () =>
-            // {
-            //     await Task.Delay(300000);
-            //     
-            if (_roomRepository is RoomRepositoryNotifyDecorator rep)
-            {
-                rep.NotifyRemoveRoom += RemoveRoomAsync;
-            }
-            await _roomRepository.RemoveRoomAsync(room.Id, cT);
-            _logger.LogInformation("");
-            // });
+            return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
         }
 
-        // var room = await _unitOfWork.RoomRepository.GetRoomByIdAsNoTrackingAsync(disconnectedPlayer.RoomId, cT);
-        // var players = room.Players;
-        //
-        // var playersExceptDisconnectedPlayerIds = players
-        //     .Where(p => p.Id != disconnectedPlayer.Id && p.Online)
-        //     .Select(p => p.Id.ToString())
-        //     .ToImmutableArray();
-        //
-        // var response = new DisconnectedPlayerResponse(disconnectedPlayer.Id);
-        //
-        // await _hubContext.Clients
-        //     .Users(playersExceptDisconnectedPlayerIds)
-        //     .ReceiveGroup_DisconnectedPlayer(response, cT);
-        // _logger.LogInformation(
-        //     "");
+        if (disconnectData!.NeedRemoveRoom)
+        {
+            var request = new RemoveFromRoomRequest(RoomId: room.Id, PlayerId: disconnectedPlayerDto.Id);
+            await _mediator.Send(new RemoveFromRoomCommand(request, authUser.ConnectionId), cT);
+
+            await _unitOfWork.RoomRepository.RemoveRoomAsync(room.Id, cT);
+        }
 
         return await _unitOfWork.SaveChangesAsync(cT);
     }
     
-    private async Task RemoveRoomAsync(RoomRepositoryNotifyDecorator.RemoveRoomEventArgs e, CancellationToken cT)
+    private async ValueTask<bool> SendSomethingWentWrongNotification(
+        IEnumerable<Error> errors,
+        string targetConnectionId,
+        CancellationToken cT)
     {
-        _logger.LogInformation("Receive remove room in event.");
-        await _hubContext.Clients.All.ReceiveAll_RemovedRoom(e.RoomId, cT);
+        foreach (var error in errors) _logger.LogError(error.Message);
+            
+        await _publisher.Publish(new ClientNotificationEvent(
+                NotificationText: NotificationMessages.SomethingWentWrong(),
+                TargetConnectionId: targetConnectionId),
+            cT);
+            
+        return false;
     }
 }
