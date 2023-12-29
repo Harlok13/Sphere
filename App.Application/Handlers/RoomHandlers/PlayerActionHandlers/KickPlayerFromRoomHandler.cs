@@ -38,7 +38,7 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
         var initiator = room.Players.Single(p => p.Id == initiatorId);
         if (!initiator.IsLeader)
         {
-            await _publisher.Publish(new NotificationEvent(
+            await _publisher.Publish(new ClientNotificationEvent(
                     NotificationText: NotificationMessages.KickPlayerFromRoom.NotLeader(),
                     TargetConnectionId: initiator.ConnectionId),
                 cT);
@@ -49,7 +49,7 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
         var kickedPlayer = room.Players.Single(p => p.Id == kickedPlayerId);
         if (kickedPlayer.InGame)
         {
-            await _publisher.Publish(new NotificationEvent(
+            await _publisher.Publish(new ClientNotificationEvent(
                     NotificationText: NotificationMessages.KickPlayerFromRoom.PlayerInGame(kickedPlayer.PlayerName),
                     TargetConnectionId: kickedPlayer.ConnectionId),
                 cT);
@@ -62,12 +62,12 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
 
         if (response)
         {
-            await _publisher.Publish(new NotificationEvent(
+            await _publisher.Publish(new ClientNotificationEvent(
                     NotificationText: NotificationMessages.KickPlayerFromRoom.SuccessKick(kickedPlayer.PlayerName),
                     TargetConnectionId: initiator.ConnectionId),
                 cT);
 
-            await _publisher.Publish(new NotificationEvent(
+            await _publisher.Publish(new ClientNotificationEvent(
                     NotificationText: NotificationMessages.KickPlayerFromRoom.WasKicked(initiator.PlayerName),
                     TargetConnectionId: kickedPlayer.ConnectionId),
                 cT);
@@ -77,9 +77,9 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
         }
 
         _logger.LogError("Transaction failed when calling {Method}.", nameof(RemoveFromRoomCommand));
-        await _publisher.Publish(new NotificationResponse(
-                NotificationId: Guid.NewGuid(),
-                NotificationText: "Something went wrong, please try again."),
+        await _publisher.Publish(new ClientNotificationEvent(
+                NotificationText: "Something went wrong, please try again.",
+                TargetConnectionId: initiator.ConnectionId),
             cT);
 
         return false;
