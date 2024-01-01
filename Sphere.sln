@@ -36,6 +36,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.ClientApp", "Web.Client
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.SignalR", "App.SignalR\App.SignalR.csproj", "{56B428D0-CB5B-46AD-9A80-03C45EA36FE7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2DD533C6-67FA-4BD1-9E7C-4D0569C38DE0}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Garbage", "Garbage\Garbage.csproj", "{26BA8FCA-9395-4B52-A447-E9711B186859}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +97,10 @@ Global
 		{56B428D0-CB5B-46AD-9A80-03C45EA36FE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56B428D0-CB5B-46AD-9A80-03C45EA36FE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56B428D0-CB5B-46AD-9A80-03C45EA36FE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26BA8FCA-9395-4B52-A447-E9711B186859}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26BA8FCA-9395-4B52-A447-E9711B186859}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26BA8FCA-9395-4B52-A447-E9711B186859}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26BA8FCA-9395-4B52-A447-E9711B186859}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AAE40A4E-0CBD-4D3F-9011-5E5A88A5E2F3} = {5E33A059-E32F-4CD4-B8F1-F6E3AF695499}
@@ -109,5 +120,6 @@ Global
 		{36C1801E-2628-4674-B000-CB87E5D710FC} = {1290B77A-49A1-4E91-A5CB-2C1A30AD2FE4}
 		{07E9323B-879F-44EF-A953-66724623B0DE} = {4215215E-511C-4839-A65F-F69BF7C5E064}
 		{56B428D0-CB5B-46AD-9A80-03C45EA36FE7} = {1290B77A-49A1-4E91-A5CB-2C1A30AD2FE4}
+		{26BA8FCA-9395-4B52-A447-E9711B186859} = {AAE40A4E-0CBD-4D3F-9011-5E5A88A5E2F3}
 	EndGlobalSection
 EndGlobal

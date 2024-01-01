@@ -28,19 +28,25 @@ public class ConnectPlayerHandler : ICommandHandler<ConnectPlayerCommand, bool>
     {
         command.Deconstruct(out IUser authUser);
 
-        var playerResult = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
-        if (!playerResult.TryFromResult(out PlayerDto? playerDto, out _))
+        if (!_unitOfWork.PlayerRepository.CheckPlayerExists(authUser.Id))
         {
             _logger.LogInformation("The player {Name} is not in the room.", authUser.UserName);
             return false;
         }
 
-        await _hubContext.Clients.User(playerDto!.Id.ToString()).ReceiveUser_NavigateToLobby(cT);
+        await _hubContext.Clients.User(authUser.Id.ToString()).ReceiveUser_NavigateToLobby(cT);
         _logger.LogInformation("");
 
-        var response = new ReconnectToRoomResponse(playerDto.RoomId);
+        var roomIdResult = await _unitOfWork.RoomRepository.GetIdByPlayerIdAsync(authUser.Id, cT);
+        if (!roomIdResult.TryFromResult(out RoomIdDto? data, out var errors))
+        {
+            foreach(var error in errors) _logger.LogError(error.Message);
+            return false;
+        }
 
-        await _hubContext.Clients.User(playerDto.Id.ToString()).ReceiveUser_ReconnectToRoom(response, cT);
+        var response = new ReconnectToRoomResponse(data!.RoomId);
+
+        await _hubContext.Clients.User(authUser.Id.ToString()).ReceiveUser_ReconnectToRoom(response, cT);
         _logger.LogInformation("");
 
         return true;

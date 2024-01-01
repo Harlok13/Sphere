@@ -4,7 +4,7 @@ namespace App.Contracts.Data;
 
 public sealed record PlayerDto(
     Guid Id,
-    Guid? RoomId,
+    Guid RoomId,
     bool IsLeader,
     bool Readiness,
     string PlayerName,

@@ -3,6 +3,7 @@ using App.SignalR.Commands.ConnectionCommands;
 using App.SignalR.Commands.LobbyCommands;
 using App.SignalR.Commands.RoomCommands;
 using App.SignalR.Commands.RoomCommands.GameActionCommands;
+using App.SignalR.Commands.RoomCommands.PlayerActionCommands;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -26,7 +27,7 @@ public class GlobalHub : Hub<IGlobalHub>
     {
         var user = Context.ToAuthUser();
         _logger.LogInformation(
-            "User {UserName}: Connected To GlobalHub. {ConnectionId}",
+            "User {UserName}: Connected To GlobalHub. ConnectionId: {ConnectionId}",
             user.UserName,
             Context.ConnectionId
         );
@@ -39,11 +40,12 @@ public class GlobalHub : Hub<IGlobalHub>
     {
         var user = Context.ToAuthUser();
         _logger.LogInformation(
-            "User {UserName}: Disconnected From GlobalHub. {ConnectionId}",
+            "User {UserName}: Disconnected From GlobalHub. ConnectionId: {ConnectionId}",
             user.UserName,
             Context.ConnectionId
         );
 
+        // TODO: add cts?
         await _mediator.Send(new DisconnectPlayerCommand(user));
         await base.OnDisconnectedAsync(exception);
     }
@@ -64,14 +66,9 @@ public class GlobalHub : Hub<IGlobalHub>
         return await _mediator.Send(command);
     }
 
-    public async ValueTask<bool> RemoveFromRoom(RemoveFromRoomRequest request)
-    {
-        var command = new RemoveFromRoomCommand(
-            Request: request,
-            ConnectionId: Context.ConnectionId);
-        return await _mediator.Send(command);
-    }
-
+    public async ValueTask<bool> RemoveFromRoom(RemoveFromRoomRequest request) =>
+        await _mediator.Send(new RemoveFromRoomCommand(request));
+    
     public async ValueTask<bool> SelectStartGameMoney(SelectStartGameMoneyRequest request) =>
         await _mediator.Send(new SelectStartGameMoneyCommand(request));
 
@@ -99,7 +96,7 @@ public class GlobalHub : Hub<IGlobalHub>
         var result = Context.Items.TryGetValue(Context.ConnectionId, out var cts);
         Context.Items.Remove(Context.ConnectionId);
         
-        _logger.LogInformation("Result of getting cts is {Result}.", result);
+        _logger.LogInformation("ResultT of getting cts is {ResultT}.", result);
         
         var command = new StopTimerCommand(
             Request: request,
@@ -114,9 +111,15 @@ public class GlobalHub : Hub<IGlobalHub>
     public async ValueTask<bool> Stay(StayRequest request) => 
         await _mediator.Send(new StayCommand(request));
 
-    public async ValueTask<bool> ConfirmReconnectingToRoom() =>
+    public async ValueTask<bool> ConfirmReconnectingToRoom(int c) =>
         await _mediator.Send(new ConfirmReconnectingToRoomCommand(Context.ToAuthUser()));
 
-    public async ValueTask<bool> CancelReconnectingToRoom() =>
+    public async ValueTask<bool> CancelReconnectingToRoom(int c) =>
         await _mediator.Send(new CancelReconnectingToRoomCommand(Context.ToAuthUser()));
+
+    public async ValueTask<bool> KickPlayerFromRoom(KickPlayerFromRoomRequest request) =>
+        await _mediator.Send(new KickPlayerFromRoomCommand(request));
+
+    public async ValueTask<bool> TransferLeadership(TransferLeadershipRequest request) =>
+        await _mediator.Send(new TransferLeadershipCommand(request));
 }

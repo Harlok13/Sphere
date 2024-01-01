@@ -2,7 +2,7 @@ import style from "./MoneySelectorButtons.module.css";
 import {FC} from "react";
 import {
     SelectStartMoneyHandlers
-} from "../../../../../../../../BL/hooks/lobby/select-start-money/use-select-start-money";
+} from "BL/hooks/lobby/select-start-money/use-select-start-money";
 
 
 // type ModalButtonHandlers = {

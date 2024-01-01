@@ -1,3 +1,4 @@
+using App.Contracts.Responses.PlayerInfoResponses;
 using App.Domain.DomainEvents.PlayerInfoDomainEvents;
 using App.SignalR.Hubs;
 using Mediator;
@@ -21,13 +22,15 @@ public class ChangedPlayerInfoMoneyDomainEventHandler : INotificationHandler<Cha
 
     public async ValueTask Handle(ChangedPlayerInfoMoneyDomainEvent notification, CancellationToken cT)
     {
-        notification.Deconstruct(out int money, out string connectionId);
+        notification.Deconstruct(out int money, out Guid playerId);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_UpdatedMoney(money, cT);
+        var response = new ChangedPlayerInfoMoneyResponse(money);
+
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_ChangedPlayerInfoMoney(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | A new value for property \"{UpdatedProperty}\" has been sent to player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_UpdatedMoney),
+            "{InvokedMethod} | A new value for property \"{UpdatedProperty}\" has been sent to player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerInfoMoney),
             nameof(notification.Money),
-            connectionId);
+            playerId);
     }
 }

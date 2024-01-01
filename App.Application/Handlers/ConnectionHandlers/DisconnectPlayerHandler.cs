@@ -37,36 +37,53 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
         command.Deconstruct(out AuthUser authUser);
         if (authUser.ConnectionId is null)
         {
-            _logger.LogError("Unable to perform \"{CommandName}\" operation because connection id is null.",
+            _logger.LogError(
+                "Unable to perform \"{CommandName}\" operation because connection id is null.",
                 nameof(DisconnectPlayerCommand));
 
             return false;
         }
 
-        var disconnectedPlayerNoTrack = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
-        if (!disconnectedPlayerNoTrack.TryFromResult(out PlayerDto? disconnectedPlayerDto, out _))
+        // var disconnectedPlayerNoTrack = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
+        // if (!disconnectedPlayerNoTrack.TryFromResult(out PlayerDto? disconnectedPlayerDto, out _))
+        if (_unitOfWork.PlayerRepository.CheckPlayerExists(authUser.Id))
         {
-            _logger.LogInformation("The player {Name} is not in the room.", authUser.UserName);
+            _logger.LogInformation(
+                "The player {Name} is not in the room.", 
+                authUser.UserName);
             return false;
         }
 
-        var room = await _unitOfWork.RoomRepository.GetRoomByIdAsync(disconnectedPlayerDto!.RoomId, cT);
-        
-        var disconnectPlayerResult = room.DisconnectPlayer(disconnectedPlayerDto.Id);
-        if (!disconnectPlayerResult.TryFromResult(out Room.DisconnectPlayerDto? disconnectData, out var errors))
+        // var roomResult = await _unitOfWork.RoomRepository.GetByIdAsync(disconnectedPlayerDto!.RoomId, cT);
+        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync1(authUser.Id, cT);
+        if (!roomResult.TryFromResult(out Room? room, out var errors))
         {
             return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
         }
-
-        if (disconnectData!.NeedRemoveRoom)
+        
+        var disconnectPlayerResult = room!.DisconnectPlayer(authUser.Id);
+        // if (!disconnectPlayerResult.TryFromResult(out Room.DisconnectPlayerDto? disconnectData, out var errors))
+        // {
+        //     return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
+        // }
+        if (disconnectPlayerResult.IsFailure)
         {
-            var request = new RemoveFromRoomRequest(RoomId: room.Id, PlayerId: disconnectedPlayerDto.Id);
-            await _mediator.Send(new RemoveFromRoomCommand(request, authUser.ConnectionId), cT);
-
-            await _unitOfWork.RoomRepository.RemoveRoomAsync(room.Id, cT);
+            return await SendSomethingWentWrongNotification(disconnectPlayerResult.Errors!, authUser.ConnectionId, cT);
         }
 
-        return await _unitOfWork.SaveChangesAsync(cT);
+        await _unitOfWork.SaveChangesAsync(cT);
+
+        if (room.Players.Count == 1)  // TODO: finish
+        {
+            var request = new RemoveFromRoomRequest(RoomId: room.Id, PlayerId: authUser.Id);
+            return await _mediator.Send(new RemoveFromRoomCommand(request), cT);
+        }
+        // if (disconnectData!.NeedRemoveRoom)
+        // {
+        //
+        //     await _unitOfWork.RoomRepository.RemoveAsync(room.Id, cT);
+        // }
+        return true;
     }
     
     private async ValueTask<bool> SendSomethingWentWrongNotification(

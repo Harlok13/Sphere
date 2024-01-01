@@ -13,31 +13,24 @@ namespace App.Application.Handlers.RoomHandlers;
 public class ToggleReadinessHandler : ICommandHandler<ToggleReadinessCommand, bool>
 {
     private readonly ILogger<ToggleReadinessHandler> _logger;
-    private readonly IPlayerRepository _playerRepository;
     private readonly IAppUnitOfWork _unitOfWork;
-    private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
 
     public ToggleReadinessHandler(
         ILogger<ToggleReadinessHandler> logger,
-        IPlayerRepository playerRepository,
-        IAppUnitOfWork unitOfWork,
-        IHubContext<GlobalHub, IGlobalHub> hubContext)
+        IAppUnitOfWork unitOfWork)
     {
         _logger = logger;
-        _playerRepository = playerRepository;
         _unitOfWork = unitOfWork;
-        _hubContext = hubContext;
     }
     
     public async ValueTask<bool> Handle(ToggleReadinessCommand command, CancellationToken cT)
     {
-        command.Request.Deconstruct(out Guid _, out Guid playerId);
-        
-        var player = await _unitOfWork.PlayerRepository.GetPlayerByIdAsync(playerId, cT);
+        command.Request.Deconstruct(out Guid roomId, out Guid playerId);
+
+        var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId, cT);
+        var player = room.Players.Single(p => p.Id == playerId);
         player.ToggleReadiness();
 
-        await _unitOfWork.SaveChangesAsync(cT);
-
-        return true;
+        return await _unitOfWork.SaveChangesAsync(cT);
     }
 }

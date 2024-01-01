@@ -1,12 +1,14 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Player} from "../../../contracts/player-response";
-import {IAddedCardResponse, ICardDto} from "../../../contracts/added-card-response";
+import {Player} from "../../../contracts/player-dto";
+import {IAddedCardResponse, ICardDto} from "../../../contracts/responses/added-card-response";
 import {produce} from "immer";
-import {IUpdatedPlayerIsLeader} from "../../../contracts/updated-player-is-leader";
-import {IChangedPlayerReadinessResponse} from "../../../contracts/changed-player-readiness-response";
+import {IChangedPlayerIsLeader} from "../../../contracts/responses/changed-player-is-leader-response";
+import {IChangedPlayerReadinessResponse} from "../../../contracts/responses/changed-player-readiness-response";
 import {IChangedPlayerMoneyResponse} from "../../../contracts/responses/changed-player-money-response";
 import {IChangedPlayerInGameResponse} from "../../../contracts/responses/changed-player-in-game-response";
 import {IChangedPlayerMoveResponse} from "../../../contracts/responses/changed-player-move-response";
+import {IChangedPlayerOnlineResponse} from "../../../contracts/responses/changed-player-online-response";
+import {IReconnectToRoomResponse} from "../../../contracts/responses/reconnect-to-room-response";
 
 export interface PlayerState {
     timer: number;
@@ -26,7 +28,8 @@ const initialState: PlayerState = {
         cards: [],
         move: false,
         money: 0,
-        inGame: false
+        inGame: false,
+        online: false
     }
 }
 
@@ -35,7 +38,7 @@ const playerSlice = createSlice({
     name: "player",
     initialState,
     reducers: {
-        setIsLeader: (state, action: PayloadAction<IUpdatedPlayerIsLeader>) =>
+        setIsLeader: (state, action: PayloadAction<IChangedPlayerIsLeader>) =>
             produce(state, draft => {
                 draft.player.isLeader = action.payload.isLeader;
             }),
@@ -49,7 +52,7 @@ const playerSlice = createSlice({
         // {
         //     state.player.readiness = action.payload;
         // },
-        resetState: (state) =>
+        resetPlayerState: (state) =>
             // produce(state, draft => {
             //     draft.player.id = "";
             //     draft.player.roomId = "";
@@ -112,12 +115,18 @@ const playerSlice = createSlice({
         },
         setInGame: (state, action: PayloadAction<IChangedPlayerInGameResponse>) => {
             state.player.inGame = action.payload.inGame;
+        },
+        setOnline: (state, action: PayloadAction<IChangedPlayerOnlineResponse>) => {
+            state.player.online = action.payload.online;
+        },
+        setRoomId: (state, action: PayloadAction<IReconnectToRoomResponse>) => {
+            state.player.roomId = action.payload.roomId;
         }
     }
 });
 
 export const {
-    resetState,
+    resetPlayerState,
     setIsLeader,
     setReadiness,
     initPlayerData,
@@ -126,6 +135,8 @@ export const {
     setNewCard,
     setTimer,
     setInGame,
+    setOnline,
+    setRoomId,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

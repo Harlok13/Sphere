@@ -1,8 +1,9 @@
+using App.Contracts.Requests;
 using App.SignalR.Commands.RoomCommands;
+using App.SignalR.Commands.RoomCommands.GameActionCommands;
 using App.SignalR.Hubs;
 using Mediator;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace App.Application.Handlers.RoomHandlers;
@@ -11,15 +12,18 @@ public class StartTimerHandler : ICommandHandler<StartTimerCommand, bool>
 {
     private readonly ILogger<StartTimerHandler> _logger;
     private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
+    private readonly IMediator _mediator;
     private const int StartTimerValue = 1;
     private const int SecondsCount = 10;
 
     public StartTimerHandler(
         ILogger<StartTimerHandler> logger,
-        IHubContext<GlobalHub, IGlobalHub> hubContext)
+        IHubContext<GlobalHub, IGlobalHub> hubContext,
+        IMediator mediator)
     {
         _logger = logger;
         _hubContext = hubContext;
+        _mediator = mediator;
     }
 
     public async ValueTask<bool> Handle(StartTimerCommand command, CancellationToken cT)
@@ -46,14 +50,13 @@ public class StartTimerHandler : ICommandHandler<StartTimerCommand, bool>
                 
                 _logger.LogInformation($"Time has passed: {seconds}");
             }
+            await _hubContext.Clients.Client(connectionId).ReceiveClient_TimeOut(cT);
+            _logger.LogInformation("en!! StartTimer end of work.");
 
             return false;
         }, cT);
-        
 
-        // var timeOutCommand = new TimeOutCommand(roomId, userId);
-        // await _mediator.Send(timeOutCommand, cT);
-        await Task.Delay(1);
+        await Task.Delay(10, cT);
         return false;
     }
 }

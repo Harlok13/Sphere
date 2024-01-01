@@ -24,12 +24,12 @@ public class ChangedRoomPlayersInRoomDomainEventHandler : INotificationHandler<C
     {
         notification.Deconstruct(out Guid roomId, out int playersInRoom);
 
-        var response = new UpdatedRoomPlayersInRoomResponse(RoomId: roomId, PlayersInRoom: playersInRoom);
+        var response = new ChangedRoomPlayersInRoomResponse(RoomId: roomId, PlayersInRoom: playersInRoom);
 
-        await _hubContext.Clients.All.ReceiveAll_UpdatedRoomPlayersInRoom(response, cT);
+        await _hubContext.Clients.All.ReceiveAll_ChangedRoomPlayersInRoom(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The updated value \"{UpdatedValue}\" of room \"{RoomId}\" has been sent to all users.",
-            nameof(_hubContext.Clients.All.ReceiveAll_UpdatedRoomPlayersInRoom),
+            "{InvokedMethod} | The changed value \"{UpdatedValue}\" of room \"{RoomId}\" has been sent to all users.",
+            nameof(_hubContext.Clients.All.ReceiveAll_ChangedRoomPlayersInRoom),
             nameof(playersInRoom).ToUpper(),
             roomId);
     }

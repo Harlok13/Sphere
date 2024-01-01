@@ -5,9 +5,14 @@ import {useGlobalHubConnection} from "BL/hooks/hub-connection/use-gloabl-hub-con
 import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
 import {useHub} from "react-use-signalr";
 import {Notifications} from "shared/components/Notifications/Notifications";
+import UserService from "./services/user/user.service";
 
 export const signalRConnection = new HubConnectionBuilder()
-    .withUrl("https://localhost:7170/hubs/global")
+    .withUrl("https://localhost:7170/hubs/global", {
+        accessTokenFactory(): string | Promise<string> {
+            return UserService.getUser().token;
+        }
+    })
     .configureLogging(LogLevel.Information)
     .withAutomaticReconnect()
     .build();

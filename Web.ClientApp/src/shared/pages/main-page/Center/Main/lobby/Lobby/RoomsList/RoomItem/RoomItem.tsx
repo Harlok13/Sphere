@@ -1,7 +1,7 @@
 import style from "./RoomItem.module.css";
 import React, {FC} from "react";
 import {JoinToRoomHandler} from "../../../../../../../../../BL/hooks/lobby/rooms-list/use-rooms-list";
-import {Room} from "../../../../../../../../../contracts/room-in-lobby-response";
+import {Room} from "../../../../../../../../../contracts/room-in-lobby-dto";
 // TODO: change the color to red if size is max
 
 interface ILobbyItemProps {
@@ -10,7 +10,6 @@ interface ILobbyItemProps {
 }
 
 export const RoomItem: FC<ILobbyItemProps> = ({roomData, joinToRoomHandler}) => {
-    console.log(roomData.minBid, roomData.maxBid, "bid");
     return (
         <li className={style.item}>
             <div className={style.body}>

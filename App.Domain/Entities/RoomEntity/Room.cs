@@ -2,13 +2,17 @@ using System.Collections.Immutable;
 using App.Domain.DomainEvents.RoomDomainEvents;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Enums;
+using App.Domain.Messages;
 using App.Domain.Primitives;
+using App.Domain.Shared;
+using App.Domain.Shared.ResultImplementations;
 
 namespace App.Domain.Entities.RoomEntity;
 
-public sealed partial class Room : Entity, IHasDomainEvent
+public sealed partial class Room : AggregateRoot, IHasDomainEvent
 {
     private readonly List<Player> _players = new();
+    private readonly List<KickedPlayer> _kickedPlayers = new();
 
     private const int DefaultPlayersInRoom = 1;
     private const RoomStatus DefaultRoomStatus = RoomStatus.Waiting;
@@ -72,6 +76,8 @@ public sealed partial class Room : Entity, IHasDomainEvent
 
     public IReadOnlyCollection<Player> Players => _players;
 
+    public IReadOnlyCollection<KickedPlayer> KickedPlayers => _kickedPlayers;
+
     // TODO: add created at (for GetFirstPageAsync)
 
     public static Room Create(
@@ -105,8 +111,9 @@ public sealed partial class Room : Entity, IHasDomainEvent
         lock (_lock)
         {
             _players.Add(player);
-            _domainEvents.Add(new AddedPlayerDomainEvent(player, this));
             SetPlayersInRoom(_players.Count);
+            
+            _domainEvents.Add(new AddedPlayerDomainEvent(player, this));
 
             if (PlayersInRoom == RoomSize)
             {
@@ -115,52 +122,71 @@ public sealed partial class Room : Entity, IHasDomainEvent
         }
     }
 
-    internal void SetPlayersInRoom(int playerCount)
+    private Result RemovePlayer(Guid playerId)
     {
-        PlayersInRoom = playerCount;
+        lock (_lock)
+        {
+            var player = _players.SingleOrDefault(p => p.Id == playerId);
+            if (player is null)
+            {
+                return Result.Create(
+                    isSuccess: false,
+                    error: new Error(ErrorMessages.Room.RemoveFromRoom.PlayerNotFound(playerId)));
+            }
+            
+            _players.Remove(player);
+            SetPlayersInRoom(Players.Count);
+            
+            _domainEvents.Add(new RemovedPlayerDomainEvent(
+                RoomId: Id,
+                PlayerId: player.Id,
+                ConnectionId: player.ConnectionId,
+                PlayersInRoom: PlayersInRoom));
+
+            return Result.CreateSuccess();
+        }
+    }
+
+    private void RemovePlayer(Player player)
+    {
+        lock (_lock)
+        {
+            _players.Remove(player);
+            SetPlayersInRoom(Players.Count);
+            
+            _domainEvents.Add(new RemovedPlayerDomainEvent(
+                RoomId: Id,
+                PlayerId: player.Id,
+                ConnectionId: player.ConnectionId,
+                PlayersInRoom: PlayersInRoom));
+        }
+    }
+
+    private void SetPlayersInRoom(int playersCount)
+    {
+        PlayersInRoom = playersCount;
+
+        if (PlayersInRoom == 0)
+        {
+            _domainEvents.Add(new RemovedRoomDomainEvent(Id));
+            return;
+        }
         _domainEvents.Add(new ChangedRoomPlayersInRoomDomainEvent(RoomId: Id, PlayersInRoom: PlayersInRoom));
     }
 
-    internal void SetRoomStatus(RoomStatus status)
+    private void SetRoomStatus(RoomStatus status)
     {
         Status = status;
         _domainEvents.Add(new ChangedRoomStatusDomainEvent(RoomId: Id, RoomStatus: Status));
     }
 
-    public void RemovePlayer(Guid playerId, string connectionId)
-    {
-        lock (_lock)
-        {
-            var player = _players.Single(p => p.Id == playerId);
-            _players.Remove(player);
-            SetPlayersInRoom(Players.Count);
-            
-            _domainEvents.Add(new RemovedPlayerDomainEvent(
-                RoomId: Id, PlayerId: playerId, ConnectionId: connectionId, PlayersInRoom: PlayersInRoom));
-        }
-    }
-
-    public void SetNewRoomLeader(Guid? playerId = null)
-    {
-        lock (_lock)
-        {
-            var newLeader = playerId is null
-                ? _players.FirstOrDefault()
-                : _players.Single(p => p.Id == playerId);
-
-            newLeader.SetIsLeader(value: true, playersInRoom: PlayersInRoom);
-            SetRoomName(name: newLeader.PlayerName, withPostfix: true);
-            SetAvatarUrl(newLeader.AvatarUrl);
-        }
-    }
-
-    internal void SetAvatarUrl(string avatarUrl)
+    private void SetAvatarUrl(string avatarUrl)
     {
         AvatarUrl = avatarUrl;
         _domainEvents.Add(new ChangedRoomAvatarUrlDomainEvent(RoomId: Id, AvatarUrl: AvatarUrl));
     }
-    
-    internal void SetRoomName(string name, bool withPostfix = false)
+
+    private void SetRoomName(string name, bool withPostfix = false)
     {
         RoomName = withPostfix
             ? $"{name}'s Room"
@@ -175,38 +201,31 @@ public sealed partial class Room : Entity, IHasDomainEvent
         _domainEvents.Add(new ChangedRoomBankDomainEvent(RoomId: Id, Bank: Bank));
     }
 
-    public record StartGameResult(bool CanStart, string? MovePlayerConnectionId, string? ErrorMsg);
-
-    public StartGameResult StartGame(Guid leaderId)
+    public void ResetBank()
     {
-        lock (_lock)
+        Bank = default;
+        _domainEvents.Add(new ChangedRoomBankDomainEvent(RoomId: Id, Bank: Bank));
+    }
+
+
+    private void AddKickedPlayer(Player initiator, Player kickedPlayer)
+    {
+        lock (_kickedPlayers)
         {
-            var roomLeader = _players.Single(p => p.Id == leaderId);
-            var canStartGame = PlayersInRoom > 1
-                               && roomLeader is { IsLeader: true, Readiness: true }
-                               && Players.All(p => p.Readiness);
-
-
-            if (canStartGame)
-            {
-                SetRoomStatus(RoomStatus.Playing);
-
-                // foreach (var player in Players)
-                // {
-                //     player.DecreaseMoney(StartBid);
-                //     IncreaseBank(StartBid);
-                // }
-
-                var index = new Random().Next(_players.Count);
-                var movePlayerConnectionId = _players.ToImmutableArray()[index].SetMove(true);
-
-
-                return new StartGameResult(CanStart: true, MovePlayerConnectionId: movePlayerConnectionId,
-                    ErrorMsg: null);
-            }
-
-            const string errorMsg = ""; // TODO: finish
-            return new StartGameResult(CanStart: false, MovePlayerConnectionId: default, ErrorMsg: errorMsg);
+            _kickedPlayers.Add(KickedPlayer.Create(
+                id: Guid.NewGuid(),
+                playerId: kickedPlayer.Id,
+                playerName: kickedPlayer.PlayerName,
+                whoKickId: initiator.Id,
+                whoKickName: initiator.PlayerName,
+                roomId: Id,
+                room: this));
+            
+            _domainEvents.Add(new AddedKickedPlayerDomainEvent(
+                InitiatorConnectionId: initiator.ConnectionId,
+                KickedPlayerConnectionId: kickedPlayer.ConnectionId,
+                NotificationForInitiator: NotificationMessages.Room.AddKickedPlayer.SuccessKick(kickedPlayer.PlayerName),
+                NotificationForKickedPlayer: NotificationMessages.Room.AddKickedPlayer.WasKicked(initiator.PlayerName)));
         }
     }
 }

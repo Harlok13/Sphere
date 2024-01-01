@@ -25,12 +25,12 @@ public class RemovedPlayerDomainEventHandler : INotificationHandler<RemovedPlaye
         notification.Deconstruct(out Guid roomId, out Guid playerId, out string connectionId, out int playersInRoom);
 
         /* Reset the player state */
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_RemoveFromRoom(cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_RemoveFromRoom(cT);
         _logger.LogInformation(
-            "{InvokedMethod} | A command to leave the room \"{RoomId}\" has been sent to player \"{ConnectionId}\".",
+            "{InvokedMethod} | A command to leave the room \"{RoomId}\" has been sent to player \"{PlayerId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_RemoveFromRoom),
             roomId,
-            connectionId);
+            playerId);
 
         await _hubContext.Groups.RemoveFromGroupAsync(connectionId, roomId.ToString(), cT);
         _logger.LogInformation(

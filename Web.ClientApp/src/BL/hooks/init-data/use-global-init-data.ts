@@ -10,9 +10,9 @@ export const useGlobalInitData = () => {
     useEffect(() => {
         const setInitData = async() => {
             const data = await InitDataService.getInitData();
-            dispatch(initPlayerInfo(data.playerInfoResponse));
-            if (!data.roomsResponse) data.roomsResponse = [];
-            dispatch(initRooms(data.roomsResponse));
+            dispatch(initPlayerInfo(data.playerInfo));
+            if (!data.rooms) data.rooms = [];
+            dispatch(initRooms(data.rooms));
         }
 
         setInitData();

@@ -1,7 +1,10 @@
 using App.Application;
+using App.Application.Handlers.ConnectionHandlers;
 using App.Application.Identity;
 using App.Infra;
+using App.SignalR.HubFilters;
 using App.SignalR.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Scrutor;
 using Serilog;
 using Sphere;
@@ -18,11 +21,12 @@ builder.Host.UseSerilog((context, configuration) =>
 
 builder.Services.AddControllers();
 
+// builder.Services.AddSig();
+
 builder.Services.AddInfrastructure(builder);
 
 builder.Services.AddMediator(options => 
     options.ServiceLifetime = ServiceLifetime.Transient);
-
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -51,12 +55,19 @@ builder.Services.AddStackExchangeRedisCache(options =>
 // });
 
 builder.Services.AddSignalR(
-//     options =>
-// {
-//     options.DisableImplicitFromServicesParameters = true;
-//     // options.
-// }
-    );
+     options =>
+     {
+         options.DisableImplicitFromServicesParameters = true;
+         if (builder.Environment.IsDevelopment())
+             options.EnableDetailedErrors = true;
+     })
+    .AddHubOptions<GlobalHub>(options =>
+    {
+        options.AddFilter<HubLoggerFilter>();
+    });
+
+// builder.Services.AddSwaggerGen()
+
 
 // builder.Services.AddCorsWithOptions(builder);
 builder.Services.AddCors(options =>
@@ -118,7 +129,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors(builder.Configuration["CorsPolicy"]
-            ?? throw new CorsPolicyException("Current CORS Policy is not set."));  // TODO: use custom ex
+            ?? throw new CorsPolicyException("Current CORS Policy is not set."));  // TODO: use custom ex and extension method
 
 app.UseAuthentication();
 app.UseAuthorization();

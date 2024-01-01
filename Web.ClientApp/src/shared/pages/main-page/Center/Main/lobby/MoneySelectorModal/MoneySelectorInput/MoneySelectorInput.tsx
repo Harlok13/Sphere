@@ -1,5 +1,5 @@
 import style from "./MoneySelectorInput.module.css";
-import {SelectStartGameMoney} from "../../../../../../../../contracts/select-start-game-money-response";
+import {SelectStartGameMoney} from "contracts/select-start-game-money-response";
 import {ChangeEvent, FC} from "react";
 
 interface IMoneySelectorInputProps {

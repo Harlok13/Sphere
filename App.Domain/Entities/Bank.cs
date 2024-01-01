@@ -6,7 +6,7 @@ public class Bank
 {
     public Guid Id { get; set; }
     public int TotalMoney { get; set; }
-    // public ICollection<> SeparatedBank { get; set; }
+    public ICollection<Card> Cards { get; set; }
     public Guid RoomId { get; set; }
     public Room Room { get; set; }
 }

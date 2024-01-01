@@ -40,15 +40,9 @@ public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyC
 
     public async ValueTask<bool> Handle(SelectStartGameMoneyCommand command, CancellationToken cT)
     {
-        command.Deconstruct(
-            out SelectStartGameMoneyRequest request,
-            out string connectionId);
+        command.Request.Deconstruct(out RoomRequest roomRequest, out Guid playerId, out Guid? roomId);
 
-        var roomRequest = request.RoomRequest;
-        var roomId = request.RoomId;
-
-
-        var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsNoTrackingAsync(request.PlayerId, cT);
+        var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsNoTrackingAsync(playerId, cT);
 
         var selectorResult = ComputeSelectStartGameMoney(
             startBid: roomRequest.StartBid,
@@ -59,13 +53,13 @@ public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyC
 
         if (selectorResult.Success)
         {
-            await _hubContext.Clients.Client(connectionId).ReceiveOwn_SelectStartGameMoney(selectorResult.Selector!, cT);
+            await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_SelectStartGameMoney(selectorResult.Selector!, cT);
             
             return true;
         }
 
-        var notificationResponse = new NotEnoughMoneyNotificationResponse(NotificationId: Guid.NewGuid(), NotificationText: selectorResult.ErrorMessage!);
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_NotEnoughMoneyNotification(notificationResponse, cT);
+        var notificationResponse = new NotificationResponse(NotificationId: Guid.NewGuid(), NotificationText: selectorResult.ErrorMessage!);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveClient_Notification(notificationResponse, cT);
 
         return false;
     }

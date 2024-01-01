@@ -2,7 +2,7 @@ import {useSelectStartGameMoneyHub} from "../../hub-connection/server-methods/se
 import React from "react";
 import {useNewRoomConfigSelector, useRoomsSelector} from "../../../slices/lobby/use-lobby-selector";
 import {usePlayerInfoSelector} from "../../../slices/player-info/use-player-info-selector";
-import {Room} from "../../../../contracts/room-in-lobby-response";
+import {Room} from "../../../../contracts/room-in-lobby-dto";
 import {PlayerInfo} from "../../../../contracts/player-info-response";
 import {ISelectStartGameMoneyRequest} from "../../../../contracts/requests/select-start-game-money-request";
 import {IRoomRequest} from "../../../../contracts/requests/room-request";

@@ -5,7 +5,7 @@ namespace App.Contracts.Responses;
 
 public sealed record InitDataResponse(
     PlayerDto? Player,
-    PlayerInfoResponse PlayerInfo,
+    PlayerInfoResponse? PlayerInfo,
     IEnumerable<PlayerHistoryResponse>? PlayerHistories,
-    IEnumerable<RoomDto>? Rooms);
+    IEnumerable<RoomInLobbyDto>? Rooms);
     

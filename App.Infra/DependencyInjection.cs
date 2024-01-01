@@ -1,18 +1,15 @@
 using System.Text;
 using App.Application.Identity.Extensions;
-using App.Application.Identity.Repositories;
-using App.Application.Repositories;
-using App.Application.Repositories.RoomRepository;
-using App.Application.Repositories.UnitOfWork;
 using App.Domain.Identity.Entities;
 using App.Infra.Data.Context;
 using App.Infra.Extensions;
-using App.Infra.Identity.Repositories;
-using App.Infra.Repositories;
+using App.Infra.SignalR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -25,14 +22,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         WebApplicationBuilder builder)
     {
-        // services
-        //     // .AddScoped<IPlayerRepository, PlayerRepository>()
-        //     // .AddScoped<IRoomRepository, RoomRepository>()
-        //     // .AddScoped<IPlayerHistoryRepository, PlayerHistoryRepository>()
-        //     // .AddScoped<IPlayerInfoRepository, PlayerInfoRepository>()
-        //     // .AddScoped<IApplicationUserRepository, ApplicationUserRepository>()
-        //     .AddScoped<IAppUnitOfWork, AppUnitOfWork>();
-
+        services.AddSingleton<IUserIdProvider, HubsUserIdProvider>();
+        
         services
             .AddIdentityWithOptions(builder)
             .AddAuthenticationWithOptions(builder)
@@ -75,9 +66,26 @@ public static class DependencyInjection
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
+
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = false,
@@ -88,7 +96,8 @@ public static class DependencyInjection
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                         builder.Configuration.GetSecretKey()))
                 };
-            });
+            })
+            .AddIdentityServerJwt();
 
         return services;
     }

@@ -4,4 +4,6 @@ namespace App.Domain.DomainEvents.RoomDomainEvents;
 
 public sealed record AddedKickedPlayerDomainEvent(
     string InitiatorConnectionId,
-    string KickedPlayerConnectionId) : DomainEvent;
+    string KickedPlayerConnectionId,
+    string NotificationForInitiator,
+    string NotificationForKickedPlayer) : DomainEvent;

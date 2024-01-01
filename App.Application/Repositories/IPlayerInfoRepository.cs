@@ -1,3 +1,4 @@
+using App.Domain.Shared;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace App.Application.Repositories;
@@ -5,7 +6,7 @@ namespace App.Application.Repositories;
 public interface IPlayerInfoRepository
 {
     Task CreatePlayerInfoAsync(Guid userId, string playerName, CancellationToken cT);
-    Task<PlayerInfo?> GetPlayerInfoByIdAsync(Guid playerId, CancellationToken cT = default);
+    Task<Result<PlayerInfo>> GetPlayerInfoByIdAsync(Guid? playerId, CancellationToken cT = default);  // TODO: rename ...ByPlayerId
     Task<PlayerInfo?> GetPlayerInfoByIdAsNoTrackingAsync(Guid playerId, CancellationToken cT);
 
     Task PlayerWinActionAsync(Guid userId, CancellationToken cT);

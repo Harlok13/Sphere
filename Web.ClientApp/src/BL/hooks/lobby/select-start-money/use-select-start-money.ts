@@ -12,6 +12,7 @@ import {IJoinToRoomRequest} from "../../../../contracts/requests/join-to-room-re
 import {ICreateRoomRequest} from "../../../../contracts/requests/create-room-request";
 import {IRoomRequest} from "../../../../contracts/requests/room-request";
 import {useNewRoomConfigSelector} from "../../../slices/lobby/use-lobby-selector";
+import {setSelectStartMoneyModal} from "BL/slices/modals/modals.slice";
 
 export type SelectStartMoneyHandlers = {
     selectStartMoneyHandler: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -72,6 +73,8 @@ export const useSelectStartMoney = () => {
 
     const cancelHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+
+        dispatch(setSelectStartMoneyModal(false));
     }
 
     const handlers: SelectStartMoneyHandlers = {

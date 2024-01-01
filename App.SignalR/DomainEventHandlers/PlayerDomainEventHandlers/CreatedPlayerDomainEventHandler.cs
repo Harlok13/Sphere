@@ -1,4 +1,6 @@
+using App.Contracts.Data;
 using App.Contracts.Mapper;
+using App.Contracts.Responses.PlayerResponses;
 using App.Domain.DomainEvents.PlayerDomainEvents;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.RoomEntity;
@@ -34,15 +36,19 @@ public class CreatedPlayerDomainEventHandler : INotificationHandler<CreatedPlaye
             player.PlayerName,
             room.Id);
         
-        var playerResponse = PlayerMapper.MapPlayerToPlayerResponse(player);
-        var initRoomResponse = RoomMapper.MapRoomToInitRoomDataResponse(room);
-        var playersResponse = PlayerMapper.MapManyPlayersToManyPlayersResponse(room.Players);
+        var playerDto = PlayerMapper.MapPlayerToPlayerDto(player);
+        var initRoomDataDto = RoomMapper.MapRoomToInitRoomDataDto(room);
+        var playersDto = PlayerMapper.MapManyPlayersToManyPlayersDto(room.Players);
+
+        var response = new CreatedPlayerResponse(
+            Player: playerDto,
+            InitRoomData: initRoomDataDto,
+            Players: playersDto);
         
-        await _hubContext.Clients.Client(player.ConnectionId)
-            .ReceiveOwn_PlayerData(playerResponse, initRoomResponse, playersResponse, cT);
+        await _hubContext.Clients.User(player.Id.ToString()).ReceiveOwn_CreatedPlayer(response, cT);
         _logger.LogInformation(
             "{InvokedMethod} | The init data of room \"{RoomId}\" has been sent to player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_PlayerData),
+            nameof(_hubContext.Clients.All.ReceiveOwn_CreatedPlayer),
             room.Id,
             player.ConnectionId);
     }

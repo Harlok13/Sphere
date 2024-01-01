@@ -23,7 +23,7 @@
 //     {
 //         foreach (var player in room.Players)
 //         {
-//             var card = Card.Create(Guid.NewGuid(), player.Id, _cardsDeckService.GetNextCard());
+//             var card = Card.Create(Guid.NewGuid(), player.Id, _cardsDeckService.GetNextCardAsync());
 //             player.AddNewCard(card);
 //         }
 //     }

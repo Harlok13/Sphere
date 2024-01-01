@@ -5,6 +5,7 @@ using App.Contracts.Mapper;
 using App.Contracts.Responses;
 using App.Domain.Entities;
 using App.Domain.Entities.PlayerEntity;
+using App.Domain.Entities.RoomEntity;
 using App.Domain.Shared;
 using App.SignalR.Commands.ConnectionCommands;
 using App.SignalR.Events;
@@ -39,22 +40,20 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
         command.Deconstruct(out AuthUser authUser);
         if (authUser.ConnectionId is null)
         {
-            _logger.LogError("Unable to perform \"{CommandName}\" operation because connection id is null.",
+            _logger.LogError(
+                "Unable to perform \"{CommandName}\" operation because connection id is null.",
                 nameof(DisconnectPlayerCommand));
 
             return false;
         }
-
-        var playerResult = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
-        if (!playerResult.TryFromResult(out PlayerDto? playerNoTrack, out var errors))
+        
+        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync1(authUser.Id, cT);
+        if (!roomResult.TryFromResult(out Room? room, out var roomErrors))
         {
-            return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
+            return await SendSomethingWentWrongNotification(roomErrors, authUser.ConnectionId, cT);
         }
-           
 
-        var room = await _unitOfWork.RoomRepository.GetRoomByIdAsync(playerNoTrack!.RoomId, cT);
-        var reconnectPlayerResult = room.ReconnectPlayer(playerId: authUser.Id, newConnectionId: authUser.ConnectionId);
-
+        var reconnectPlayerResult = room!.ReconnectPlayer(playerId: authUser.Id, newConnectionId: authUser.ConnectionId);
         if (!reconnectPlayerResult.TryFromResult(out Player? reconnectPlayer, out var reconnectErrors))
         {
             return await SendSomethingWentWrongNotification(reconnectErrors, authUser.ConnectionId, cT);

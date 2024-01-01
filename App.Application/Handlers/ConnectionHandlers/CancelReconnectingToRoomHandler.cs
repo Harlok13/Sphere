@@ -35,14 +35,15 @@ public class CancelReconnectingToRoomHandler : ICommandHandler<CancelReconnectin
         command.Deconstruct(out AuthUser authUser);
         if (authUser.ConnectionId is null)
         {
-            _logger.LogError("Unable to perform \"{CommandName}\" operation because connection id is null.",
+            _logger.LogError(
+                "Unable to perform \"{CommandName}\" operation because connection id is null.",
                 nameof(DisconnectPlayerCommand));
 
             return false;
         }
 
-        var playerResult = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
-        if (!playerResult.TryFromResult(out PlayerDto? playerNoTrack, out var errors))
+        var roomResult = await _unitOfWork.RoomRepository.GetIdByPlayerIdAsync(authUser.Id, cT);
+        if (!roomResult.TryFromResult(out RoomIdDto? data, out var errors))
         {
             foreach (var error in errors) _logger.LogError(error.Message);
 
@@ -54,7 +55,7 @@ public class CancelReconnectingToRoomHandler : ICommandHandler<CancelReconnectin
             return false;
         }
         
-        var request = new RemoveFromRoomRequest(playerNoTrack!.RoomId, playerNoTrack.Id);
+        var request = new RemoveFromRoomRequest(data!.RoomId, authUser.Id);
         return await _mediator.Send(new RemoveFromRoomCommand(request, authUser.ConnectionId), cT);
     }
 }

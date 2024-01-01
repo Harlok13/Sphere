@@ -1,12 +1,14 @@
 import style from "../RoomControlPanel.module.css";
-import {useNavigate} from "react-router-dom";
-import {NavigateEnum} from "../../../../../../../constants/navigate.enum";
+import React, {FC} from "react";
 
-export const LeaveButton = () => {
-    const navigate = useNavigate();
+interface RemoveFromRoomProps {
+    removeFromRoomHandler: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>
+}
+
+export const LeaveButton: FC<RemoveFromRoomProps> = ({removeFromRoomHandler}) => {
 
     return (
-        <button onClick={() => navigate(NavigateEnum.Lobby)} className={`${style.leave} ${style.button}`}>
+        <button onClick={removeFromRoomHandler} className={`${style.leave} ${style.button}`}>
             Leave
             <span className={`${style.iconBottom} material-icons-outlined`}>
                 logout

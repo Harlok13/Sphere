@@ -11,7 +11,9 @@ public sealed record RoomDto(
     int MinBid,
     int MaxBid,
     string AvatarUrl,
-    RoomStatus Status,
     int PlayersInRoom,
-    IEnumerable<PlayerDto> Players, 
-    int Bank);
+    RoomStatus Status,
+    int Bank,
+    int LowerStartMoneyBound,
+    int UpperStartMoneyBound,
+    IEnumerable<PlayerDto> Players);

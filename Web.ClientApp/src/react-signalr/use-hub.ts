@@ -1,9 +1,15 @@
 import {useEffect, useState} from "react";
 import {HubConnection, HubConnectionState} from "@microsoft/signalr";
+import {INotificationResponse} from "contracts/notification-response";
+import {v4} from "uuid";
+import {useDispatch} from "react-redux";
+import {setNewNotification} from "BL/slices/notifications/notifications";
 
 export const useHub = (hubConnection?: HubConnection) => {
     const [hubConnectionState, setHubConnectionState] = useState<HubConnectionState>(hubConnection?.state ?? HubConnectionState.Disconnected);
     const [error, setError] = useState();
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setError(undefined);
@@ -21,6 +27,12 @@ export const useHub = (hubConnection?: HubConnection) => {
         const onStateUpdatedCallback = () => {
             if(isMounted) {
                 setHubConnectionState(hubConnection?.state);
+
+                const notification: INotificationResponse = {
+                    notificationId: v4(),
+                    notificationText: "Connection restored."
+                }
+                dispatch(setNewNotification(notification));  // TODO: set timeout
             }
         }
         hubConnection.onclose(onStateUpdatedCallback);
@@ -28,6 +40,11 @@ export const useHub = (hubConnection?: HubConnection) => {
         hubConnection.onreconnecting(onStateUpdatedCallback);
 
         if (hubConnection.state === HubConnectionState.Disconnected) {
+            const notification: INotificationResponse = {
+                notificationId: v4(),
+                notificationText: "Connection lost."
+            }
+            dispatch(setNewNotification(notification));  // TODO: set timeout
             const startPromise = hubConnection
                 .start()
                 .then(onStateUpdatedCallback)

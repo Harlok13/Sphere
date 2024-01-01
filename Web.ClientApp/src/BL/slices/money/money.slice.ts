@@ -2,7 +2,6 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {ISelectStartGameMoneyResponse, SelectStartGameMoney} from "../../../contracts/select-start-game-money-response";
 
 interface MoneyState {
-    showModal: boolean;
     type: SelectStartMoneyType;
     selectStartMoney: SelectStartGameMoney;
 }
@@ -14,7 +13,6 @@ export enum SelectStartMoneyType{
 }
 
 const initialState: MoneyState = {
-    showModal: false,
     type: SelectStartMoneyType.None,
     selectStartMoney: {
         roomId: "",
@@ -37,9 +35,6 @@ export const moneySlice = createSlice({
             if (state.selectStartMoney.availableUpperBound >= action.payload)
                 state.selectStartMoney.recommendedValue = action.payload;
         },
-        setShowModal: (state, action: PayloadAction<boolean>) => {
-            state.showModal = action.payload;
-        },
         setType: (state, action: PayloadAction<SelectStartMoneyType>) => {
             state.type = action.payload;
         }  // TODO: also add reset type in useEffect
@@ -49,7 +44,6 @@ export const moneySlice = createSlice({
 export const {
     initSelectStartMoney,
     setRecommendedValue,
-    setShowModal,
     setType,
 } = moneySlice.actions;
 

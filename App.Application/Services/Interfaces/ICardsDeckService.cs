@@ -4,7 +4,9 @@ namespace App.Application.Services.Interfaces;
 
 public interface ICardsDeckService
 {
-    CardInDeck GetNextCard();
+    Task<CardInDeck> GetNextCardAsync(Guid roomId, CancellationToken cT);
 
-    void ResetDeck();
+    Task ResetAsync(Guid roomId, CancellationToken cT);
+
+    Task CreateAsync(Guid roomId, CancellationToken cT);
 }

@@ -24,9 +24,9 @@ public class PlayerRepository : IPlayerRepository
                 new Error(ErrorMessages.Player.IdIsNull()));
 
             var playerDto = await _context.Set<Player>()
-                .AsNoTracking()
-                .Include(p => p.Room)
+                // .AsNoTracking()
                 .Where(p => p.Id == id)
+                .Include(p => p.Room)
                 .Select(p => PlayerMapper.MapPlayerToPlayerDto(p))
                 .SingleOrDefaultAsync(cT);
 
@@ -55,4 +55,7 @@ public class PlayerRepository : IPlayerRepository
             return UnexpectedResult<PlayerDto>.Create();
         }
     }
+
+    public bool CheckPlayerExists(Guid playerId)
+        => _context.Set<Player>().Any(p => p.Id == playerId);
 }

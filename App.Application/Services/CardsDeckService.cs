@@ -1,3 +1,4 @@
+using App.Application.Repositories;
 using App.Application.Services.Interfaces;
 using App.Domain.Entities;
 using Microsoft.Extensions.Logging;
@@ -7,54 +8,52 @@ namespace App.Application.Services;
 
 public sealed class CardsDeckService : ICardsDeckService
 {
-    private readonly ILogger<CardsDeckService> _logger;
-    private readonly List<CardInDeck> _cardsDeck;
-    private int _cardsDeckIndex = 0;
     private const int CardDeckSize = 52;
+
+    private readonly ILogger<CardsDeckService> _logger;
+    private readonly ICardsDeckRepository _cardsDeckRepository;
     
-    public CardsDeckService(ILogger<CardsDeckService> logger)
+    public CardsDeckService(ICardsDeckRepository cardsDeckRepository, ILogger<CardsDeckService> logger)
     {
+        _cardsDeckRepository = cardsDeckRepository;
         _logger = logger;
-        _cardsDeck = CreateCardsDeck();
     }
 
-    public CardInDeck GetNextCard()
+    public async Task<CardInDeck> GetNextCardAsync(Guid roomId, CancellationToken cT)
     {
-        var cardsGenerator = CardsGenerator();
-        cardsGenerator.MoveNext();
+        var cardsDeck = await _cardsDeckRepository.GetCardsDeckAsync(roomId, cT);
+        var card = cardsDeck.FirstOrDefault();
+        cardsDeck.Remove(card);
 
-        _cardsDeckIndex++;
+        await _cardsDeckRepository.SaveChangesAsync(roomId: roomId, cardsDeck: cardsDeck, cT);
 
-        return cardsGenerator.Current;
+        return card;
     }
 
-    public void ResetDeck()
+    public async Task ResetAsync(Guid roomId, CancellationToken cT)
     {
-        _cardsDeckIndex = default;
-        ShuffleCardsDeck(_cardsDeck);
+        await _cardsDeckRepository.RemoveCardsDeck(roomId, cT);
+        await CreateAsync(roomId, cT);
     }
 
-    private List<CardInDeck> CreateCardsDeck()
+    public async Task CreateAsync(Guid roomId, CancellationToken cT)
     {
         var data = ReadJson();
         var cardsDeck = new List<CardInDeck>();
 
         if (data == null) throw new Exception("Data is empty!");  // TODO: custom ex
 
-        // List<Card> cardsDeck = (List<Card>)Enumerable.Range(0, CardDeckSize)
-        //     .Select(cardDataIndex => DeserializeCard(data[$"{cardDataIndex}"]["frame"]))
-        //     .ToList();
         foreach (var cardDataIndex in Enumerable.Range(0, CardDeckSize))
         {
             cardsDeck.Add(DeserializeCard(data[$"{cardDataIndex}"]["frame"]));
         }
         
-        ShuffleCardsDeck(cardsDeck);
+        Shuffle(cardsDeck);
 
-        return cardsDeck;
+        await _cardsDeckRepository.AddCardsDeckAsync(roomId: roomId, cardsDeck: cardsDeck, cT);
     }
 
-    private void ShuffleCardsDeck(List<CardInDeck> cardsDeck)
+    private void Shuffle(List<CardInDeck> cardsDeck)
     {
         var random = new Random();
         var index = cardsDeck.Count;
@@ -68,7 +67,7 @@ public sealed class CardsDeckService : ICardsDeckService
         }
     }
 
-    private Dictionary<string, dynamic>? ReadJson()
+    private Dictionary<string, dynamic>? ReadJson()  // TODO: add cache
     {
         var json = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "JsonData", "cards.json"));
 
@@ -77,10 +76,4 @@ public sealed class CardsDeckService : ICardsDeckService
 
     private CardInDeck DeserializeCard(dynamic currentCard) =>
         JsonConvert.DeserializeObject<CardInDeck>(currentCard.ToString());
-
-    private IEnumerator<CardInDeck> CardsGenerator()
-    {
-        while (_cardsDeckIndex < CardDeckSize) 
-            yield return _cardsDeck[_cardsDeckIndex];
-    }
 }

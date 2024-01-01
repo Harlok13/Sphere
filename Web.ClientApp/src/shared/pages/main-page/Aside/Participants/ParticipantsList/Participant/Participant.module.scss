@@ -26,4 +26,19 @@
     font-size: 1.2rem;
     right: .5rem;
   }
+
+  .disconnect {
+    margin: 0 .5rem;
+    color: #ff0000;
+    //font-size: 1.2rem;
+  }
 }
+
+.inactive {
+  opacity: .5;
+}
+
+//.inactive > .disconnect {
+//  opacity: 100%;
+//  color: white;
+//}

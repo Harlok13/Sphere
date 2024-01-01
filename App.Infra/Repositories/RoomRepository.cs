@@ -15,25 +15,30 @@ public class RoomRepository : IRoomRepository
 {
     private readonly ApplicationContext _context;
 
-    // public event EventHandlerAsync<RemoveRoomEventArgs> NotifyRemoveRoom;
 
-    public RoomRepository(ApplicationContext context)
-    {
-        _context = context;
-    }
+    public RoomRepository(ApplicationContext context) => _context = context;
 
     public async Task AddAsync(Room room, CancellationToken cT)
-    {
-        await _context.AddAsync(room, cT);
-    }
+        => await _context.AddAsync(room, cT);
 
-    public async Task<Room?> GetByIdAsync(Guid roomId, CancellationToken cT)
+
+    public async Task<Result<Room>> GetByIdAsync(Guid? roomId, CancellationToken cT)
     {
-        return await _context.Set<Room>()
+        if (roomId is null)
+            return InvalidResult<Room>.Create(
+                new Error(""));
+
+        var room = await _context.Set<Room>()
             .Where(r => r.Id == roomId)
             .Include(e => e.Players
                 .OrderBy(p => p.Id))
             .SingleOrDefaultAsync(cT);
+
+        if (room is null)
+            return NotFoundResult<Room>.Create(
+                new Error(""));
+
+        return SuccessResult<Room>.Create(room);
     }
 
     public async Task<Room?> GetByIdAsNoTrackingAsync(Guid roomId, CancellationToken cT)
@@ -67,18 +72,22 @@ public class RoomRepository : IRoomRepository
             .ToArrayAsync(cT); // TODO: 15 - const 
     }
 
-    public async Task RemoveAsync(Guid roomId, CancellationToken cT)
+    public async Task RemoveAsync(Guid roomId, CancellationToken cT) // TODO: fix
     {
         var room = await _context.Set<Room>()
-            .Include(e => e.Players)  // TODO: redundant?
+            .Include(e => e.Players) // TODO: redundant?
             .SingleOrDefaultAsync(e => e.Id == roomId, cT);
 
         _context.Set<Room>().Remove(room);
     }
 
-    public async Task<Room?> GetByPlayerIdAsync1(Guid playerId, CancellationToken cT)
+    public async Task<Result<Room>> GetByPlayerIdAsync1(Guid? playerId, CancellationToken cT)
     {
-        return await _context.Set<Room>()
+        if (playerId is null)
+            return InvalidResult<Room>.Create(
+                new Error("")); // TODO: add invoked method
+
+        var room = await _context.Set<Room>()
             .Include(r => r.Players
                 .OrderBy(p => p.Id))
             .Join(_context.Set<Player>(),
@@ -88,8 +97,14 @@ public class RoomRepository : IRoomRepository
             .Where(rp => rp.Player.Id == playerId)
             .Select(rp => rp.Room)
             .SingleOrDefaultAsync(cT);
+        
+        if (room is null)
+            return NotFoundResult<Room>.Create(
+                new Error(""));
+
+        return SuccessResult<Room>.Create(room);
     }
-    
+
     [Obsolete]
     public async Task<Room?> GetByPlayerIdAsNoTrackingAsync2(Guid playerId, CancellationToken cT)
     {
@@ -98,11 +113,11 @@ public class RoomRepository : IRoomRepository
             .Include(e => e.Players
                 .OrderBy(p => p.Id))
             .SelectMany(r => r.Players);
-        
+
         var roomId = await players
             .Where(p => p.Id == playerId)
             .Select(p => p.RoomId).SingleOrDefaultAsync(cT);
-        
+
         var room = await _context.Set<Room>()
             .SingleOrDefaultAsync(r => r.Id == roomId, cT);
 
@@ -116,7 +131,7 @@ public class RoomRepository : IRoomRepository
             return InvalidResult<RoomIdDto>.Create(
                 new Error(ErrorMessages.Room.IdIsNull()));
         }
-        
+
         var roomId = await _context.Set<Room>()
             .Join(_context.Set<Player>(),
                 r => r.Id,
@@ -131,8 +146,7 @@ public class RoomRepository : IRoomRepository
             return NotFoundResult<RoomIdDto>.Create(
                 new Error(ErrorMessages.Room.NotFound((Guid)playerId)));
         }
-        
+
         return SuccessResult<RoomIdDto>.Create(roomId);
     }
 }
-

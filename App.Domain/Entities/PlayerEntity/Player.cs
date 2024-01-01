@@ -13,6 +13,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents;
 
     private const string DefaultAvatarUrl = "img/avatars/default_avatar.png";
+    private const bool DefaultOnline = true;
 
     private Player(
         Guid id,
@@ -28,7 +29,8 @@ public sealed partial class Player : Entity, IHasDomainEvent
         Money = money;
         ConnectionId = connectionId;
         IsLeader = isLeader;
-        AvatarUrl = DefaultAvatarUrl; 
+        AvatarUrl = DefaultAvatarUrl;
+        Online = DefaultOnline;
         Readiness = default;
         Score = default;
         Move = default;
@@ -62,7 +64,9 @@ public sealed partial class Player : Entity, IHasDomainEvent
 
     public MoveStatus MoveStatus { get; private set; }
 
-    public static Player Create(
+    public bool Online { get; private set; }
+
+    internal static Player Create(
         Guid id,
         string playerName,
         Guid roomId,
@@ -73,8 +77,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
     {
         var player = new Player(
             id: id,
-            playerName:
-            playerName,
+            playerName: playerName,
             roomId: roomId,
             money: money,
             connectionId: connectionId,
@@ -87,13 +90,12 @@ public sealed partial class Player : Entity, IHasDomainEvent
         return player;
     }
 
-    public void SetIsLeader(bool value, int playersInRoom)
+    public void SetIsLeader(bool value)
     {
         IsLeader = value;
         _domainEvents.Add(new ChangedPlayerIsLeaderDomainEvent(
             IsLeader: IsLeader,
             ConnectionId: ConnectionId,
-            PlayersInRoom: playersInRoom,
             RoomId: RoomId,
             PlayerId: Id));
     }
@@ -118,6 +120,16 @@ public sealed partial class Player : Entity, IHasDomainEvent
             PlayerId: Id));
     }
 
+    public void IncreaseMoney(int value)
+    {
+        Money += value;
+        _domainEvents.Add(new ChangedPlayerMoneyDomainEvent(
+            Money: Money,
+            ConnectionId: ConnectionId,
+            RoomId: RoomId,
+            PlayerId: Id));
+    }
+
     public string SetMove(bool value)
     {
         Move = value;
@@ -128,12 +140,18 @@ public sealed partial class Player : Entity, IHasDomainEvent
     public void AddNewCard(Card card, int delayMs)
     {
         _cards.Add(card);
+        SetScore(card.Value);
         _domainEvents.Add(new AddedCardDomainEvent(
             Card: card,
             DelayMs: delayMs,
             RoomId: RoomId,
             PlayerId: Id,
             ConnectionId: ConnectionId));
+    }
+
+    private void SetScore(int cardValue)
+    {
+        Score = cardValue;
     }
 
     public void ResetCards()
@@ -148,6 +166,55 @@ public sealed partial class Player : Entity, IHasDomainEvent
             RoomId: RoomId,
             PlayerId: Id,
             InGame: InGame,
+            ConnectionId: ConnectionId));
+    }
+
+    public void SetMoveStatus(MoveStatus moveStatus)
+    {
+        MoveStatus = moveStatus;
+    }
+
+    public void Hit()
+    {
+        SetMoveStatus(MoveStatus.Hit);
+        SetMove(false);
+    }
+
+    public void Stay()
+    {
+        SetMoveStatus(MoveStatus.Stay);
+        SetMove(false);
+    }
+
+    public void EndGame()
+    {
+        ResetCards();
+        SetScore(default);
+        ToggleReadiness();
+        SetInGame(default);
+        SetMoveStatus(MoveStatus.None);
+        
+        // TODO: check money, suggest setting a new amount
+    }
+
+    private void SetConnectionId(string connId)
+    {
+        ConnectionId = connId;
+    }
+
+    public void SetOnline(bool onlineValue, string? connId = null)
+    {
+        Online = onlineValue;
+
+        if (onlineValue && connId is null) throw new Exception("ConnectionId can't be null.");  // TODO: custom ex
+        
+        connId ??= String.Empty;
+        SetConnectionId(connId);
+
+        _domainEvents.Add(new ChangedPlayerOnlineDomainEvent(
+            Online: Online,
+            RoomId: RoomId,
+            PlayerId: Id,
             ConnectionId: ConnectionId));
     }
 }

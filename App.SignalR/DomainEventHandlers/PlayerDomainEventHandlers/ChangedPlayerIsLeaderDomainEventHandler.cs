@@ -23,14 +23,14 @@ public class ChangedPlayerIsLeaderDomainEventHandler : INotificationHandler<Chan
     public async ValueTask Handle(ChangedPlayerIsLeaderDomainEvent notification, CancellationToken cT)
     {
         notification.Deconstruct(
-            out Guid roomId, out Guid playerId, out int playersInRoom, out bool isLeader, out string connectionId);
+            out Guid roomId, out Guid playerId, out bool isLeader, out string connectionId);
 
-        var response = new UpdatedPlayerIsLeaderResponse(playerId, isLeader);
+        var response = new ChangedPlayerIsLeaderResponse(playerId, isLeader);
         
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_UpdatedPlayerIsLeader(response, cT);
+        await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerIsLeader(response, cT);
         _logger.LogInformation(
             "{InvokedMethod} | The player \"{ConnectionId}\" received an updated \"{UpdatedValue}\" value.",
-            nameof(_hubContext.Clients.All.ReceiveOwn_UpdatedPlayerIsLeader),
+            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerIsLeader),
             nameof(playerId),
             connectionId);
 
@@ -39,10 +39,10 @@ public class ChangedPlayerIsLeaderDomainEventHandler : INotificationHandler<Chan
          command changes the state of the room itself and does not depend on the
          number of players
          */
-        await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_UpdatedPlayerIsLeader(response, cT);
+        await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerIsLeader(response, cT);
         _logger.LogInformation(
             "{InvokedMethod} | The group \"{RoomId}\" received an updated player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveGroup_UpdatedPlayerIsLeader),
+            nameof(_hubContext.Clients.All.ReceiveGroup_ChangedPlayerIsLeader),
             roomId,
             connectionId);
     }

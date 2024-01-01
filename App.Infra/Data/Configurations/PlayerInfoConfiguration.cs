@@ -95,7 +95,12 @@ public class PlayerInfoConfiguration : IEntityTypeConfiguration<PlayerInfo>
             .HasColumnName("has21")
             .HasDefaultValue(0)
             .IsRequired();
-        
+
+        builder.Property(e => e.HasGold21)
+            .HasColumnName("has_gold21")
+            .HasDefaultValue(0)
+            .IsRequired();
+
         // builder.Property(e => e.CreatedAt)
         //     .HasColumnName("created_at")
         //     .HasDefaultValueSql("NOW()");

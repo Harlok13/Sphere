@@ -26,4 +26,5 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
     public DbSet<PlayerHistory> PlayerHistories { get; set; } = null!;
     public DbSet<PlayerInfo> PlayerInfos { get; set; } = null!;
     public DbSet<Card> Cards { get; set; } = null!;
+    public DbSet<KickedPlayer> KickedPlayers { get; set; } = null!;
 }

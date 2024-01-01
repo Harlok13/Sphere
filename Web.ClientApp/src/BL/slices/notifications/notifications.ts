@@ -1,10 +1,10 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {INotEnoughMoneyNotificationResponse, NotEnoughMoneyNotification} from "../../../contracts/not-enough-money-notification-response";
+import {INotificationResponse} from "contracts/notification-response";
 import {produce} from "immer";
 
 
 interface NotificationsState {
-    notifications: Array<NotEnoughMoneyNotification>;
+    notifications: Array<INotificationResponse>;
 }
 
 const initialState: NotificationsState = {
@@ -15,7 +15,7 @@ export const notificationsSlice = createSlice({
     name: "notifications",
     initialState,
     reducers: {
-        setNewNotification: (state, action: PayloadAction<INotEnoughMoneyNotificationResponse>) => {
+        setNewNotification: (state, action: PayloadAction<INotificationResponse>) => {
             const nextState = produce(state, draft => {
                 draft.notifications.push(action.payload);
             });

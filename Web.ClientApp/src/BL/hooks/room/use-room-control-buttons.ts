@@ -1,4 +1,9 @@
-import {useStartGameHub, useStopTimerHub, useToggleReadinessHub} from "../hub-connection/server-methods/server-methods";
+import {
+    useHitHub,
+    useStartGameHub, useStayHub,
+    useStopTimerHub,
+    useToggleReadinessHub
+} from "../hub-connection/server-methods/server-methods";
 import {usePlayerSelector} from "../../slices/player/use-player-selector";
 import {
     useGame21PlayersSelector,
@@ -8,6 +13,9 @@ import {
 import React from "react";
 import {IToggleReadinessRequest} from "../../../contracts/requests/toggle-readiness-request";
 import {IStartGameRequest} from "../../../contracts/requests/start-game-request";
+import {IHitRequest} from "../../../contracts/requests/hit-request";
+import {IStayRequest} from "../../../contracts/requests/stay-request";
+import {IStopTimerRequest} from "../../../contracts/requests/stop-timer-request";
 
 export const useRoomControlButtons = () => {
     const roomData = useRoomDataSelector();
@@ -17,17 +25,47 @@ export const useRoomControlButtons = () => {
     const startGame = useStartGameHub();
     const gameStarted = useGameStartedSelector();
     const stopTimer = useStopTimerHub();
+    const hit = useHitHub();
+    const stay = useStayHub();
 
     const getCardHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         console.log("invoke stop handler")
-        // stopTimer
-        //     .invoke(player.roomId, player.id)
-        //     .catch(err => console.error(err.toString()));
+        const hitRequest: IHitRequest = {
+            roomId: player.roomId,
+            playerId: player.id
+        }
+
+        const stopTimerRequest: IStopTimerRequest = {
+            playerId: player.id,
+            roomId: player.roomId
+        }
+        stopTimer
+            .invoke(stopTimerRequest)
+            .catch(err => console.error(err.toString()));
+
+        hit
+            .invoke(hitRequest)
+            .catch(err => console.error(err.toString()));
     }
 
-    const passHandler = () => {
+    const passHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const stayRequest: IStayRequest = {
+            roomId: player.roomId,
+            playerId: player.id
+        }
+        const stopTimerRequest: IStopTimerRequest = {
+            playerId: player.id,
+            roomId: player.roomId
+        }
+        stopTimer
+            .invoke(stopTimerRequest)
+            .catch(err => console.error(err.toString()));
 
+        stay
+            .invoke(stayRequest)
+            .catch(err => console.error(err.toString()));
     }
 
     const readinessHandler = async () => {

@@ -10,7 +10,7 @@ const initialState : HubMethodState = {
     loading: false
 }
 
-export function useHubMethod<TData, TArgs extends any>(hubConnection: HubConnection | undefined, methodName: string) {
+export function useHubMethod<TData, TArgs extends any = undefined>(hubConnection: HubConnection | undefined, methodName: string) {
     const [state, setState] = useState<HubMethodState<TData>>(initialState);
     const isMounted = useRef(true);
 
@@ -20,7 +20,7 @@ export function useHubMethod<TData, TArgs extends any>(hubConnection: HubConnect
         }
     }, []);
 
-    const invoke = useCallback(async (args: TArgs) => {
+    const invoke = useCallback(async (args?: TArgs) => {
         setStateIfMounted(s => ({...s, loading: true}));
 
         try {

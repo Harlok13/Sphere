@@ -24,5 +24,13 @@
   font-size: 1.2rem;
   right: 0.5rem;
 }
+.item .disconnect {
+  margin: 0 0.5rem;
+  color: #ff0000;
+}
+
+.inactive {
+  opacity: 0.5;
+}
 
 /*# sourceMappingURL=Participant.module.css.map */

@@ -1,14 +1,14 @@
 import style from "./NotEnoughMoney.module.css";
 import { GoAlertFill } from "react-icons/go";
 import {IoMdCloseCircle} from "react-icons/io";
-import {NotEnoughMoneyNotification} from "../../../../contracts/not-enough-money-notification-response";
 import React, {FC} from "react";
 import {useDispatch} from "react-redux";
-import {removeNotification} from "../../../../BL/slices/notifications/notifications";
+import {removeNotification} from "BL/slices/notifications/notifications";
+import {INotificationResponse} from "contracts/notification-response";
 
 
 interface INotEnoughMoneyProps {
-    notificationData: NotEnoughMoneyNotification
+    notificationData: INotificationResponse;
 }
 
 export const NotEnoughMoney: FC<INotEnoughMoneyProps> = ({notificationData}) => {

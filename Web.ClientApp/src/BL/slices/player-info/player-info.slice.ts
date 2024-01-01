@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {IPlayerInfoResponse, PlayerInfo} from "../../../contracts/player-info-response";
 import {IPlayerHistoryResponse, PlayerHistory} from "../../../contracts/player-history-response";
+import {IChangedPlayerInfoMoneyResponse} from "../../../contracts/responses/changed-player-info-money-response";
 
 export interface PlayerInfoState {
     playerInfo: PlayerInfo
@@ -52,8 +53,8 @@ export const playerInfoSlice = createSlice({
         setDraws: (state, action: PayloadAction<number>) => {
             state.playerInfo.draws = action.payload;
         },
-        setMoney: (state, action: PayloadAction<number>) => {
-            state.playerInfo.money = action.payload;
+        setMoney: (state, action: PayloadAction<IChangedPlayerInfoMoneyResponse>) => {
+            state.playerInfo.money = action.payload.money;
         },
         setAllExp: (state, action: PayloadAction<number>) => {
             state.playerInfo.allExp = action.payload;

@@ -1,37 +1,30 @@
-using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
+using App.Application.Services.Interfaces;
 using App.Contracts.Requests;
 using App.Domain.Entities.RoomEntity;
-using App.SignalR.Commands;
 using App.SignalR.Commands.LobbyCommands;
-using App.SignalR.Hubs;
 using Mediator;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace App.Application.Handlers.LobbyHandlers;
 
 public class CreateRoomHandler : ICommandHandler<CreateRoomCommand, bool>
 {
-    private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
     private readonly ILogger<CreateRoomHandler> _logger;
-    private readonly IRoomRepository _roomRepository;
     private readonly IAppUnitOfWork _unitOfWork;
     private readonly IMediator _mediator;
+    private readonly ICardsDeckService _cardsDeck;
 
     public CreateRoomHandler(
-        IHubContext<GlobalHub, IGlobalHub> hubContext,
         ILogger<CreateRoomHandler> logger,
-        IRoomRepository roomRepository,
         IAppUnitOfWork unitOfWork,
-        IMediator mediator
-    )
+        IMediator mediator, 
+        ICardsDeckService cardsDeck)
     {
-        _hubContext = hubContext;
         _logger = logger;
-        _roomRepository = roomRepository;
         _unitOfWork = unitOfWork;
         _mediator = mediator;
+        _cardsDeck = cardsDeck;
     }
 
     public async ValueTask<bool> Handle(CreateRoomCommand command, CancellationToken cT)
@@ -56,7 +49,7 @@ public class CreateRoomHandler : ICommandHandler<CreateRoomCommand, bool>
             lowerStartMoneyBound: lowerBound,
             upperStartMoneyBound: upperBound);
         
-        await _unitOfWork.RoomRepository.AddNewRoomAsync(room, cT);
+        await _unitOfWork.RoomRepository.AddAsync(room, cT);
 
         var joinToRoomRequest = new JoinToRoomRequest(
             RoomId: room.Id,
@@ -64,11 +57,10 @@ public class CreateRoomHandler : ICommandHandler<CreateRoomCommand, bool>
             SelectedStartMoney: selectedStartMoney);
 
         await _unitOfWork.SaveChangesAsync(cT);
-        
+
+        await _cardsDeck.CreateAsync(room.Id, cT);
+
         var joinToRoomCommand = new JoinToRoomCommand(joinToRoomRequest, connectionId);
-        await _mediator.Send(joinToRoomCommand, cT);
-
-
-        return true;
+        return await _mediator.Send(joinToRoomCommand, cT);
     }
 }

@@ -74,3 +74,4 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+

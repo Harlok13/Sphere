@@ -1,4 +1,6 @@
 using App.Application.Repositories;
+using App.Domain.Shared;
+using App.Domain.Shared.ResultImplementations;
 using App.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
@@ -19,9 +21,20 @@ public class PlayerInfoRepository : IPlayerInfoRepository
         await _context.PlayerInfos.AddAsync(playerInfo, cT);
     }
 
-    public async Task<PlayerInfo?> GetPlayerInfoByIdAsync(Guid playerId, CancellationToken cT)
+    public async Task<Result<PlayerInfo>> GetPlayerInfoByIdAsync(Guid? playerId, CancellationToken cT)
     {
-        return await _context.PlayerInfos.SingleOrDefaultAsync(x => x.UserId == playerId, cT);
+        if (playerId is null)
+            return InvalidResult<PlayerInfo>.Create(
+                new Error(""));
+
+        var playerInfo = await _context.PlayerInfos
+            .SingleOrDefaultAsync(x => x.UserId == playerId, cT);
+        
+        if (playerInfo is null)
+            return NotFoundResult<PlayerInfo>.Create(
+                new Error(""));
+        
+        return SuccessResult<PlayerInfo>.Create(playerInfo);
     }
 
     public async Task<PlayerInfo?> GetPlayerInfoByIdAsNoTrackingAsync(Guid playerId, CancellationToken cT)

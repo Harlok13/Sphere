@@ -1,29 +1,27 @@
 using App.Contracts.Data;
-using App.Contracts.Requests;
-using App.Contracts.Responses;
 using App.Domain.Entities.RoomEntity;
 
 namespace App.Contracts.Mapper;
 
 public class RoomMapper
 {
-    public static IEnumerable<RoomResponse> MapManyRoomsToManyRoomsResponse(ICollection<Room> rooms)
+    public static IEnumerable<RoomInLobbyDto> MapManyRoomsToManyRoomsInLobbyDto(ICollection<Room> rooms)
     {
-        var roomsResponse = new List<RoomResponse>(rooms.Count);
+        var roomsInLobbyDto = new List<RoomInLobbyDto>(rooms.Count);
         foreach (var room in rooms)
         {
-            var playersResponse = new List<PlayerResponse>(room.Players.Count);
+            var playersDto = new List<PlayerDto>(room.Players.Count);
             foreach (var p in room.Players)
             {
-                var pResponse = PlayerMapper.MapPlayerToPlayerResponse(p);
-                playersResponse.Add(pResponse);
+                var pResponse = PlayerMapper.MapPlayerToPlayerDto(p);
+                playersDto.Add(pResponse);
             }
 
-            var roomResponse = MapRoomToRoomResponse(room, playersResponse);
-            roomsResponse.Add(roomResponse);
+            var roomDto = MapRoomToRoomInLobbyDto(room);
+            roomsInLobbyDto.Add(roomDto);
         }
 
-        return roomsResponse;
+        return roomsInLobbyDto;
     }
 
     public static RoomInLobbyDto MapRoomToRoomInLobbyDto(Room entity)
@@ -43,9 +41,9 @@ public class RoomMapper
             UpperStartMoneyBound: entity.UpperStartMoneyBound);
     }
 
-    public static InitRoomDataResponse MapRoomToInitRoomDataResponse(Room entity)
+    public static InitRoomDataDto MapRoomToInitRoomDataDto(Room entity)
     {
-        return new InitRoomDataResponse(
+        return new InitRoomDataDto(
             Id: entity.Id,
             RoomName: entity.RoomName,
             RoomSize: entity.RoomSize,
@@ -53,23 +51,29 @@ public class RoomMapper
             MinBid: entity.MinBid,
             MaxBid: entity.MaxBid);
     }
+    
+    public static IEnumerable<RoomDto> MapManyRoomsToManyRoomsDto(ICollection<Room> rooms)
+    {
+        var roomsDto = new List<RoomDto>(rooms.Count);
+        foreach (var room in rooms)
+        {
+            var playersDto = new List<PlayerDto>(room.Players.Count);
+            foreach (var p in room.Players)
+            {
+                var playerDto = PlayerMapper.MapPlayerToPlayerDto(p);
+                playersDto.Add(playerDto);
+            }
 
-    public static RoomDto MapRoomRequestToRoomDto(RoomRequest request)
+            var roomDto = MapRoomToRoomDto(room, playersDto);
+            roomsDto.Add(roomDto);
+        }
+
+        return roomsDto;
+    }
+
+    public static RoomDto MapRoomToRoomDto(Room entity, IEnumerable<PlayerDto> playersResponse)
     {
         return new RoomDto(
-            RoomName: request.RoomName,
-            RoomSize: request.RoomSize,
-            StartBid: request.StartBid,
-            MinBid: request.MinBid,
-            MaxBid: request.MaxBid,
-            AvatarUrl: request.AvatarUrl,
-            Status: request.Status,
-            PlayersInRoom: request.PlayersInRoom);
-    }
-    
-    private static RoomResponse MapRoomToRoomResponse(Room entity, IEnumerable<PlayerResponse> playersResponse)
-    {
-        return new RoomResponse(
             Id: entity.Id,
             RoomName: entity.RoomName,
             RoomSize: entity.RoomSize,
@@ -77,9 +81,11 @@ public class RoomMapper
             MinBid: entity.MinBid,
             MaxBid: entity.MaxBid,
             AvatarUrl: entity.AvatarUrl,
-            Status: entity.Status,
             PlayersInRoom: entity.PlayersInRoom,
+            Status: entity.Status,
             Bank: entity.Bank,
+            LowerStartMoneyBound: entity.LowerStartMoneyBound,
+            UpperStartMoneyBound: entity.UpperStartMoneyBound,
             Players: playersResponse);
     }
 }

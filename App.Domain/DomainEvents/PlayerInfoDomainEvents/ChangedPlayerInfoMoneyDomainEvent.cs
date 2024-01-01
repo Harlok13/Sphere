@@ -4,4 +4,4 @@ namespace App.Domain.DomainEvents.PlayerInfoDomainEvents;
 
 public sealed record ChangedPlayerInfoMoneyDomainEvent(
     int Money,
-    string ConnectionId) : DomainEvent;
+    Guid PlayerId) : DomainEvent;

@@ -1,13 +1,13 @@
-import {ContentContainer} from "../../shared/pages/main-page/ContentContainer/ContentContainer";
-import {Center} from "../../shared/pages/main-page/Center/Center";
-import {GlobalAside} from "../../components/layout/GlobalAside/GlobalAside";
-import {GlobalHead} from "../../components/layout/GlobalHead/GlobalHead";
-import {GlobalRightSide} from "../../components/layout/GlobalRightSide/GlobalRightSide";
-import {LobbyBottom} from "./center/LobbyBottom/LobbyBottom";
-import {LobbyMain} from "./center/LobbyMain/LobbyMain";
+import {ContentContainer} from "shared/pages/main-page/ContentContainer/ContentContainer";
+import {Center} from "shared/pages/main-page/Center/Center";
+import {GlobalAside} from "components/layout/GlobalAside/GlobalAside";
+import {GlobalHead} from "components/layout/GlobalHead/GlobalHead";
+import {GlobalRightSide} from "components/layout/GlobalRightSide/GlobalRightSide";
+import {LobbyBottom} from "pages/LobbyPage/center/LobbyBottom/LobbyBottom";
+import {LobbyMain} from "pages/LobbyPage/center/LobbyMain/LobbyMain";
 import {useEffect} from "react";
 import {useDispatch} from "react-redux";
-import {setShowModal} from "../../BL/slices/money/money.slice";
+import {setSelectStartMoneyModal} from "BL/slices/modals/modals.slice";
 
 export const LobbyPage = () => {
     // useLobbyInitData();
@@ -15,7 +15,7 @@ export const LobbyPage = () => {
 
     useEffect(() => {
         return () => {
-            dispatch(setShowModal(false));
+            dispatch(setSelectStartMoneyModal(false));
         }
     }, []);
 

@@ -50,7 +50,8 @@ public class HitHandler : ICommandHandler<HitCommand, bool>
     {
         command.Request.Deconstruct(out Guid roomId, out Guid playerId);
 
-        var player = await _unitOfWork.PlayerRepository.GetPlayerByIdAsync(playerId, cT);
+        var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId, cT);
+        var player = room.Players.Single(p => p.Id == playerId);
         player.Hit();
         
         var card = Card.Create(Guid.NewGuid(), player.Id, await _cardsDeck.GetNextCardAsync(roomId, cT));  // TODO: mediatr?

@@ -1,10 +1,13 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import UserService from "../../../services/user/user.service";
-import {ICreatedRoomResponse, IRoomInLobbyDto, Room} from "../../../contracts/room-in-lobby-response";
-import {IUpdatedRoomStatusResponse} from "../../../contracts/updated-room-status-response";
-import {IUpdatedRoomPlayersInRoomResponse} from "../../../contracts/updated-room-players-in-room-response";
-import {IChangedRoomRoomNameResponse} from "../../../contracts/changed-room-room-name-response";
-import {IChangedRoomAvatarUrlResponse} from "../../../contracts/changed-room-avatar-response";
+import UserService from "services/user/user.service";
+import {ICreatedRoomResponse, IRoomInLobbyDto, Room} from "contracts/room-in-lobby-dto";
+import {IChangedRoomStatusResponse} from "contracts/responses/changed-room-status-response";
+import {
+    IChangedRoomPlayersInRoomResponse,
+} from "contracts/responses/changed-room-players-in-room-response";
+import {IChangedRoomRoomNameResponse} from "contracts/responses/changed-room-room-name-response";
+import {IChangedRoomAvatarUrlResponse} from "contracts/responses/changed-room-avatar-response";
+import {IRemovedRoomResponse} from "contracts/responses/removed-room-response";
 
 
 const userName = UserService.getUser().userName;
@@ -68,8 +71,8 @@ export const lobbySlice = createSlice({
         addNewRoom: (state, action: PayloadAction<ICreatedRoomResponse>) => {
             state.rooms = [action.payload.roomInLobbyDto, ...state.rooms];
         },
-        removeRoom: (state, action: PayloadAction<string>) => {
-            state.rooms = [...state.rooms.filter(r => r.id !== action.payload)];
+        removeRoom: (state, action: PayloadAction<IRemovedRoomResponse>) => {
+            state.rooms = [...state.rooms.filter(r => r.id !== action.payload.roomId)];
         },
         updateRoom: (state, action: PayloadAction<IRoomInLobbyDto>) => {
             state.rooms = [...state.rooms.filter(r => r.id !== action.payload.id), action.payload]
@@ -143,11 +146,11 @@ export const lobbySlice = createSlice({
             state.rooms = [...action.payload].reverse();
         },
 
-        updateRoomStatus: (state, action: PayloadAction<IUpdatedRoomStatusResponse>) => {
+        updateRoomStatus: (state, action: PayloadAction<IChangedRoomStatusResponse>) => {
             const index = state.rooms.findIndex(r => r.id === action.payload.roomId)
             state.rooms[index].status = action.payload.status;
         },
-        updatePlayersInRoom: (state, action: PayloadAction<IUpdatedRoomPlayersInRoomResponse>) => {
+        updatePlayersInRoom: (state, action: PayloadAction<IChangedRoomPlayersInRoomResponse>) => {
             const index = state.rooms.findIndex(r => r.id === action.payload.roomId);
             state.rooms[index].playersInRoom = action.payload.playersInRoom;
         },

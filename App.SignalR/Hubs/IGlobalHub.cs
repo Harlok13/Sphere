@@ -1,5 +1,5 @@
-using App.Contracts.Data;
 using App.Contracts.Responses;
+using App.Contracts.Responses.PlayerInfoResponses;
 using App.Contracts.Responses.PlayerResponses;
 using App.Contracts.Responses.RoomResponses;
 
@@ -12,11 +12,12 @@ public interface IGlobalHub
     Task ReceiveOwn_CreatedPlayer(CreatedPlayerResponse response, CancellationToken cT);
     Task ReceiveOwn_RemoveFromRoom(CancellationToken cT);
     Task ReceiveGroup_RemovedPlayer(RemovedPlayerResponse response, CancellationToken cT);
-    Task ReceiveAll_RemovedRoom(Guid roomId, CancellationToken cT);
+    Task ReceiveAll_RemovedRoom(RemovedRoomResponse response, CancellationToken cT);
     Task ReceiveGroup_ChangedPlayerReadiness(ChangedPlayerReadinessResponse response, CancellationToken cT);
     Task ReceiveOwn_ChangedPlayerReadiness(ChangedPlayerReadinessResponse response, CancellationToken cT);
     Task ReceiveOwn_SelectStartGameMoney(SelectStartGameMoneyResponse response, CancellationToken cT);
-    Task ReceiveOwn_NotEnoughMoneyNotification(NotEnoughMoneyNotificationResponse response, CancellationToken cT);
+    Task ReceiveClient_Notification(NotificationResponse response, CancellationToken cT);
+    Task ReceiveUser_Notification(NotificationResponse response, CancellationToken cT);
     Task ReceiveOwn_ChangedPlayerInfoMoney(ChangedPlayerInfoMoneyResponse response, CancellationToken cT);
     Task ReceiveOwn_AddedCard(AddedCardResponse response, CancellationToken cT);
     Task ReceiveGroup_AddedCard(AddedCardResponse response, CancellationToken cT);
@@ -37,7 +38,10 @@ public interface IGlobalHub
     Task ReceiveGroup_ChangedRoomRoomName(ChangedRoomRoomNameResponse response, CancellationToken cT);
     Task ReceiveAll_ChangedRoomAvatarUrl(ChangedRoomAvatarUrlResponse response, CancellationToken cT);
     Task ReceiveClient_TimeOut(CancellationToken cT);
-    Task ReceiveUser_ReconnectToRoom(CancellationToken cT);
+    Task ReceiveUser_ReconnectToRoom(ReconnectToRoomResponse response, CancellationToken cT);
     Task ReceiveGroup_ChangedPlayerOnline(ChangedPlayerOnlineResponse response, CancellationToken cT);
     Task ReceiveClient_ChangedPlayerOnline(ChangedPlayerOnlineResponse response, CancellationToken cT);
+    Task ReceiveClient_ReconnectingInitRoomData(ReconnectingInitRoomDataResponse response, CancellationToken cT);
+    Task ReceiveUser_NavigateToLobby(CancellationToken cT);
+    
 }

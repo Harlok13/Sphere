@@ -28,7 +28,8 @@ public class StayHandler : ICommandHandler<StayCommand, bool>
         command.Request.Deconstruct(out Guid roomId, out Guid playerId);
         _logger.LogInformation($"Invoked method \"Stay\".");
 
-        var player = await _unitOfWork.PlayerRepository.GetPlayerByIdAsync(playerId, cT);
+        var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId, cT);
+        var player = room.Players.Single(p => p.Id == playerId);
         player.Stay();
 
         await _unitOfWork.SaveChangesAsync(cT);
