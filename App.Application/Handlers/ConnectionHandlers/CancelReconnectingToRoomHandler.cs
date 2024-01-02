@@ -56,6 +56,10 @@ public class CancelReconnectingToRoomHandler : ICommandHandler<CancelReconnectin
         }
         
         var request = new RemoveFromRoomRequest(data!.RoomId, authUser.Id);
-        return await _mediator.Send(new RemoveFromRoomCommand(request, authUser.ConnectionId), cT);
+        _logger.LogInformation("User {UserId}: Invoking command {CommandName} with argument {Argument}.",
+            authUser.Id,
+            nameof(RemoveFromRoomCommand),
+            new {Request = request});
+        return await _mediator.Send(new RemoveFromRoomCommand(request), cT);
     }
 }
