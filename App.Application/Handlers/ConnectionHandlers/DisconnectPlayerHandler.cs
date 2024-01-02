@@ -1,7 +1,7 @@
 using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
-using App.Contracts.Data;
 using App.Contracts.Requests;
+using App.Domain.DomainResults;
 using App.Domain.Entities;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Shared;
@@ -46,10 +46,10 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
 
         // var disconnectedPlayerNoTrack = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
         // if (!disconnectedPlayerNoTrack.TryFromResult(out PlayerDto? disconnectedPlayerDto, out _))
-        if (_unitOfWork.PlayerRepository.CheckPlayerExists(authUser.Id))
+        if (!_unitOfWork.PlayerRepository.CheckPlayerExists(authUser.Id))
         {
             _logger.LogInformation(
-                "The player {Name} is not in the room.", 
+                "The player \"{Name}\" is not in the room.", 
                 authUser.UserName);
             return false;
         }
@@ -66,9 +66,10 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
         // {
         //     return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
         // }
-        if (disconnectPlayerResult.IsFailure)
+        if (disconnectPlayerResult is DomainError disconnectPlayerError)
         {
-            return await SendSomethingWentWrongNotification(disconnectPlayerResult.Errors!, authUser.ConnectionId, cT);
+            _logger.LogError(disconnectPlayerError.Reason);
+            return await SendSomethingWentWrongNotification(null, authUser.ConnectionId, cT);
         }
 
         await _unitOfWork.SaveChangesAsync(cT);
@@ -76,6 +77,10 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
         if (room.Players.Count == 1)  // TODO: finish
         {
             var request = new RemoveFromRoomRequest(RoomId: room.Id, PlayerId: authUser.Id);
+            _logger.LogInformation("User {UserId}: Invoking command {CommandName} with argument {Argument}.",
+                authUser.Id,
+                nameof(RemoveFromRoomCommand),
+                new {Request = request});
             return await _mediator.Send(new RemoveFromRoomCommand(request), cT);
         }
         // if (disconnectData!.NeedRemoveRoom)
@@ -87,11 +92,12 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
     }
     
     private async ValueTask<bool> SendSomethingWentWrongNotification(
-        IEnumerable<Error> errors,
+        IEnumerable<Error>? errors,
         string targetConnectionId,
         CancellationToken cT)
     {
-        foreach (var error in errors) _logger.LogError(error.Message);
+        if (errors is not null)
+            foreach (var error in errors) _logger.LogError(error.Message);
             
         await _publisher.Publish(new ClientNotificationEvent(
                 NotificationText: NotificationMessages.SomethingWentWrong(),
