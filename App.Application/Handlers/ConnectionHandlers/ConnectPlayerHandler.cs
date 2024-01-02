@@ -30,7 +30,9 @@ public class ConnectPlayerHandler : ICommandHandler<ConnectPlayerCommand, bool>
 
         if (!_unitOfWork.PlayerRepository.CheckPlayerExists(authUser.Id))
         {
-            _logger.LogInformation("The player {Name} is not in the room.", authUser.UserName);
+            _logger.LogInformation(
+                "The player \"{Name}\" is not in the room.",
+                authUser.UserName);
             return false;
         }
 
