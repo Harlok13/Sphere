@@ -1,6 +1,7 @@
 using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Requests;
+using App.Domain.DomainResults;
 using App.Domain.Entities.RoomEntity;
 using App.SignalR.Commands.RoomCommands;
 using App.SignalR.Commands.RoomCommands.PlayerActionCommands;
@@ -74,7 +75,7 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
          so as long as the player is not deleted, we can get his data
         */
         var kickPlayerResult = room!.KickPlayer(initiatorId: initiatorId, kickedId: kickedPlayerId);
-        if (!kickPlayerResult.Success && kickPlayerResult is Room.KickPlayerFailure kickPlayerFailure)
+        if (kickPlayerResult is DomainFailure kickPlayerFailure)
         {
             await _publisher.Publish(new UserNotificationEvent(
                     NotificationText: kickPlayerFailure.Reason,
@@ -83,7 +84,7 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
 
             return false;
         }
-        if (!kickPlayerResult.Success && kickPlayerResult is Room.KickPlayerError kickPlayerError)
+        if (kickPlayerResult is DomainError kickPlayerError)
         {
             _logger.LogError(kickPlayerError.Reason);
 
@@ -98,6 +99,10 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
         await _unitOfWork.SaveChangesAsync(cT);  // TODO: what to do with the transaction?
 
         var request = new RemoveFromRoomRequest(RoomId: room.Id, PlayerId: kickedPlayerId);
+        _logger.LogInformation("User {UserId}: Invoking command {CommandName} with argument {Argument}.",
+            initiatorId,
+            nameof(RemoveFromRoomCommand),
+            new {Request = request});
         var response = await _mediator.Send(new RemoveFromRoomCommand(request), cT);
 
         // if (response)

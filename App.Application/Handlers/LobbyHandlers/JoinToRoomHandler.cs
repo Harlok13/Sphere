@@ -1,5 +1,6 @@
 using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
+using App.Domain.DomainResults;
 using App.Domain.Entities.PlayerInfoEntity;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Shared;
@@ -7,7 +8,6 @@ using App.SignalR.Commands.LobbyCommands;
 using App.SignalR.Events;
 using Mediator;
 using Microsoft.Extensions.Logging;
-using Player = App.Domain.Entities.PlayerEntity.Player;
 
 namespace App.Application.Handlers.LobbyHandlers;
 
@@ -33,37 +33,20 @@ public class JoinToRoomHandler : ICommandHandler<JoinToRoomCommand, bool>
             out Guid roomId, out Guid playerId, out int selectedStartMoney);
         var connectionId = command.ConnectionId;
         
-        // TODO: check player is kicked
-        
         var roomResult = await _unitOfWork.RoomRepository.GetByIdAsync(roomId, cT);
         if (!roomResult.TryFromResult(out Room? room, out var roomErrors))
         {
             return await SendSomethingWentWrongNotification(roomErrors, connectionId, cT);
         }
 
-        // if (room!.Players.Count == room.RoomSize)
-        // {
-        //     // TODO: room is full message (_hubContext.Clients.Client(player.ConnectionId).ReceiveOwn_RoomIsFullNotification());
-        //     return false;
-        // }
-
         var canPlayerJoinResult = room!.CanPlayerJoin(playerId);
-        if (canPlayerJoinResult is Room.CanPlayerJoinFailure)
+        if (canPlayerJoinResult is DomainFailure canPlayerJoinFailure)
         {
-            if (canPlayerJoinResult is Room.RoomIsFull roomIsFullResult)
-            {
-                await _publisher.Publish(new ClientNotificationEvent(
-                        NotificationText: roomIsFullResult.Reason,
-                        TargetConnectionId: connectionId),
-                    cT);
-            }
-            else if (canPlayerJoinResult is Room.PlayerWasKicked playerWasKickedResult)
-            {
-                await _publisher.Publish(new ClientNotificationEvent(
-                        NotificationText: playerWasKickedResult.Reason,
-                        TargetConnectionId: connectionId),
-                    cT);
-            }
+            await _publisher.Publish(new ClientNotificationEvent(
+                    NotificationText: canPlayerJoinFailure.Reason,
+                    TargetConnectionId: connectionId),
+                cT);
+
         }
         
         var playerInfoResult = await _unitOfWork.PlayerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
@@ -83,9 +66,14 @@ public class JoinToRoomHandler : ICommandHandler<JoinToRoomCommand, bool>
             playerName: data!.PlayerName, 
             data.Money,
             connectionId: connectionId);
-        if (joinResult.IsFailure)
+        if (joinResult is DomainFailure joinFailure)
         {
-            return await SendSomethingWentWrongNotification(joinResult.Errors!, connectionId, cT);
+            await _publisher.Publish(new UserNotificationEvent(
+                    NotificationText: joinFailure.Reason,
+                    TargetId: playerId),
+                cT);
+
+            return false;
         }
 
         var saveChangesResult = await _unitOfWork.SaveChangesAsync(cT);
@@ -95,25 +83,6 @@ public class JoinToRoomHandler : ICommandHandler<JoinToRoomCommand, bool>
         }
 
         return saveChangesResult;
-
-
-        // var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
-        //
-        // playerInfo.DecrementMoney(selectedStartMoney);
-        //
-        // var isLeader = room.Players.Count < 1;
-        // var player = Player.Create(
-        //     id: playerId,
-        //     playerName: playerInfo.PlayerName,
-        //     roomId: roomId,
-        //     money: selectedStartMoney,
-        //     connectionId: connectionId,
-        //     isLeader: isLeader,
-        //     room: room);
-        // _logger.LogInformation($"room is null? {player.Room is null}");
-        // room.AddNewPlayer(player);
-        //
-        // return await _unitOfWork.SaveChangesAsync(cT);
     }
     
     private async ValueTask<bool> SendSomethingWentWrongNotification(

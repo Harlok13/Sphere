@@ -1,11 +1,9 @@
-using System.Collections.Immutable;
 using App.Domain.DomainEvents.RoomDomainEvents;
+using App.Domain.DomainResults;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Enums;
 using App.Domain.Messages;
 using App.Domain.Primitives;
-using App.Domain.Shared;
-using App.Domain.Shared.ResultImplementations;
 
 namespace App.Domain.Entities.RoomEntity;
 
@@ -24,7 +22,7 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
     
     public Player this[int index]
     {
-        get { lock(_lock) return _players[index]; }
+        get { lock(_players) return _players[index]; }
     }
 
     private Room(
@@ -106,9 +104,9 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
         return room;
     }
 
-    public void AddNewPlayer(Player player) // TODO: validation
+    private void AddNewPlayer(Player player) // TODO: validation
     {
-        lock (_lock)
+        lock (_players)
         {
             _players.Add(player);
             SetPlayersInRoom(_players.Count);
@@ -122,17 +120,14 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
         }
     }
 
-    private Result RemovePlayer(Guid playerId)
+    private DomainResult RemovePlayer(Guid playerId)
     {
-        lock (_lock)
+        lock (_players)
         {
             var player = _players.SingleOrDefault(p => p.Id == playerId);
             if (player is null)
-            {
-                return Result.Create(
-                    isSuccess: false,
-                    error: new Error(ErrorMessages.Room.RemoveFromRoom.PlayerNotFound(playerId)));
-            }
+                return new DomainError(
+                    Message.Error.Room.PlayerNotFound(nameof(RemovePlayer), playerId));
             
             _players.Remove(player);
             SetPlayersInRoom(Players.Count);
@@ -143,13 +138,13 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
                 ConnectionId: player.ConnectionId,
                 PlayersInRoom: PlayersInRoom));
 
-            return Result.CreateSuccess();
+            return new DomainSuccessResult();
         }
     }
 
     private void RemovePlayer(Player player)
     {
-        lock (_lock)
+        lock (_players)
         {
             _players.Remove(player);
             SetPlayersInRoom(Players.Count);
@@ -195,13 +190,13 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
         _domainEvents.Add(new ChangedRoomRoomNameDomainEvent(RoomId: Id, RoomName: RoomName));
     }
 
-    public void IncreaseBank(int value)
+    private void IncreaseBank(int value)
     {
         Bank += value;
         _domainEvents.Add(new ChangedRoomBankDomainEvent(RoomId: Id, Bank: Bank));
     }
 
-    public void ResetBank()
+    private void ResetBank()
     {
         Bank = default;
         _domainEvents.Add(new ChangedRoomBankDomainEvent(RoomId: Id, Bank: Bank));
@@ -224,8 +219,8 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
             _domainEvents.Add(new AddedKickedPlayerDomainEvent(
                 InitiatorConnectionId: initiator.ConnectionId,
                 KickedPlayerConnectionId: kickedPlayer.ConnectionId,
-                NotificationForInitiator: NotificationMessages.Room.AddKickedPlayer.SuccessKick(kickedPlayer.PlayerName),
-                NotificationForKickedPlayer: NotificationMessages.Room.AddKickedPlayer.WasKicked(initiator.PlayerName)));
+                NotificationForInitiator: Message.Notification.Room.AddKickedPlayer.SuccessKick(kickedPlayer.PlayerName),
+                NotificationForKickedPlayer: Message.Notification.Room.AddKickedPlayer.WasKicked(initiator.PlayerName)));
         }
     }
 }

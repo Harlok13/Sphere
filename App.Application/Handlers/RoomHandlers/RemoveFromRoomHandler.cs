@@ -1,8 +1,7 @@
 using App.Application.Extensions;
-using App.Application.Repositories;
-using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
-using App.Contracts.Enums;
+using App.Domain.DomainResults;
+using App.Domain.DomainResults.CustomResults;
 using App.Domain.Entities.PlayerInfoEntity;
 using App.Domain.Entities.RoomEntity;
 using App.SignalR.Commands.RoomCommands;
@@ -42,12 +41,14 @@ public class RemoveFromRoomHandler : ICommandHandler<RemoveFromRoomCommand, bool
         }
         
         var removePlayerResult = room!.RemovePlayerFromRoom(playerId);
-        if (!removePlayerResult.TryFromResult(out Room.RemovePlayerFromRoomDto? data, out var errors))
+        if (removePlayerResult is DomainError removePlayerError)
         {
-            foreach(var error in errors) _logger.LogError(error.Message);
+            _logger.LogError(removePlayerError.Reason);
             
             return false;
         }
+
+        var removePlayerData = removePlayerResult as RemovePlayerFromRoomDomainResult;
 
         
         var playerInfoResult = await _unitOfWork.PlayerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
@@ -57,7 +58,7 @@ public class RemoveFromRoomHandler : ICommandHandler<RemoveFromRoomCommand, bool
 
             return false;
         }
-        playerInfo!.IncrementMoney(data!.IncrementMoney);
+        playerInfo!.IncrementMoney(removePlayerData!.IncrementMoney);
         
         var saveChangesResult = await _unitOfWork.SaveChangesAsync(cT);
         if (saveChangesResult)
@@ -65,35 +66,6 @@ public class RemoveFromRoomHandler : ICommandHandler<RemoveFromRoomCommand, bool
             await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_NavigateToLobby(cT);
         }
         
-        return saveChangesResult; 
-        // if (data.NeedRemoveRoom)
-        // {
-        //     await _unitOfWork.RoomRepository.RemoveAsync(room.Id, cT);
-        // }
-
-        // var player = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(playerId, cT);
-        //
-        // if (player != null)
-        // {
-        //     playerInfo?.IncrementMoney(player.Money);
-        //
-        //     var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId, cT);
-        //     room.RemovePlayerFromRoom(playerId, connectionId);
-        //
-        //     if (room.PlayersInRoom > 0) room.SetNewRoomLeader();
-        //     else await _roomRepository.RemoveAsync(roomId, cT);
-        //
-        //     await _hubContext.Clients.User(player.Id.ToString()).ReceiveUser_NavigateToLobby(cT);
-        // }
-        //
-        // _logger.LogInformation("");
-
-        // return await _unitOfWork.SaveChangesAsync(cT);
+        return saveChangesResult;
     }
-
-    // private async Task RemoveAsync(RoomRepositoryNotifyDecorator.RemoveRoomEventArgs e, CancellationToken cT)
-    // {
-    //     _logger.LogInformation("Receive remove room in event.");
-    //     await _hubContext.Clients.All.ReceiveAll_RemovedRoom(e.RoomId, cT);
-    // }
 }

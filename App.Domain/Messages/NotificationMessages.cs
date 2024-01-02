@@ -1,25 +1,28 @@
 namespace App.Domain.Messages;
 
-internal abstract class NotificationMessages
+internal abstract partial class Message
 {
-    internal abstract class Room
+    internal abstract class Notification
     {
-        internal abstract class KickPlayer
+        internal abstract class Room
         {
-            internal static string NotLeader() 
-                => "You are not a leader to kick the player.";
+            internal abstract class AddKickedPlayer
+            {
+                public static string WasKicked(string kickInitiatorName)
+                    => $"You were kicked out of the room by \"{kickInitiatorName}\". You can join if a member of this room invites you.";
 
-            internal static string PlayerInGame(string kickedPlayerName) 
-                => $"You can't kick the player \"{kickedPlayerName}\" while he is in the game.";
-        }
+                public static string SuccessKick(string kickedPlayerName)
+                    => $"You kick \"{kickedPlayerName}\" from room.";
+            }
 
-        internal abstract class AddKickedPlayer
-        {
-            public static string WasKicked(string kickInitiatorName)
-                => $"You were kicked out of the room by \"{kickInitiatorName}\". You can join if a member of this room invites you.";
+            internal abstract class TransferLeadership
+            {
+                public static string SuccessTransfer(string receiverName)
+                    => $"You have given leadership to the player \"{receiverName}\".";
 
-            public static string SuccessKick(string kickedPlayerName)
-                => $"You kick \"{kickedPlayerName}\" from room.";
+                public static string ReceiveLeadership(string senderName)
+                    => $"The player \"{senderName}\" gave you the lead.";
+            }
         }
     }
 }

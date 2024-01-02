@@ -137,7 +137,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
         return ConnectionId;
     }
     
-    public void AddNewCard(Card card, int delayMs)
+    public void AddNewCard(Card card, int delayMs = default)
     {
         _cards.Add(card);
         SetScore(card.Value);
@@ -174,8 +174,9 @@ public sealed partial class Player : Entity, IHasDomainEvent
         MoveStatus = moveStatus;
     }
 
-    public void Hit()
+    public void Hit(Card card)
     {
+        AddNewCard(card);
         SetMoveStatus(MoveStatus.Hit);
         SetMove(false);
     }
