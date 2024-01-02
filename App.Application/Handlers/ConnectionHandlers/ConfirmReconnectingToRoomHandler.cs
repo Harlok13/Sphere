@@ -1,10 +1,10 @@
 using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
-using App.Contracts.Data;
 using App.Contracts.Mapper;
 using App.Contracts.Responses;
+using App.Domain.DomainResults;
+using App.Domain.DomainResults.CustomResults;
 using App.Domain.Entities;
-using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Shared;
 using App.SignalR.Commands.ConnectionCommands;
@@ -54,10 +54,13 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
         }
 
         var reconnectPlayerResult = room!.ReconnectPlayer(playerId: authUser.Id, newConnectionId: authUser.ConnectionId);
-        if (!reconnectPlayerResult.TryFromResult(out Player? reconnectPlayer, out var reconnectErrors))
+        if (reconnectPlayerResult is DomainError reconnectPlayerError)
         {
-            return await SendSomethingWentWrongNotification(reconnectErrors, authUser.ConnectionId, cT);
+            _logger.LogError(reconnectPlayerError.Reason);
+            return await SendSomethingWentWrongNotification(null, authUser.ConnectionId, cT);
         }
+
+        var reconnectPlayerData = reconnectPlayerResult as ReconnectPlayerDomainResult;
         
         var saveChangesResult = await _unitOfWork.SaveChangesAsync(cT);
         if (!saveChangesResult)
@@ -66,7 +69,7 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
             return await SendSomethingWentWrongNotification(new List<Error>(1) { errorMsg }, authUser.ConnectionId, cT);
         }
 
-        var playerDto = PlayerMapper.MapPlayerToPlayerDto(reconnectPlayer!);  // TODO: RoomMapper.MapToReconnectingInitRoomDataResponse
+        var playerDto = PlayerMapper.MapPlayerToPlayerDto(reconnectPlayerData!.Player);  // TODO: RoomMapper.MapToReconnectingInitRoomDataResponse
         var initRoomDataDto = RoomMapper.MapRoomToInitRoomDataDto(room);
         var playersDto = PlayerMapper.MapManyPlayersToManyPlayersDto(room.Players);
 
@@ -75,18 +78,21 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
             InitRoomData: initRoomDataDto,
             Players: playersDto);
 
-        await _hubContext.Clients.Client(reconnectPlayer!.ConnectionId).ReceiveClient_ReconnectingInitRoomData(response, cT);
+        await _hubContext.Clients
+            .Client(reconnectPlayerData.Player.ConnectionId)
+            .ReceiveClient_ReconnectingInitRoomData(response, cT);
         _logger.LogInformation("");
 
         return saveChangesResult;
     }
 
     private async ValueTask<bool> SendSomethingWentWrongNotification(
-        IEnumerable<Error> errors,
+        IEnumerable<Error>? errors,
         string targetConnectionId,
         CancellationToken cT)
     {
-        foreach (var error in errors) _logger.LogError(error.Message);
+        if (errors is not null)
+            foreach (var error in errors) _logger.LogError(error.Message);
             
         await _publisher.Publish(new ClientNotificationEvent(
                 NotificationText: NotificationMessages.SomethingWentWrong(),
