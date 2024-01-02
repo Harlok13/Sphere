@@ -19,15 +19,15 @@ public sealed class CardsDeckService : ICardsDeckService
         _logger = logger;
     }
 
-    public async Task<CardInDeck> GetNextCardAsync(Guid roomId, CancellationToken cT)
+    public async Task<Card> GetNextCardAsync(Guid roomId, Guid playerId, CancellationToken cT)
     {
         var cardsDeck = await _cardsDeckRepository.GetCardsDeckAsync(roomId, cT);
-        var card = cardsDeck.FirstOrDefault();
-        cardsDeck.Remove(card);
+        var cardInDeck = cardsDeck.FirstOrDefault();  // TODO: finish 
+        cardsDeck.Remove(cardInDeck);
 
         await _cardsDeckRepository.SaveChangesAsync(roomId: roomId, cardsDeck: cardsDeck, cT);
 
-        return card;
+        return Card.Create(Guid.NewGuid(), playerId, cardInDeck);
     }
 
     public async Task ResetAsync(Guid roomId, CancellationToken cT)
