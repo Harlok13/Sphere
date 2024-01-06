@@ -1,9 +1,9 @@
-import {RightSide} from "../../../shared/pages/main-page/RightSide/RightSide";
-import {RoomChat} from "../../../shared/pages/main-page/RightSide/RoomChat/RoomChat";
-import {RoomChatHead} from "../../../shared/pages/main-page/RightSide/RoomChat/RoomChatHead/RoomChatHead";
-import {MessageWindow} from "../../../shared/pages/main-page/RightSide/RoomChat/MessageWindow/MessageWindow";
-import {TextArea} from "../../../shared/pages/main-page/RightSide/RoomChat/TextArea/TextArea";
-import {ChatMessage, Message} from "../../../shared/components/ChatMessage/ChatMessage";
+import {ChatMessage, Message} from "components/shared/components/ChatMessage/ChatMessage";
+import {RightSide} from "components/shared/pages/main-page/RightSide/RightSide";
+import {RoomChat} from "components/shared/pages/main-page/RightSide/RoomChat/RoomChat";
+import {RoomChatHead} from "components/shared/pages/main-page/RightSide/RoomChat/RoomChatHead/RoomChatHead";
+import {MessageWindow} from "components/shared/pages/main-page/RightSide/RoomChat/MessageWindow/MessageWindow";
+import {TextArea} from "components/shared/pages/main-page/RightSide/RoomChat/TextArea/TextArea";
 
 export const GlobalRightSide = () => {
     const msgData : Message = {

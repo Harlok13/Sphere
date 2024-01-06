@@ -20,8 +20,17 @@ public class RemoveRoomHandler : ICommandHandler<RemoveRoomCommand, bool>
     {
         command.Deconstruct(out Guid roomId);
 
-        await _unitOfWork.RoomRepository.RemoveAsync(roomId, cT);
         _logger.LogInformation("Trying to remove the room with ID \"{RoomId}\".", roomId);
+        var removeResult = await _unitOfWork.RoomRepository.RemoveAsync(roomId, cT);
+        if (removeResult.IsFailure)
+        {
+            foreach (var error in removeResult.Errors!)
+            {
+                _logger.LogError(error.Message);
+            }
+
+            return false;
+        }
 
         return await _unitOfWork.SaveChangesAsync(cT);
     }

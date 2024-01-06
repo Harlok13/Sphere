@@ -5,7 +5,7 @@ import {BrowserRouter} from 'react-router-dom';
 import * as serviceWorkerRegistration from 'serviceWorkerRegistration';
 import {Provider} from "react-redux";
 import {App} from "App";
-import {store} from "BL/store";
+import {store} from "store/store";
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href')!;
 const rootElement = document.getElementById('root')!;

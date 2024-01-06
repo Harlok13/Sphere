@@ -39,7 +39,6 @@ public class Card
 
     public Guid PlayerId { get; set;}
     
-    // [ForeignKey("player_fk")]
     public virtual PlayerEntity.Player Player { get; set; }
 
     public static Card Create(Guid id, int x, int y, int width, int height, int value, string suitValue) =>

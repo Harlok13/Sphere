@@ -28,9 +28,12 @@ public class ChangedPlayerMoveDomainEventHandler : INotificationHandler<ChangedP
 
         await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerMove(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The changed value \"Move - {Value}\" has been sent to the player \"{ConnectionId}\".",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerMove),
+            nameof(notification.Move),
             move,
             connectionId);
+        
+        // TODO: send to group (need to see whose turn it is now and the timer itself)
     }
 }

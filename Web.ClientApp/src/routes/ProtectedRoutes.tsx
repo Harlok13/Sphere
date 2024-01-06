@@ -1,6 +1,6 @@
 import {Navigate, Outlet, useLocation} from "react-router-dom";
-import UserService from "../services/user/user.service";
-import {useGlobalInitData} from "../BL/hooks/init-data/use-global-init-data";
+import {useGlobalInitData} from "hooks/init-data/use-global-init-data";
+import UserService from "services/user/user.service";
 
 export const ProtectedRoutes = () => {
     const location = useLocation();

@@ -29,9 +29,10 @@ public class ChangedPlayerIsLeaderDomainEventHandler : INotificationHandler<Chan
         
         await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerIsLeader(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The player \"{ConnectionId}\" received an updated \"{UpdatedValue}\" value.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerIsLeader),
-            nameof(playerId),
+            nameof(notification.IsLeader),
+            isLeader,
             connectionId);
 
         /*
@@ -41,9 +42,10 @@ public class ChangedPlayerIsLeaderDomainEventHandler : INotificationHandler<Chan
          */
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerIsLeader(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The group \"{RoomId}\" received an updated player \"{ConnectionId}\".",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the group \"{RoomId}\".",
             nameof(_hubContext.Clients.All.ReceiveGroup_ChangedPlayerIsLeader),
-            roomId,
-            connectionId);
+            nameof(notification.IsLeader),
+            isLeader,
+            roomId);
     }
 }

@@ -28,14 +28,18 @@ public class ChangedPlayerInGameDomainEventHandler : INotificationHandler<Change
 
         await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerInGame(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The changed value \"InGame\" has been sent to the player \"{ConnectionId}\".",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerInGame),
+            nameof(notification.InGame),
+            inGame,
             connectionId);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerInGame(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The changed value \"InGame\" has been sent to the group \"{RoomId}\".",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the group \"{RoomId}\".",
             nameof(_hubContext.Clients.All.ReceiveGroup_ChangedPlayerInGame),
+            nameof(notification.InGame),
+            inGame,
             roomId);
     }
 }

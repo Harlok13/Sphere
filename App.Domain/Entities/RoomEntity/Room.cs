@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Text.Json;
 using App.Domain.DomainEvents.RoomDomainEvents;
 using App.Domain.DomainResults;
 using App.Domain.Entities.PlayerEntity;
@@ -11,9 +13,11 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
 {
     private readonly List<Player> _players = new();
     private readonly List<KickedPlayer> _kickedPlayers = new();
+    private List<CardInDeck>? _cardsDeck;
 
     private const int DefaultPlayersInRoom = 1;
     private const RoomStatus DefaultRoomStatus = RoomStatus.Waiting;
+    private const int MaxCardsCount = 6;
     
     private readonly object _lock = new();
 
@@ -75,6 +79,12 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
     public IReadOnlyCollection<Player> Players => _players;
 
     public IReadOnlyCollection<KickedPlayer> KickedPlayers => _kickedPlayers;
+
+    [Description("Json column")]
+    public string? CardsDeck { get; private set; }
+    
+    [Description("Json column")]
+    public string? GameHistory { get; private set; }
 
     // TODO: add created at (for GetFirstPageAsync)
 
@@ -190,13 +200,13 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
         _domainEvents.Add(new ChangedRoomRoomNameDomainEvent(RoomId: Id, RoomName: RoomName));
     }
 
-    private void IncreaseBank(int value)
+    private void IncreaseBank(int value)  
     {
         Bank += value;
         _domainEvents.Add(new ChangedRoomBankDomainEvent(RoomId: Id, Bank: Bank));
     }
 
-    private void ResetBank()
+    public void ResetBank()  // TODO: make private
     {
         Bank = default;
         _domainEvents.Add(new ChangedRoomBankDomainEvent(RoomId: Id, Bank: Bank));
@@ -207,14 +217,15 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
     {
         lock (_kickedPlayers)
         {
-            _kickedPlayers.Add(KickedPlayer.Create(
+            var kP = KickedPlayer.Create(
                 id: Guid.NewGuid(),
                 playerId: kickedPlayer.Id,
                 playerName: kickedPlayer.PlayerName,
                 whoKickId: initiator.Id,
                 whoKickName: initiator.PlayerName,
                 roomId: Id,
-                room: this));
+                room: this);
+            _kickedPlayers.Add(kP);
             
             _domainEvents.Add(new AddedKickedPlayerDomainEvent(
                 InitiatorConnectionId: initiator.ConnectionId,
@@ -222,5 +233,25 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
                 NotificationForInitiator: Message.Notification.Room.AddKickedPlayer.SuccessKick(kickedPlayer.PlayerName),
                 NotificationForKickedPlayer: Message.Notification.Room.AddKickedPlayer.WasKicked(initiator.PlayerName)));
         }
+    }
+
+    private void UpdateCardsDeck(IEnumerable<CardInDeck>? cardInDecks)  // TODO: ref
+    {
+        if (cardInDecks is not null) _cardsDeck ??= cardInDecks.ToList();
+        CardsDeck = JsonSerializer.Serialize(_cardsDeck);
+    }
+
+    private DomainResult GetCardsDeck()  
+    {
+        if (CardsDeck is null)
+            return new DomainError(
+                Message.Error.FieldIsNull(nameof(CardsDeck), nameof(Room)));
+        
+        _cardsDeck ??= JsonSerializer.Deserialize<List<CardInDeck>>(CardsDeck);
+        if (_cardsDeck is null)
+            return new DomainError(
+                Message.Error.DeserializeError(nameof(_cardsDeck), nameof(Room)));
+
+        return new DomainSuccessResult<List<CardInDeck>>(_cardsDeck);
     }
 }

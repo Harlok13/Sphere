@@ -1,14 +1,16 @@
-import {Route, Routes} from "react-router-dom";
-import WelcomePage from "pages/WelcomePage/WelcomePage";
-import LoginPage from "pages/LoginPage/LoginPage";
-import RegisterPage from "pages/RegisterPage/RegisterPage";
-import ProfilePage from "pages/ProfilePage/ProfilePage";
-import {RoomPage} from "pages/RoomPage/RoomPage";
-import {SettingsPage} from "pages/SettingsPage/SettingsPage";
-import {LeaderboardsPage} from "pages/LeaderboardsPage/LeaderboardsPage";
-import {ProtectedRoutes} from "routes/ProtectedRoutes";
+import React from "react";
+import WelcomePage from "components/pages/WelcomePage/WelcomePage";
+import LoginPage from "components/pages/LoginPage/LoginPage";
+import RegisterPage from "components/pages/RegisterPage/RegisterPage";
+import {Route} from "react-router";
+import {ProtectedRoutes} from "./ProtectedRoutes";
+import {RoomPage} from "components/pages/RoomPage/RoomPage";
+import {LobbyPage} from "components/pages/LobbyPage/LobbyPage";
+import {Routes} from "react-router-dom";
+import {SettingsPage} from "components/pages/SettingsPage/SettingsPage";
+import {LeaderboardsPage} from "components/pages/LeaderboardsPage/LeaderboardsPage";
+import ProfilePage from "components/pages/ProfilePage/ProfilePage";
 import {v4} from "uuid";
-import {LobbyPage} from "pages/LobbyPage/LobbyPage";
 
 export const Router = () => {
     return (

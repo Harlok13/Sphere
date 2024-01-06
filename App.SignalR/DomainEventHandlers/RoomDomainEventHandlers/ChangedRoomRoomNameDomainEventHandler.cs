@@ -28,16 +28,18 @@ public class ChangedRoomRoomNameDomainEventHandler : INotificationHandler<Change
 
         await _hubContext.Clients.All.ReceiveAll_ChangedRoomRoomName(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The updated value \"{UpdatedValue}\" of room \"{RoomId}\" has been sent to all users.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of room \"{RoomId}\" has been sent to all users.",
             nameof(_hubContext.Clients.All.ReceiveAll_ChangedRoomRoomName),
-            nameof(roomName).ToUpper(),
+            nameof(notification.RoomName),
+            roomName,
             roomId);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedRoomRoomName(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The updated value \"{UpdatedValue}\" of room \"{RoomId}\" has been sent to the group.",
+            "{InvokedMethod} - The updated value \"{ValueName} - {Value}\" of room \"{RoomId}\" has been sent to the group.",
             nameof(_hubContext.Clients.All.ReceiveGroup_ChangedRoomRoomName),
-            nameof(roomName).ToUpper(),
+            nameof(notification.RoomName),
+            roomName,
             roomId);
     }
 }

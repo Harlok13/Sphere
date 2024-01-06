@@ -1,73 +1,74 @@
-using App.Application.Repositories;
-using App.Application.Repositories.RoomRepository;
+using App.Application.Extensions;
+using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Requests;
 using App.Contracts.Responses;
 using App.SignalR.Commands.LobbyCommands;
-using App.SignalR.Hubs;
+using App.SignalR.Events;
 using Mediator;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace App.Application.Handlers.LobbyHandlers;
 
 public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyCommand, bool>
 {
-    private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
     private readonly ILogger<SelectStartGameMoneyHandler> _logger;
-    private readonly IRoomRepository _roomRepository;
-    private readonly IPlayerInfoRepository _playerInfoRepository;
     private readonly IAppUnitOfWork _unitOfWork;
-    private readonly IMediator _mediator;
+    private readonly IPublisher _publisher;
 
     private sealed record Result(bool Success, SelectStartGameMoneyResponse? Selector, string? ErrorMessage);
 
     public SelectStartGameMoneyHandler(
-        IHubContext<GlobalHub, IGlobalHub> hubContext,
         ILogger<SelectStartGameMoneyHandler> logger,
-        IRoomRepository roomRepository,
         IAppUnitOfWork unitOfWork,
-        IMediator mediator,
-        IPlayerInfoRepository playerInfoRepository)
+        IPublisher publisher)
     {
-        _hubContext = hubContext;
         _logger = logger;
-        _roomRepository = roomRepository;
         _unitOfWork = unitOfWork;
-        _mediator = mediator;
-        _playerInfoRepository = playerInfoRepository;
+        _publisher = publisher;
     }
 
     public async ValueTask<bool> Handle(SelectStartGameMoneyCommand command, CancellationToken cT)
     {
         command.Request.Deconstruct(out RoomRequest roomRequest, out Guid playerId, out Guid? roomId);
 
-        var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsNoTrackingAsync(playerId, cT);
+        var playerInfoMoneyResult = await _unitOfWork.PlayerInfoRepository.GetMoneyByIdAsync(playerId, cT);
+        if (!playerInfoMoneyResult.TryFromResult(out var playerInfoData, out var errors))
+        {
+            foreach (var error in errors) _logger.LogError(error.Message);
+
+            await _publisher.Publish(new UserNotificationEvent(
+                    NotificationText: NotificationMessages.SomethingWentWrong(),
+                    TargetId: playerId),
+                cT);
+
+            return false;
+        }
 
         var selectorResult = ComputeSelectStartGameMoney(
             startBid: roomRequest.StartBid,
             minBid: roomRequest.MinBid,
             maxBid: roomRequest.MaxBid,
-            playerMoney: playerInfo.Money,
+            playerMoney: playerInfoData!.Money,
             roomId: roomId);
 
         if (selectorResult.Success)
         {
-            await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_SelectStartGameMoney(selectorResult.Selector!, cT);
-            
+            await _publisher.Publish(new UserSelectStartGameMoneyEvent(
+                    PlayerId: playerId,
+                    Response: selectorResult.Selector!),
+                cT);
+
             return true;
         }
 
-        var notificationResponse = new NotificationResponse(NotificationId: Guid.NewGuid(), NotificationText: selectorResult.ErrorMessage!);
-        await _hubContext.Clients.User(playerId.ToString()).ReceiveClient_Notification(notificationResponse, cT);
+        await _publisher.Publish(new UserNotificationEvent(
+                NotificationText: selectorResult.ErrorMessage!,
+                TargetId: playerId),
+            cT);
 
         return false;
     }
-
-    // 100 10/20 
-    // 350 recommend
-    // 240 lower bound
-    // 540 upper bound
 
     private Result ComputeSelectStartGameMoney(int startBid, int minBid, int maxBid, int playerMoney, Guid? roomId)
     {
@@ -100,7 +101,7 @@ public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyC
                     RoomId: roomId),
                 ErrorMessage: null);
         }
-
+        // TODO: finish method
         const string errMsg = "Your money is not enough to play with such bets.\nPlease reduce your bid.";
 
         return new Result(Success: success, Selector: null, ErrorMessage: errMsg);

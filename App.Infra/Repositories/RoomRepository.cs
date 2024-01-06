@@ -21,22 +21,28 @@ public class RoomRepository : IRoomRepository
     public async Task AddAsync(Room room, CancellationToken cT)
         => await _context.AddAsync(room, cT);
 
-
+    public void Update(Room room)  // TODO: redundant
+    {
+        _context.Set<Room>()
+            .Update(room);
+    }
+    
     public async Task<Result<Room>> GetByIdAsync(Guid? roomId, CancellationToken cT)
     {
         if (roomId is null)
             return InvalidResult<Room>.Create(
-                new Error(""));
+                new Error(ErrorMessages.ArgumentIsNull(nameof(roomId), nameof(GetByIdAsync))));
 
         var room = await _context.Set<Room>()
             .Where(r => r.Id == roomId)
             .Include(e => e.Players
                 .OrderBy(p => p.Id))
+            .Include(r => r.KickedPlayers)
             .SingleOrDefaultAsync(cT);
 
         if (room is null)
             return NotFoundResult<Room>.Create(
-                new Error(""));
+                new Error(ErrorMessages.NotFound(nameof(room), nameof(GetByIdAsync))));
 
         return SuccessResult<Room>.Create(room);
     }
@@ -47,6 +53,7 @@ public class RoomRepository : IRoomRepository
             .AsNoTracking()
             .Include(e => e.Players
                 .OrderBy(p => p.Id))
+            .Include(r => r.KickedPlayers)
             .SingleOrDefaultAsync(r => r.Id == roomId, cT);
         var roomDto = _context.Set<Room>()
             .AsNoTracking()
@@ -72,24 +79,36 @@ public class RoomRepository : IRoomRepository
             .ToArrayAsync(cT); // TODO: 15 - const 
     }
 
-    public async Task RemoveAsync(Guid roomId, CancellationToken cT) // TODO: fix
+    public async Task<Result> RemoveAsync(Guid? roomId, CancellationToken cT) // TODO: fix
     {
+        if (roomId is null)
+            return Result.Create(
+                isSuccess: false,
+                error: new Error(ErrorMessages.ArgumentIsNull(nameof(roomId), nameof(RemoveAsync))));
+
         var room = await _context.Set<Room>()
-            .Include(e => e.Players) // TODO: redundant?
             .SingleOrDefaultAsync(e => e.Id == roomId, cT);
 
+        if (room is null)
+            return Result.Create(
+                isSuccess: false,
+                error: new Error(ErrorMessages.NotFound(nameof(room), nameof(RemoveAsync))));
+
         _context.Set<Room>().Remove(room);
+
+        return Result.CreateSuccess();
     }
 
     public async Task<Result<Room>> GetByPlayerIdAsync1(Guid? playerId, CancellationToken cT)
     {
         if (playerId is null)
             return InvalidResult<Room>.Create(
-                new Error("")); // TODO: add invoked method
+                new Error(ErrorMessages.ArgumentIsNull(nameof(playerId), nameof(GetByPlayerIdAsync1)))); 
 
         var room = await _context.Set<Room>()
             .Include(r => r.Players
                 .OrderBy(p => p.Id))
+            .Include(r => r.KickedPlayers)
             .Join(_context.Set<Player>(),
                 r => r.Id,
                 p => p.RoomId,
@@ -100,7 +119,7 @@ public class RoomRepository : IRoomRepository
         
         if (room is null)
             return NotFoundResult<Room>.Create(
-                new Error(""));
+                new Error(ErrorMessages.NotFound(nameof(room), nameof(GetByPlayerIdAsync1))));
 
         return SuccessResult<Room>.Create(room);
     }
@@ -112,6 +131,7 @@ public class RoomRepository : IRoomRepository
             .AsNoTracking()
             .Include(e => e.Players
                 .OrderBy(p => p.Id))
+            .Include(r => r.KickedPlayers)
             .SelectMany(r => r.Players);
 
         var roomId = await players
@@ -129,7 +149,7 @@ public class RoomRepository : IRoomRepository
         if (playerId is null)
         {
             return InvalidResult<RoomIdDto>.Create(
-                new Error(ErrorMessages.Room.IdIsNull()));
+                new Error(ErrorMessages.ArgumentIsNull(nameof(playerId), nameof(GetIdByPlayerIdAsync))));
         }
 
         var roomId = await _context.Set<Room>()
@@ -144,7 +164,8 @@ public class RoomRepository : IRoomRepository
         if (roomId is null)
         {
             return NotFoundResult<RoomIdDto>.Create(
-                new Error(ErrorMessages.Room.NotFound((Guid)playerId)));
+                // new Error(ErrorMessages.Room.NotFound((Guid)playerId)));
+                new Error(ErrorMessages.NotFound(nameof(roomId), nameof(GetIdByPlayerIdAsync))));
         }
 
         return SuccessResult<RoomIdDto>.Create(roomId);

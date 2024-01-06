@@ -31,7 +31,9 @@ public class RemovedRoomDomainEventHandler : INotificationHandler<RemovedRoomDom
         var removeResult = await _mediator.Send(new RemoveRoomCommand(roomId), cT);
         if (!removeResult)
         {
-            _logger.LogError("Deleting a room with ID \"{RoomId}\" failed.", roomId);
+            _logger.LogError(
+                "Deleting a room with ID \"{RoomId}\" failed.", 
+                roomId);
             return;
         }
 

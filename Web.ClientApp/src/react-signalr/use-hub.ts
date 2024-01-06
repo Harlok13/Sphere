@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {HubConnection, HubConnectionState} from "@microsoft/signalr";
-import {INotificationResponse} from "contracts/notification-response";
 import {v4} from "uuid";
 import {useDispatch} from "react-redux";
-import {setNewNotification} from "BL/slices/notifications/notifications";
+import {INotificationResponse} from "shared/contracts/notification-response";
+import {setNewNotification} from "store/notifications/notifications.slice";
 
 export const useHub = (hubConnection?: HubConnection) => {
     const [hubConnectionState, setHubConnectionState] = useState<HubConnectionState>(hubConnection?.state ?? HubConnectionState.Disconnected);
@@ -42,7 +42,7 @@ export const useHub = (hubConnection?: HubConnection) => {
         if (hubConnection.state === HubConnectionState.Disconnected) {
             const notification: INotificationResponse = {
                 notificationId: v4(),
-                notificationText: "Connection lost."
+                notificationText: "Connection lost. Try reloading the page."
             }
             dispatch(setNewNotification(notification));  // TODO: set timeout
             const startPromise = hubConnection

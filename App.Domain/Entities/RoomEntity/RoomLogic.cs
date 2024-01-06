@@ -1,47 +1,143 @@
 using System.Collections.Immutable;
+using System.Text;
 using App.Domain.DomainEvents.RoomDomainEvents;
 using App.Domain.DomainResults;
 using App.Domain.DomainResults.CustomResults;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Enums;
+using App.Domain.Extensions;
 using App.Domain.Messages;
 
 namespace App.Domain.Entities.RoomEntity;
 
 public sealed partial class Room
 {
-    public record StartGameResult(bool CanStart, string? MovePlayerConnectionId, string? ErrorMsg);
-
-    public StartGameResult StartGame(Guid leaderId)
+    public DomainResult CanStartGame(Guid leaderId)
     {
         lock (_lock)
         {
-            var roomLeader = _players.Single(p => p.Id == leaderId);
-            var canStartGame = PlayersInRoom > 1
-                               && roomLeader is { IsLeader: true, Readiness: true }
-                               && Players.All(p => p.Readiness);
+            var roomLeader = _players.SingleOrDefault(p => p.Id == leaderId);
+            if (roomLeader is null)
+                return new DomainError(
+                    Message.Error.Room.PlayerNotFound(nameof(StartGame), leaderId));
 
+            if (_players.Count < 2)
+                return new DomainFailure(
+                    Message.Failure.Room.CanStartGame.NotEnoughPlayers());
 
-            if (canStartGame)
+            if (!roomLeader.IsLeader)
+                return new DomainFailure(
+                    Message.Failure.Room.CanStartGame.NotLeader());
+
+            if (!roomLeader.Readiness)
+                return new DomainFailure(
+                    Message.Failure.Room.CanStartGame.NotReadiness());
+
+            if (!_players.All(p => p.Readiness))
             {
-                SetRoomStatus(RoomStatus.Playing);
+                /* player name can't be null */
+                var players = _players
+                    .Where(p => !p.Readiness)
+                    .Select(p => new { p.PlayerName, p.Id })
+                    .ToImmutableArray();
 
-                // foreach (var player in Players)
-                // {
-                //     player.DecreaseMoney(StartBid);
-                //     IncreaseBank(StartBid);
-                // }
+                var playerNames = new StringBuilder();
+                playerNames.AppendJoin(", ", players.Select(x => x.PlayerName));
 
-                var index = new Random().Next(_players.Count);
-                var movePlayerConnectionId = _players.ToImmutableArray()[index].SetMove(true);
-
-
-                return new StartGameResult(CanStart: true, MovePlayerConnectionId: movePlayerConnectionId,
-                    ErrorMsg: null);
+                return new DomainNotificationFailure(
+                    Reason: Message.Failure.Room.CanStartGame.PlayersNotReady(playerNames.ToString()),
+                    PlayerIds: players.Select(p => p.Id),
+                    NotificationForPlayers: Message.Notification.Room.CanStartGame.NotReady());
             }
 
-            const string errorMsg = ""; // TODO: finish
-            return new StartGameResult(CanStart: false, MovePlayerConnectionId: default, ErrorMsg: errorMsg);
+            if (!_players.All(p => p.Money >= StartBid))
+            {
+                var players = _players
+                    .Where(p => p.Money < StartBid)
+                    .Select(p => new { p.PlayerName, p.Id })
+                    .ToImmutableArray();
+
+                var playerNames = new StringBuilder();
+                playerNames.AppendJoin(", ", players.Select(x => x.PlayerName));
+
+                return new DomainNotificationFailure(
+                    Reason: Message.Failure.Room.CanStartGame.SomeoneNotEnoughMoney(playerNames.ToString()),
+                    PlayerIds: players.Select(p => p.Id),
+                    NotificationForPlayers: Message.Notification.Room.CanStartGame.NotEnoughMoney());
+            }
+
+            return new DomainSuccessResult();
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the next card from the cards deck.
+    /// </summary>
+    /// <param name="playerId">The ID of the player who is getting the next card.</param>
+    /// <returns>
+    /// A <see cref="DomainResult"/> object containing the next card if successful,
+    /// or one of the following:
+    /// <list type="bullet">
+    ///     <item><see cref="DomainError"/>: If there is an error retrieving the card deck.</item>
+    ///     <item><see cref="DomainFailure"/>: If the deck is out of cards.</item>
+    /// </list>
+    /// </returns>
+    private DomainResult GetNextCard(Guid playerId)
+    {
+        var cardsDeckResult = GetCardsDeck();
+        if (cardsDeckResult is DomainError cardsDeckError)
+            return cardsDeckError;
+
+        if (!cardsDeckResult.TryFromDomainResult(out List<CardInDeck>? cardsDeck, out DomainError? error))
+            return error!;
+
+        var cardInDeck = cardsDeck!.FirstOrDefault();
+        if (cardInDeck is null)
+            return new DomainError(
+                Message.Failure.Room.GetNextCard.DeckIsOut());
+
+        cardsDeck!.Remove(cardInDeck);
+
+        var card = Card.Create(Guid.NewGuid(), playerId: playerId, cardInDeck: cardInDeck);
+
+        return new DomainSuccessResult<Card>(card);
+    }
+
+    public DomainResult StartGame(Guid leaderId, IEnumerable<CardInDeck> cardsDeck)
+    {
+        UpdateCardsDeck(cardsDeck); // TODO: ref
+
+        lock (_players)
+        {
+            foreach (var indexAkaDelay in Enumerable.Range(0, _players.Count))
+            {
+                var player = _players[indexAkaDelay];
+
+                var cardResult = GetNextCard(player.Id);
+                if (!cardResult.Success) return cardResult;
+                // if (cardResult is DomainError cardError) return cardError;
+                // if (cardResult is DomainFailure cardFailure) return cardFailure;
+                if (!cardResult.TryFromDomainResult(out Card? card, out DomainError? error)) return error!;
+
+                var delayMs = indexAkaDelay * 1000;
+
+                var playerStartGameResult = player.StartGame(startBid: StartBid, card: card!, delayMs: delayMs);
+                if (playerStartGameResult is DomainFailure playerStartGameFailure)
+                    return playerStartGameFailure;
+
+                if (playerStartGameResult is DomainError playerStartGameError)
+                    return playerStartGameError;
+
+                IncreaseBank(StartBid);
+
+                if (player.Id == leaderId)
+                {
+                    player.SetMove(true);
+                }
+            }
+
+            UpdateCardsDeck(_cardsDeck);
+            return new DomainSuccessResult();
         }
     }
 
@@ -52,12 +148,12 @@ public sealed partial class Room
             var sender = Players.SingleOrDefault(p => p.Id == senderId);
             if (sender is null)
                 return new DomainError(
-                    Message.Error.Room.PlayerNotFound(nameof(Message.Error.Room.TransferLeadership), senderId));
+                    Message.Error.Room.PlayerNotFound(nameof(TransferLeadership), senderId));
 
             var receiver = Players.SingleOrDefault(p => p.Id == receiverId);
             if (receiver is null)
                 return new DomainError(
-                    Message.Error.Room.PlayerNotFound(nameof(Message.Error.Room.TransferLeadership), receiverId));
+                    Message.Error.Room.PlayerNotFound(nameof(TransferLeadership), receiverId));
 
             if (!sender.IsLeader)
                 return new DomainFailure(
@@ -69,8 +165,10 @@ public sealed partial class Room
             _domainEvents.Add(new TransferredLeadershipDomainEvent(
                 SenderId: senderId,
                 ReceiverId: receiverId,
-                NotificationForSender: Message.Notification.Room.TransferLeadership.SuccessTransfer(receiver.PlayerName),
-                NotificationForReceiver: Message.Notification.Room.TransferLeadership.ReceiveLeadership(sender.PlayerName)));
+                NotificationForSender:
+                Message.Notification.Room.TransferLeadership.SuccessTransfer(receiver.PlayerName),
+                NotificationForReceiver: Message.Notification.Room.TransferLeadership.ReceiveLeadership(
+                    sender.PlayerName)));
 
             return new DomainSuccessResult();
         }
@@ -88,10 +186,10 @@ public sealed partial class Room
 
             reconnectPlayer.SetOnline(true, newConnectionId);
 
-            return new ReconnectPlayerDomainResult(reconnectPlayer);
+            return new DomainSuccessResult<Player>(reconnectPlayer);
         }
     }
-    
+
     public DomainResult DisconnectPlayer(Guid disconnectPlayerId)
     {
         lock (_lock)
@@ -116,7 +214,7 @@ public sealed partial class Room
             return new DomainSuccessResult();
         }
     }
-    
+
     public DomainResult RemovePlayerFromRoom(Guid playerId)
     {
         lock (_lock)
@@ -125,6 +223,10 @@ public sealed partial class Room
             if (player is null)
                 return new DomainError(
                     Message.Error.Room.PlayerNotFound(nameof(RemovePlayerFromRoom), playerId));
+
+            if (player.InGame)
+                return new DomainFailure(
+                    Message.Failure.Room.RemovePlayerFromRoom.InGame());
 
             RemovePlayer(player);
 
@@ -135,8 +237,7 @@ public sealed partial class Room
                     return new DomainError(setNewRoomLeaderError.Reason);
             }
 
-
-            return new RemovePlayerFromRoomDomainResult(player.Money);
+            return new DomainSuccessResult<int>(player.Money);
         }
     }
 
@@ -162,12 +263,12 @@ public sealed partial class Room
 
     public DomainResult CanPlayerJoin(Guid playerId)
     {
-        if (Players.Count == RoomSize)
-            return new DomainFailure(
-                Message.Failure.Room.CanPlayerJoin.RoomIsFull(RoomName));
-
         lock (_kickedPlayers)
         {
+            if (_players.Count == RoomSize)
+                return new DomainFailure(
+                    Message.Failure.Room.CanPlayerJoin.RoomIsFull(RoomName));
+
             var wasKicked = _kickedPlayers.Any(p => p.PlayerId == playerId);
             if (wasKicked)
             {
@@ -192,69 +293,126 @@ public sealed partial class Room
             return new DomainFailure(
                 Message.Failure.Room.JoinToRoom.NotEnoughMoney(RoomName));
 
-        var isLeader = _players.Count < 1;
-        var player = Player.Create(
-            id: playerId,
-            playerName: playerName,
-            roomId: Id,
-            money: money,
-            connectionId: connectionId,
-            isLeader: isLeader,
-            room: this);
+        lock (_players)
+        {
+            var isLeader = _players.Count < 1;
+            var player = Player.Create(
+                id: playerId,
+                playerName: playerName,
+                roomId: Id,
+                money: money,
+                connectionId: connectionId,
+                isLeader: isLeader,
+                room: this);
 
-        AddNewPlayer(player);
+            AddNewPlayer(player);
 
-        return new DomainSuccessResult();
+            return new DomainSuccessResult();
+        }
     }
 
     public DomainResult KickPlayer(Guid initiatorId, Guid kickedId)
     {
-        var initiator = _players.SingleOrDefault(p => p.Id == initiatorId);
-        if (initiator is null)
-            return new DomainError(
-                Message.Error.Room.PlayerNotFound(nameof(KickPlayer), initiatorId));
+        lock (_players)
+        {
+            var initiator = _players.SingleOrDefault(p => p.Id == initiatorId);
+            if (initiator is null)
+                return new DomainError(
+                    Message.Error.Room.PlayerNotFound(nameof(KickPlayer), initiatorId));
 
+            var kickedPlayer = _players.SingleOrDefault(p => p.Id == kickedId);
+            if (kickedPlayer is null)
+                return new DomainError(
+                    Message.Error.Room.PlayerNotFound(nameof(KickPlayer), kickedId));
 
-        var kickedPlayer = _players.SingleOrDefault(p => p.Id == kickedId);
-        if (kickedPlayer is null)
-            return new DomainError(
-                Message.Error.Room.PlayerNotFound(nameof(KickPlayer), kickedId));
+            if (!initiator.IsLeader)
+                return new DomainFailure(
+                    Message.Failure.Room.KickPlayer.NotLeader());
 
+            if (kickedPlayer.InGame)
+                return new DomainFailure(
+                    Message.Failure.Room.KickPlayer.PlayerInGame(kickedPlayer.PlayerName));
 
-        if (!initiator.IsLeader)
-            return new DomainFailure(
-                Message.Failure.Room.KickPlayer.NotLeader());
+            AddKickedPlayer(initiator: initiator, kickedPlayer: kickedPlayer);
 
-        if (kickedPlayer.InGame)
-            return new DomainFailure(
-                Message.Failure.Room.KickPlayer.PlayerInGame(kickedPlayer.PlayerName));
-
-        AddKickedPlayer(initiator: initiator, kickedPlayer: kickedPlayer);
-
-        return new DomainSuccessResult();
+            return new DomainSuccessResult();
+        }
     }
 
-    public DomainResult PlayerHit(Guid playerId, Card card)
+    public DomainResult PlayerHit(Guid playerId)
     {
-        var player = _players.SingleOrDefault(p => p.Id == playerId);
-        if (player is null)
-            return new DomainError(
-                Message.Error.Room.PlayerNotFound(nameof(PlayerHit), playerId));
+        lock (_players)
+        {
+            var player = _players.SingleOrDefault(p => p.Id == playerId);
+            if (player is null)
+                return new DomainError(
+                    Message.Error.Room.PlayerNotFound(nameof(PlayerHit), playerId));
 
-        player.Hit(card);
+            var getCardsCountResult = player.GetCardsCount();
+            if (!getCardsCountResult.TryFromDomainResult(out int cardsCount, out DomainError? getCardsCountError))
+                return getCardsCountError!;
 
-        return new DomainSuccessResult();
+            if (cardsCount >= MaxCardsCount)
+                return new DomainFailure(
+                    Message.Failure.Room.PlayerHit.MaxCards(MaxCardsCount));
+
+            var cardResult = GetNextCard(playerId);
+            if (!cardResult.Success) return cardResult;
+            // if (cardResult is DomainError cardError) return cardError;
+            // if (cardResult is DomainFailure cardFailure) return cardFailure;
+            if (!cardResult.TryFromDomainResult(out Card? card, out DomainError? error)) return error!;
+
+            var hitResult = player.Hit(card!);
+            if (hitResult is DomainError hitError) return hitError;
+
+            return new DomainSuccessResult();
+        }
     }
 
     public DomainResult PlayerStay(Guid playerId)
     {
-        var player = _players.SingleOrDefault(p => p.Id == playerId);
-        if (player is null)
-            return new DomainError(
-                Message.Error.Room.PlayerNotFound(nameof(PlayerHit), playerId));
+        lock (_players)
+        {
+            var player = _players.SingleOrDefault(p => p.Id == playerId);
+            if (player is null)
+                return new DomainError(
+                    Message.Error.Room.PlayerNotFound(nameof(PlayerHit), playerId));
 
-        player.Stay();
+            player.Stay();
 
-        return new DomainSuccessResult();
+            return new DomainSuccessResult();
+        }
+    }
+
+    public DomainResult PlayerToggleReadiness(Guid playerId)
+    {
+        lock (_players)
+        {
+            var player = _players.SingleOrDefault(p => p.Id == playerId);
+            if (player is null)
+                return new DomainError(
+                    Message.Error.Room.PlayerNotFound(nameof(PlayerToggleReadiness), playerId));
+
+            player.ToggleReadiness();
+
+            return new DomainSuccessResult();
+        }
+    }
+
+    public bool PassTurn()
+    {
+        lock (_players)
+        {
+            if (_players.Any(p => p.MoveStatus == MoveStatus.None))
+            {
+                _players
+                    .First(p => p.MoveStatus == MoveStatus.None)
+                    .SetMove(true);
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

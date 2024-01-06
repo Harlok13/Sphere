@@ -27,7 +27,7 @@ public class RemovedPlayerDomainEventHandler : INotificationHandler<RemovedPlaye
         /* Reset the player state */
         await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_RemoveFromRoom(cT);
         _logger.LogInformation(
-            "{InvokedMethod} | A command to leave the room \"{RoomId}\" has been sent to player \"{PlayerId}\".",
+            "{InvokedMethod} - A command to leave from the room \"{RoomId}\" has been sent to the player \"{PlayerId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_RemoveFromRoom),
             roomId,
             playerId);

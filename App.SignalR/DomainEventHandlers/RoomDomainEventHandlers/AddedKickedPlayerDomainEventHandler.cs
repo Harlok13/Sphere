@@ -26,6 +26,11 @@ public class AddedKickedPlayerDomainEventHandler : INotificationHandler<AddedKic
             out string notificationForInitiator,
             out string notificationForKickedPlayer);
         
+        _logger.LogInformation(
+            "Send a notification to \"{InitiatorConnId}\" and \"{KickedConnId}\".",
+            initiatorConnectionId,
+            kickedPlayerConnectionId);
+        
         await _publisher.Publish(new ClientNotificationEvent(
                 NotificationText: notificationForInitiator,
                 TargetConnectionId: initiatorConnectionId),

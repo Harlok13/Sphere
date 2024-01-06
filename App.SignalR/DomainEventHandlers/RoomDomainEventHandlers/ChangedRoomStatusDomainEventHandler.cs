@@ -29,9 +29,10 @@ public class ChangedRoomStatusDomainEventHandler : INotificationHandler<ChangedR
         
         await _hubContext.Clients.All.ReceiveAll_ChangedRoomStatus(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The changed value \"{UpdatedValue}\" of room \"{RoomId}\" has been sent to all users.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of room \"{RoomId}\" has been sent to all users.",
             nameof(_hubContext.Clients.All.ReceiveAll_ChangedRoomStatus),
-            nameof(roomStatus).ToUpper(),
+            nameof(notification.RoomStatus),
+            roomStatus,
             roomId);
     }
 }

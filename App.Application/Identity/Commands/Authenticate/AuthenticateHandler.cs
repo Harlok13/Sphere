@@ -1,3 +1,4 @@
+using App.Application.Extensions;
 using App.Application.Identity.Repositories;
 using App.Application.Identity.Services;
 using App.Application.Repositories;
@@ -5,6 +6,7 @@ using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Identity.Responses;
 using App.Contracts.Mapper;
 using App.Domain.Entities;
+using App.Domain.Entities.PlayerInfoEntity;
 using App.Domain.Identity.Entities;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
@@ -79,8 +81,12 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenValidityInDays);
 
         await _appUnitOfWork.SaveChangesAsync(cT);
-        var statistic = await _playerInfoRepository.GetPlayerInfoByIdAsync(user.Id, cT);
-        var statisticResponse = PlayerMapper.MapPlayerInfoToPlayerInfoResponse(statistic);
+        var playerInfoResult = await _playerInfoRepository.GetPlayerInfoByIdAsync(user.Id, cT);
+        if (!playerInfoResult.TryFromResult(out PlayerInfo? playerInfo, out var playerInfoErrors))
+        {
+            // TODO: finish
+        }
+        var statisticResponse = PlayerMapper.MapPlayerInfoToPlayerInfoResponse(playerInfo!);
 
         return new AuthenticateResponse(
             PlayerId: user.Id,

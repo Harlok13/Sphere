@@ -16,11 +16,13 @@ public interface IRoomRepository
 
     Task<ICollection<Room>?> GetFirstPageAsNoTrackingAsync(CancellationToken cT);
 
-    Task RemoveAsync(Guid roomId, CancellationToken cT);
+    Task<Result> RemoveAsync(Guid? roomId, CancellationToken cT);
 
     Task<Result<Room>> GetByPlayerIdAsync1(Guid? playerId, CancellationToken cT);
     Task<Room?> GetByPlayerIdAsNoTrackingAsync2(Guid playerId, CancellationToken cT);
 
     Task<Result<RoomIdDto>> GetIdByPlayerIdAsync(Guid? playerId, CancellationToken cT);
+
+    void Update(Room room);
 }
 

@@ -8,20 +8,29 @@ internal abstract partial class Message
         {
             internal abstract class AddKickedPlayer
             {
-                public static string WasKicked(string kickInitiatorName)
+                internal static string WasKicked(string kickInitiatorName)
                     => $"You were kicked out of the room by \"{kickInitiatorName}\". You can join if a member of this room invites you.";
 
-                public static string SuccessKick(string kickedPlayerName)
+                internal static string SuccessKick(string kickedPlayerName)
                     => $"You kick \"{kickedPlayerName}\" from room.";
             }
 
             internal abstract class TransferLeadership
             {
-                public static string SuccessTransfer(string receiverName)
+                internal static string SuccessTransfer(string receiverName)
                     => $"You have given leadership to the player \"{receiverName}\".";
 
-                public static string ReceiveLeadership(string senderName)
+                internal static string ReceiveLeadership(string senderName)
                     => $"The player \"{senderName}\" gave you the lead.";
+            }
+
+            internal abstract class CanStartGame
+            {
+                internal static string NotReady()
+                    => "The leader wants to start the game but you are not prepared.";
+
+                internal static string NotEnoughMoney()
+                    => "The leader wants to start the game but you don't have enough money for the start bet.";
             }
         }
     }

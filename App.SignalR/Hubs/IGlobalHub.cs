@@ -15,7 +15,7 @@ public interface IGlobalHub
     Task ReceiveAll_RemovedRoom(RemovedRoomResponse response, CancellationToken cT);
     Task ReceiveGroup_ChangedPlayerReadiness(ChangedPlayerReadinessResponse response, CancellationToken cT);
     Task ReceiveOwn_ChangedPlayerReadiness(ChangedPlayerReadinessResponse response, CancellationToken cT);
-    Task ReceiveOwn_SelectStartGameMoney(SelectStartGameMoneyResponse response, CancellationToken cT);
+    Task ReceiveUser_SelectStartGameMoney(SelectStartGameMoneyResponse response, CancellationToken cT);
     Task ReceiveClient_Notification(NotificationResponse response, CancellationToken cT);
     Task ReceiveUser_Notification(NotificationResponse response, CancellationToken cT);
     Task ReceiveOwn_ChangedPlayerInfoMoney(ChangedPlayerInfoMoneyResponse response, CancellationToken cT);
@@ -42,6 +42,5 @@ public interface IGlobalHub
     Task ReceiveGroup_ChangedPlayerOnline(ChangedPlayerOnlineResponse response, CancellationToken cT);
     Task ReceiveClient_ChangedPlayerOnline(ChangedPlayerOnlineResponse response, CancellationToken cT);
     Task ReceiveClient_ReconnectingInitRoomData(ReconnectingInitRoomDataResponse response, CancellationToken cT);
-    Task ReceiveUser_NavigateToLobby(CancellationToken cT);
-    
+    Task ReceiveUser_Navigate(NavigateResponse response, CancellationToken cT);
 }

@@ -48,7 +48,7 @@ public class GetInitDataHandler : IQueryHandler<GetInitDataQuery, InitDataRespon
         var playerResult = await _playerRepository.GetPlayerByIdAsNoTrackingAsync(playerId, cT);
         playerResult.TryFromResult(out PlayerDto? playerDto, out _);
 
-        // if (!playerResult.TryFromResult(out PlayerDto? playerDto, out var errors))
+        // if (!playerResult.TryFromDomainResult(out PlayerDto? playerDto, out var errors))
         // {
         //     foreach (var error in errors) _logger.LogError(error.Message);
         //     

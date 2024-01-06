@@ -33,10 +33,10 @@ public sealed class CardsDeckService : ICardsDeckService
     public async Task ResetAsync(Guid roomId, CancellationToken cT)
     {
         await _cardsDeckRepository.RemoveCardsDeck(roomId, cT);
-        await CreateAsync(roomId, cT);
+        // await CreateAsync(roomId, cT);
     }
 
-    public async Task CreateAsync(Guid roomId, CancellationToken cT)
+    public IEnumerable<CardInDeck> Create()
     {
         var data = ReadJson();
         var cardsDeck = new List<CardInDeck>();
@@ -50,7 +50,8 @@ public sealed class CardsDeckService : ICardsDeckService
         
         Shuffle(cardsDeck);
 
-        await _cardsDeckRepository.AddCardsDeckAsync(roomId: roomId, cardsDeck: cardsDeck, cT);
+        return cardsDeck;
+        // await _cardsDeckRepository.AddCardsDeckAsync(roomId: roomId, cardsDeck: cardsDeck, cT);
     }
 
     private void Shuffle(List<CardInDeck> cardsDeck)

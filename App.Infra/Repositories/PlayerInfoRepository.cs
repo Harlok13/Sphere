@@ -1,7 +1,9 @@
 using App.Application.Repositories;
+using App.Contracts.Data;
 using App.Domain.Shared;
 using App.Domain.Shared.ResultImplementations;
 using App.Infra.Data.Context;
+using App.Infra.Messages;
 using Microsoft.EntityFrameworkCore;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
@@ -25,14 +27,14 @@ public class PlayerInfoRepository : IPlayerInfoRepository
     {
         if (playerId is null)
             return InvalidResult<PlayerInfo>.Create(
-                new Error(""));
+                new Error(ErrorMessages.ArgumentIsNull(nameof(playerId), nameof(GetPlayerInfoByIdAsync))));
 
         var playerInfo = await _context.PlayerInfos
             .SingleOrDefaultAsync(x => x.UserId == playerId, cT);
         
         if (playerInfo is null)
             return NotFoundResult<PlayerInfo>.Create(
-                new Error(""));
+                new Error(ErrorMessages.NotFound(nameof(playerInfo), nameof(GetPlayerInfoByIdAsync))));
         
         return SuccessResult<PlayerInfo>.Create(playerInfo);
     }
@@ -42,6 +44,24 @@ public class PlayerInfoRepository : IPlayerInfoRepository
         return await _context.PlayerInfos
             .AsNoTracking()
             .SingleOrDefaultAsync(e => e.UserId == playerId, cT);
+    }
+
+    public async Task<Result<PlayerInfoMoneyDto>> GetMoneyByIdAsync(Guid? playerId, CancellationToken cT)
+    {
+        if (playerId is null)
+            return InvalidResult<PlayerInfoMoneyDto>.Create(
+                new Error(ErrorMessages.ArgumentIsNull(nameof(playerId), nameof(GetMoneyByIdAsync))));
+
+        var money = await _context.Set<PlayerInfo>()
+            .Where(p => p.UserId == playerId)
+            .Select(p => new PlayerInfoMoneyDto(p.Money))
+            .SingleOrDefaultAsync(cT);
+
+        if (money is null)
+            return NotFoundResult<PlayerInfoMoneyDto>.Create(
+                new Error(ErrorMessages.NotFound(nameof(money), nameof(GetMoneyByIdAsync))));
+
+        return SuccessResult<PlayerInfoMoneyDto>.Create(money);
     }
 
     public Task PlayerWinActionAsync(Guid userId, CancellationToken cT)

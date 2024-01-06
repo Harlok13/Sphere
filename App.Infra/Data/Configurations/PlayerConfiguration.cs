@@ -67,6 +67,10 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .HasColumnName("online")
             .IsRequired();
 
+        builder.Property(e => e.Cards)
+            .HasColumnName("cards")
+            .HasColumnType("jsonb");
+
         builder
             .HasOne(e => e.Room)
             .WithMany(e => e.Players)

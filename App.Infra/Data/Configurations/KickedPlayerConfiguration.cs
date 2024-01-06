@@ -16,6 +16,10 @@ public class KickedPlayerConfiguration : IEntityTypeConfiguration<KickedPlayer>
         //     .HasColumnName("player_id")
         //     .IsRequired();
 
+        builder.Property(e => e.Id)
+            .ValueGeneratedNever()
+            .HasColumnName("id");
+
         builder.Property(e => e.PlayerName)
             .HasColumnName("player_name")
             .HasColumnType("VARCHAR")

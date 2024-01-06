@@ -28,8 +28,10 @@ public class ChangedRoomBankDomainEventHandler : INotificationHandler<ChangedRoo
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedRoomBank(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The changed value \"Bank\" of room \"{RoomId}\" has been sent to the group.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of room \"{RoomId}\" has been sent to the group.",
             nameof(_hubContext.Clients.All.ReceiveGroup_ChangedRoomBank),
+            nameof(notification.Bank),
+            bank,
             roomId);
     }
 }

@@ -1,5 +1,7 @@
 using App.Application.Extensions;
+using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Enums;
 using App.Domain.DomainResults;
 using App.Domain.Entities.PlayerInfoEntity;
 using App.Domain.Entities.RoomEntity;
@@ -47,6 +49,7 @@ public class JoinToRoomHandler : ICommandHandler<JoinToRoomCommand, bool>
                     TargetConnectionId: connectionId),
                 cT);
 
+            return false;
         }
         
         var playerInfoResult = await _unitOfWork.PlayerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
@@ -82,6 +85,11 @@ public class JoinToRoomHandler : ICommandHandler<JoinToRoomCommand, bool>
             return await SendSomethingWentWrongNotification(null, connectionId, cT);
         }
 
+        await _publisher.Publish(new UserNavigateEvent(
+                TargetId: playerId,
+                Navigate: NavigateEnum.Room),
+            cT);
+        
         return saveChangesResult;
     }
     

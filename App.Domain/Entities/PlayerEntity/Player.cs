@@ -1,13 +1,18 @@
+using System.ComponentModel;
+using System.Text.Json;
 using App.Domain.DomainEvents.PlayerDomainEvents;
+using App.Domain.DomainResults;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Enums;
+using App.Domain.Messages;
 using App.Domain.Primitives;
 
 namespace App.Domain.Entities.PlayerEntity;
 
 public sealed partial class Player : Entity, IHasDomainEvent
 {
-    private readonly List<Card> _cards = new();
+    // private readonly List<Card> _cards = new();
+    private List<Card>? _cards;
 
     private readonly List<DomainEvent> _domainEvents = new();
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents;
@@ -52,7 +57,10 @@ public sealed partial class Player : Entity, IHasDomainEvent
 
     public int Score { get; private set; }
 
-    public IReadOnlyCollection<Card> Cards => _cards;
+    // public IReadOnlyCollection<Card> Cards => _cards;
+
+    [Description("Json column")]
+    public string? Cards { get; private set; }
 
     public bool Move { get; private set; }
 
@@ -90,7 +98,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
         return player;
     }
 
-    public void SetIsLeader(bool value)
+    internal void SetIsLeader(bool value)
     {
         IsLeader = value;
         _domainEvents.Add(new ChangedPlayerIsLeaderDomainEvent(
@@ -100,7 +108,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
             PlayerId: Id));
     }
 
-    public void ToggleReadiness()
+    internal void ToggleReadiness()
     {
         Readiness = !Readiness;
         _domainEvents.Add(new ChangedPlayerReadinessDomainEvent(
@@ -110,17 +118,23 @@ public sealed partial class Player : Entity, IHasDomainEvent
             ConnectionId: ConnectionId));
     }
 
-    public void DecreaseMoney(int value)
+    private DomainResult DecreaseMoney(int value) 
     {
+        if (Money < value) 
+            return new DomainFailure(
+                Message.Failure.Player.DecreaseMoney.NotEnoughMoney(Money - value));
+        
         Money -= value;
         _domainEvents.Add(new ChangedPlayerMoneyDomainEvent(
             Money: Money,
             ConnectionId: ConnectionId,
             RoomId: RoomId,
             PlayerId: Id));
+
+        return new DomainSuccessResult();
     }
 
-    public void IncreaseMoney(int value)
+    public void IncreaseMoney(int value)  // TODO: make private/internal
     {
         Money += value;
         _domainEvents.Add(new ChangedPlayerMoneyDomainEvent(
@@ -130,23 +144,30 @@ public sealed partial class Player : Entity, IHasDomainEvent
             PlayerId: Id));
     }
 
-    public string SetMove(bool value)
+    internal void SetMove(bool value)
     {
         Move = value;
         _domainEvents.Add(new ChangedPlayerMoveDomainEvent(Move: Move, ConnectionId: ConnectionId));
-        return ConnectionId;
     }
-    
-    public void AddNewCard(Card card, int delayMs = default)
+
+    private DomainResult AddNewCard(Card card, int delayMs = default) 
     {
-        _cards.Add(card);
+        var syncCardsResult = SyncCards();
+        if (syncCardsResult is DomainError syncCardsError) return syncCardsError;
+        
+        _cards!.Add(card);
         SetScore(card.Value);
+
+        Cards = JsonSerializer.Serialize(_cards);
+        
         _domainEvents.Add(new AddedCardDomainEvent(
             Card: card,
             DelayMs: delayMs,
             RoomId: RoomId,
             PlayerId: Id,
             ConnectionId: ConnectionId));
+
+        return new DomainSuccessResult();
     }
 
     private void SetScore(int cardValue)
@@ -154,12 +175,13 @@ public sealed partial class Player : Entity, IHasDomainEvent
         Score = cardValue;
     }
 
-    public void ResetCards()
+    internal void ResetCards()
     {
-        _cards.Clear();
+        _cards?.Clear();
+        Cards = default;
     }
 
-    public void SetInGame(bool value)
+    private void SetInGame(bool value)  
     {
         InGame = value;
         _domainEvents.Add(new ChangedPlayerInGameDomainEvent(
@@ -169,33 +191,9 @@ public sealed partial class Player : Entity, IHasDomainEvent
             ConnectionId: ConnectionId));
     }
 
-    public void SetMoveStatus(MoveStatus moveStatus)
+    public void SetMoveStatus(MoveStatus moveStatus)  // TODO: make private/internal
     {
         MoveStatus = moveStatus;
-    }
-
-    public void Hit(Card card)
-    {
-        AddNewCard(card);
-        SetMoveStatus(MoveStatus.Hit);
-        SetMove(false);
-    }
-
-    public void Stay()
-    {
-        SetMoveStatus(MoveStatus.Stay);
-        SetMove(false);
-    }
-
-    public void EndGame()
-    {
-        ResetCards();
-        SetScore(default);
-        ToggleReadiness();
-        SetInGame(default);
-        SetMoveStatus(MoveStatus.None);
-        
-        // TODO: check money, suggest setting a new amount
     }
 
     private void SetConnectionId(string connId)
@@ -203,7 +201,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
         ConnectionId = connId;
     }
 
-    public void SetOnline(bool onlineValue, string? connId = null)
+    internal void SetOnline(bool onlineValue, string? connId = null)
     {
         Online = onlineValue;
 
@@ -217,5 +215,25 @@ public sealed partial class Player : Entity, IHasDomainEvent
             RoomId: RoomId,
             PlayerId: Id,
             ConnectionId: ConnectionId));
+    }
+
+    internal DomainResult GetCardsCount()
+    {
+        var syncCardsResult = SyncCards();
+        if (syncCardsResult is DomainError syncCardsError) return syncCardsError;
+
+        return new DomainSuccessResult<int>(_cards!.Count);
+    }
+
+    private DomainResult SyncCards()
+    {
+        if (Cards is null) _cards ??= new List<Card>();
+
+        _cards ??= JsonSerializer.Deserialize<List<Card>>(Cards!);
+        if (_cards is null)
+            return new DomainError(
+                Message.Error.DeserializeError(nameof(_cards), nameof(Room)));
+
+        return new DomainSuccessResult();
     }
 }

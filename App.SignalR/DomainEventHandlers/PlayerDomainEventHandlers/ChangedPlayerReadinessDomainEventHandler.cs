@@ -28,14 +28,18 @@ public class ChangedPlayerReadinessDomainEventHandler : INotificationHandler<Cha
 
         await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerReadiness(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The updated value \"Readiness\" has been set to player \"{ConnectionId}\".",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerReadiness),
+            nameof(notification.Readiness),
+            readiness,
             connectionId);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerReadiness(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The group \"{RoomId}\" received an updated player.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the group \"{RoomId}\".",
             nameof(_hubContext.Clients.All.ReceiveGroup_ChangedPlayerReadiness),
-            connectionId);
+            nameof(notification.Readiness),
+            readiness,
+            roomId);
     }
 }

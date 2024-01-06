@@ -30,7 +30,7 @@ public class CreatedPlayerDomainEventHandler : INotificationHandler<CreatedPlaye
 
         await _hubContext.Groups.AddToGroupAsync(player.ConnectionId, room.Id.ToString(), cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The player \"{ConnectionId} - {PlayerName}\" was joined to the group \"{RoomId}\".",
+            "{InvokedMethod} - The player \"{ConnectionId} - {PlayerName}\" was joined to the group \"{RoomId}\".",
             nameof(_hubContext.Groups.AddToGroupAsync),
             player.ConnectionId,
             player.PlayerName,
@@ -47,9 +47,10 @@ public class CreatedPlayerDomainEventHandler : INotificationHandler<CreatedPlaye
         
         await _hubContext.Clients.User(player.Id.ToString()).ReceiveOwn_CreatedPlayer(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The init data of room \"{RoomId}\" has been sent to player \"{ConnectionId}\".",
+            "{InvokedMethod} - The init data of room \"{RoomId} - {RoomName}\" has been sent to the player \"{ConnectionId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_CreatedPlayer),
             room.Id,
+            room.RoomName,
             player.ConnectionId);
     }
 }

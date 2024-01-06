@@ -28,9 +28,10 @@ public class ChangedPlayerInfoMoneyDomainEventHandler : INotificationHandler<Cha
 
         await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_ChangedPlayerInfoMoney(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | A new value for property \"{UpdatedProperty}\" has been sent to player \"{PlayerId}\".",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerInfoMoney),
             nameof(notification.Money),
+            notification,
             playerId);
     }
 }

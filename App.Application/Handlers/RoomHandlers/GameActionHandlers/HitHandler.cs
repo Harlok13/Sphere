@@ -1,4 +1,5 @@
 using App.Application.Extensions;
+using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
 using App.Application.Services.Interfaces;
 using App.Domain.DomainResults;
@@ -18,19 +19,16 @@ public class HitHandler : ICommandHandler<HitCommand, bool>
     private readonly IAppUnitOfWork _unitOfWork;
     private readonly IMediator _mediator;
     private readonly IPublisher _publisher;
-    private readonly ICardsDeckService _cardsDeck;
 
     public HitHandler(
         ILogger<HitHandler> logger,
         IAppUnitOfWork unitOfWork,
         IMediator mediator,
-        ICardsDeckService cardsDeck, 
         IPublisher publisher)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mediator = mediator;
-        _cardsDeck = cardsDeck;
         _publisher = publisher;
     }
 
@@ -50,16 +48,24 @@ public class HitHandler : ICommandHandler<HitCommand, bool>
 
             return false;
         }
-
-        var card = await _cardsDeck.GetNextCardAsync(roomId: roomId, playerId: playerId, cT); 
         
-        var playerHitResult = room!.PlayerHit(playerId: playerId, card: card);
+        var playerHitResult = room!.PlayerHit(playerId);
         if (playerHitResult is DomainError playerHitError)
         {
             _logger.LogError(playerHitError.Reason);
 
             await _publisher.Publish(new UserNotificationEvent(
                     NotificationText: NotificationMessages.SomethingWentWrong(),
+                    TargetId: playerId),
+                cT);
+
+            return false;
+        }
+
+        if (playerHitResult is DomainFailure playerHitFailure)
+        {
+            await _publisher.Publish(new UserNotificationEvent(
+                    NotificationText: playerHitFailure.Reason,
                     TargetId: playerId),
                 cT);
 

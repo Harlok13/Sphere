@@ -28,14 +28,18 @@ public class ChangedPlayerMoneyDomainEventHandler : INotificationHandler<Changed
 
         await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerMoney(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The changed value \"Money\" has been sent to the player {ConnectionId}.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
             nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerMoney),
+            nameof(notification.Money),
+            money,
             connectionId);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerMoney(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The changed value \"Money\" of player \"{ConnectionId}\" has been sent to the group {RoomId}.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of player \"{ConnectionId}\" has been sent to the group \"{RoomId}\".",
             nameof(_hubContext.Clients.All.ReceiveGroup_ChangedPlayerMoney),
+            nameof(notification.Money),
+            money,
             connectionId,
             roomId);
     }

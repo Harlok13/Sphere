@@ -1,3 +1,4 @@
+using System.Text.Json;
 using App.Contracts.Data;
 using App.Contracts.Identity.Responses;
 using App.Contracts.Responses;
@@ -28,8 +29,30 @@ public class PlayerMapper
             Has21: entity.Has21);
     }
 
+    // public static PlayerInfoDto MapPlayerToPlayerInfoDto(PlayerInfo entity)
+    // {
+    //     return new PlayerInfoDto(
+    //         Id: entity.UserId,
+    //         AvatarUrl: entity.AvatarUrl,
+    //         PlayerName: entity.PlayerName,
+    //         Matches: entity.Matches,
+    //         Loses: entity.Loses,
+    //         Wins: entity.Wins,
+    //         Draws: entity.Draws,
+    //         AllExp: entity.AllExp,
+    //         CurrentExp: entity.CurrentExp,
+    //         TargetExp: entity.TargetExp,
+    //         Money: entity.Money,
+    //         Likes: entity.Likes,
+    //         Level: entity.Level,
+    //         Has21: entity.Has21);
+    // }
+
     public static PlayerDto MapPlayerToPlayerDto(Player entity)
     {
+        
+        // TODO: fix
+        var cards = entity.Cards is null ? new List<Card>() : JsonSerializer.Deserialize<List<Card>>(entity.Cards);
         return new PlayerDto(
             Id: entity.Id,
             RoomId: entity.RoomId,
@@ -38,7 +61,7 @@ public class PlayerMapper
             PlayerName: entity.PlayerName,
             Score: entity.Score,
             AvatarUrl: entity.AvatarUrl,
-            Cards: entity.Cards,
+            Cards: cards,
             Move: entity.Move,
             Money: entity.Money,
             InGame: entity.InGame,

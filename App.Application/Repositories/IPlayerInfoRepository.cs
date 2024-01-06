@@ -1,3 +1,4 @@
+using App.Contracts.Data;
 using App.Domain.Shared;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
@@ -8,6 +9,7 @@ public interface IPlayerInfoRepository
     Task CreatePlayerInfoAsync(Guid userId, string playerName, CancellationToken cT);
     Task<Result<PlayerInfo>> GetPlayerInfoByIdAsync(Guid? playerId, CancellationToken cT = default);  // TODO: rename ...ByPlayerId
     Task<PlayerInfo?> GetPlayerInfoByIdAsNoTrackingAsync(Guid playerId, CancellationToken cT);
+    Task<Result<PlayerInfoMoneyDto>> GetMoneyByIdAsync(Guid? playerId, CancellationToken cT);
 
     Task PlayerWinActionAsync(Guid userId, CancellationToken cT);
     Task PlayerLoseActionAsync(Guid userId, CancellationToken cT);

@@ -1,20 +1,34 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "paths": {
-      "BL/*": ["./BL/*"],
-      "app/*": ["./app/*"],
-      "components/*": ["./components/*"],
-      "shared/*": ["./shared/*"],
-      "pages/*": ["./pages/*"],
-      "contracts/*": ["./contracts/*"],
-      "services/*": ["./services/*"],
-      "routes/*": ["./routes/*"],
-      "interfaces/*": ["./interfaces/*"],
-      "constants/*": ["./constants/*"],
-      "contexts/*": ["./contexts/*"],
-      "types/*": ["./types/*"]
-    },
+//  "compilerOptions": {
+//    "baseUrl": "./src",
+//    "paths": {
+//      "BL/*": ["./BL/*"],
+//      "app/*": ["./app/*"],
+//      "components/*": ["./components/*"],
+//      "shared/*": ["./shared/*"],
+//      "pages/*": ["./pages/*"],
+//      "contracts/*": ["./contracts/*"],
+//      "services/*": ["./services/*"],
+//      "routes/*": ["./routes/*"],
+//      "interfaces/*": ["./interfaces/*"],
+//      "constants/*": ["./constants/*"],
+//      "contexts/*": ["./contexts/*"],
+//      "types/*": ["./types/*"]
+//    },
+    "compilerOptions": {
+      "baseUrl": "./src",
+      "paths": {
+        "assets/*": ["./assets/*"],
+        "components/*": ["./components/*"],
+        "configs/*": ["./configs/*"],
+        "data/*": ["./data/*"],
+        "hooks/*": ["./hooks/*"],
+        "providers/*": ["./providers/*"],
+        "services/*": ["./services/*"],
+        "shared/*": ["./shared/*"],
+        "store/*": ["./store/*"],
+        "utils/*": ["./utils/*"]
+      },
     "target": "es5",
     "lib": [
       "dom",

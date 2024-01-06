@@ -2,6 +2,12 @@ namespace App.Infra.Messages;
 
 internal abstract class ErrorMessages
 {
+    internal static string ArgumentIsNull(string argName, string methodName)
+        => $"The argument \"{argName}\" of method \"{methodName}\" is null.";
+
+    internal static string NotFound(string objName, string callingMethod)
+        => $"Calling method \"{callingMethod}\": {objName} was not found.";
+
     internal abstract class Player
     {
         public static string IdIsNull() => "Player id is null.";

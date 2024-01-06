@@ -42,12 +42,12 @@ public class CardConfiguration : IEntityTypeConfiguration<Card>
             .HasColumnType("VARCHAR")
             .HasMaxLength(20)
             .IsRequired();
-
-        builder
-            .HasOne(e => e.Player)
-            .WithMany(e => e.Cards)
-            .HasForeignKey(e => e.PlayerId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("FK_cards_player_player_id");
+        
+        // builder
+        //     .HasOne(e => e.Player)
+        //     .WithMany(e => e.Cards)
+        //     .HasForeignKey(e => e.PlayerId)
+        //     .OnDelete(DeleteBehavior.Cascade)
+        //     .HasConstraintName("FK_cards_player_player_id");
     }
 }

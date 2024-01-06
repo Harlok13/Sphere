@@ -48,16 +48,18 @@ public class AddedCardDomainEventHandler : INotificationHandler<AddedCardDomainE
 
         await _hubContext.Clients.Client(connectionId).ReceiveOwn_AddedCard(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The new card \"Card - {Value}\" has been sent to the player {ConnectionId} with delay {Delay} ms.",
+            "{InvokedMethod} - The new card \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\" with delay {Delay} ms.",
             nameof(_hubContext.Clients.All.ReceiveOwn_AddedCard),
-            card,
+            nameof(notification.Card),
+            card.SuitValue,
             connectionId,
             resultDelay);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_AddedCard(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The new card \"Card - {Value}\" has been sent to the group \"{RoomId}\" with delay {Delay} ms.",
+            "{InvokedMethod} - The new card \"{ValueName} - {Value}\" has been sent to the group \"{RoomId}\" with delay {Delay} ms.",
             nameof(_hubContext.Clients.All.ReceiveGroup_AddedCard),
+            nameof(notification.Card),
             card,
             roomId,
             resultDelay);

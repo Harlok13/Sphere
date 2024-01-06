@@ -1,5 +1,5 @@
-import {IUserStatistic} from "../../interfaces/user/user-statistic.types";
-import {IUser} from "../../interfaces/user/user.types";
+import {IPlayerInfo} from "shared/interfaces/user/player-info.types";
+import {IUser} from "shared/interfaces/user/user.types";
 
 
 class UserService {
@@ -36,7 +36,7 @@ class UserService {
         return JSON.parse(user);
     }
 
-    static getUserStatistic(): IUserStatistic {
+    static getUserStatistic(): IPlayerInfo {
         let user: string = localStorage.getItem("user")
             ? localStorage.getItem("user")!
             : (() => {

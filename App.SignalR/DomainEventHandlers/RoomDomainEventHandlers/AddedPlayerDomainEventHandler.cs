@@ -32,7 +32,7 @@ public class AddedPlayerDomainEventHandler : INotificationHandler<AddedPlayerDom
         
         await _hubContext.Clients.GroupExcept(room.Id.ToString(), player.ConnectionId).ReceiveGroup_AddedPlayer(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The data of new player \"{ConnectionId}\" has been sent to the room \"{RoomId}\", except \"{ExceptedConnectionId}\".",
+            "{InvokedMethod} - The data of new player \"{ConnectionId}\" has been sent to the room \"{RoomId}\", except \"{ExceptedConnectionId}\".",
             nameof(_hubContext.Clients.All.ReceiveGroup_AddedPlayer),
             player.ConnectionId,
             room.Id,

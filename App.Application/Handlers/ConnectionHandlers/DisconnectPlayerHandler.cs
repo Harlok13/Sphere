@@ -1,4 +1,5 @@
 using App.Application.Extensions;
+using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Requests;
 using App.Domain.DomainResults;
@@ -45,7 +46,7 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
         }
 
         // var disconnectedPlayerNoTrack = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
-        // if (!disconnectedPlayerNoTrack.TryFromResult(out PlayerDto? disconnectedPlayerDto, out _))
+        // if (!disconnectedPlayerNoTrack.TryFromDomainResult(out PlayerDto? disconnectedPlayerDto, out _))
         if (!_unitOfWork.PlayerRepository.CheckPlayerExists(authUser.Id))
         {
             _logger.LogInformation(
@@ -62,7 +63,7 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
         }
         
         var disconnectPlayerResult = room!.DisconnectPlayer(authUser.Id);
-        // if (!disconnectPlayerResult.TryFromResult(out Room.DisconnectPlayerDto? disconnectData, out var errors))
+        // if (!disconnectPlayerResult.TryFromDomainResult(out Room.DisconnectPlayerDto? disconnectData, out var errors))
         // {
         //     return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
         // }

@@ -1,4 +1,5 @@
 using App.Application.Extensions;
+using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Requests;
 using App.Domain.DomainResults;
@@ -48,28 +49,6 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
             return false;
         }
 
-        // var initiator = room.Players.Single(p => p.Id == initiatorId);
-        // if (!initiator.IsLeader)
-        // {
-        //     await _publisher.Publish(new ClientNotificationEvent(
-        //             NotificationText: NotificationMessages.KickPlayerFromRoom.NotLeader(),
-        //             TargetConnectionId: initiator.ConnectionId),
-        //         cT);
-        //
-        //     return false;
-        // }
-        //
-        // var kickedPlayer = room.Players.Single(p => p.Id == kickedPlayerId);
-        // if (kickedPlayer.InGame)
-        // {
-        //     await _publisher.Publish(new ClientNotificationEvent(
-        //             NotificationText: NotificationMessages.KickPlayerFromRoom.PlayerInGame(kickedPlayer.PlayerName),
-        //             TargetConnectionId: kickedPlayer.ConnectionId),
-        //         cT);
-        //
-        //     return false;
-        // }
-        
         /*
          if the transaction fails, the changes will not be saved
          so as long as the player is not deleted, we can get his data
@@ -105,23 +84,7 @@ public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomComma
             new {Request = request});
         var response = await _mediator.Send(new RemoveFromRoomCommand(request), cT);
 
-        // if (response)
-        // {
-        //     
-        //     await _publisher.Publish(new ClientNotificationEvent(
-        //             NotificationText: NotificationMessages.KickPlayerFromRoom.SuccessKick(kickedPlayer.PlayerName),
-        //             TargetConnectionId: initiator.ConnectionId),
-        //         cT);
-        //
-        //     await _publisher.Publish(new ClientNotificationEvent(
-        // NotificationText: NotificationMessages.KickPlayerFromRoom.WasKicked(initiator.PlayerName),
-        //             TargetConnectionId: kickedPlayer.ConnectionId),
-        //         cT);
-        //
-        //     // room.AddKickedPlayer(kickedPlayerId);  // TODO: finish (attention, room as no tracking)
-        //     return true;
-        // }
-        if (response)
+        if (!response)
         {
             _logger.LogError("Transaction failed when calling {Method}.", nameof(RemoveFromRoomCommand));
             await _publisher.Publish(new UserNotificationEvent(

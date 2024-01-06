@@ -31,9 +31,9 @@ public class CreatedRoomDomainEventHandler : INotificationHandler<CreatedRoomDom
         
         await _hubContext.Clients.All.ReceiveAll_CreatedRoom(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The new room \"{RoomId} - {Value}\" has been sent to all users.",
+            "{InvokedMethod} - The new room \"{RoomId} - {Value}\" has been sent to all users.",
             nameof(_hubContext.Clients.All.ReceiveAll_CreatedRoom),
             room.Id,
-            room);
+            room.RoomName);
     }
 }

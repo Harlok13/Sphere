@@ -1,48 +1,57 @@
-import {UserInfo} from "shared/pages/main-page/Aside/UserInfo/UserInfo";
-import {UserInfoAvatar} from "shared/pages/main-page/Aside/UserInfo/UserInfoAvatar/UserInfoAvatar";
-import {UserInfoBody} from "shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoBody";
-import {UserInfoHead} from "shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoHead/UserInfoHead";
-import {UserName} from "shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoHead/UserName/UserName";
-import {Logout} from "shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoHead/Logout/Logout";
-import {UserInfoItems} from "shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoItems/UserInfoItems";
-import {Money} from "shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoItems/Money/Money";
-import {Level} from "shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoItems/Level/Level";
-import {History} from "shared/pages/main-page/Aside/History/History";
-import {HistoryHead} from "shared/pages/main-page/Aside/History/HistoryHead/HistoryHead";
-import {HistoryBody} from "shared/pages/main-page/Aside/History/HistoryBody/HistoryBody";
-import {UserHistoryMsg} from "shared/pages/main-page/Aside/History/HistoryBody/UserHistoryMsg/UserHistoryMsg";
+import {useGame21PlayersSelector, useInRoomSelector, useRoomDataSelector} from "store/game21/use-game21-selector";
+import {usePlayerSelector} from "store/player/use-player-selector";
+import {usePlayerInfoSelector} from "store/player-info/use-player-info-selector";
+import {usePlayerActionModalSelector} from "store/modals/use-modals-selector";
+import {useDispatch} from "react-redux";
+import {
+    useKickPlayerFromRoomHub,
+    useRemoveFromRoomHub,
+    useTransferLeadershipHub
+} from "hooks/hub-connection/server-methods/server-methods";
+import {PlayerActionModal, resetModalsState, setPlayerActionModal} from "store/modals/modals.slice";
+import React from "react";
+import {IKickPlayerFromRoomRequest} from "shared/contracts/requests/kick-player-from-room-request";
+import {ITransferLeadershipRequest} from "shared/contracts/requests/transfer-leadership-request";
+import {IRemoveFromRoomRequest} from "shared/contracts/requests/remove-from-room-request";
+import {Aside} from "components/shared/pages/main-page/Aside/Aside";
+import {UserInfo} from "components/shared/pages/main-page/Aside/UserInfo/UserInfo";
+import {UserInfoAvatar} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoAvatar/UserInfoAvatar";
+import {UserInfoBody} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoBody";
+import {UserInfoHead} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoHead/UserInfoHead";
+import {UserName} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoHead/UserName/UserName";
+import {Logout} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoHead/Logout/Logout";
+import {UserInfoItems} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoItems/UserInfoItems";
+import {Money} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoItems/Money/Money";
+import {Level} from "components/shared/pages/main-page/Aside/UserInfo/UserInfoBody/UserInfoItems/Level/Level";
+import {History} from "components/shared/pages/main-page/Aside/History/History";
+import {HistoryHead} from "components/shared/pages/main-page/Aside/History/HistoryHead/HistoryHead";
+import {HistoryBody} from "components/shared/pages/main-page/Aside/History/HistoryBody/HistoryBody";
+import {
+    UserHistoryMsg
+} from "components/shared/pages/main-page/Aside/History/HistoryBody/UserHistoryMsg/UserHistoryMsg";
 import {
     Game21HistoryMsg
-} from "shared/pages/main-page/Aside/History/HistoryBody/UserHistoryMsg/Game21HistoryMsg/Game21HistoryMsg";
-import {HistoryShowMore} from "shared/pages/main-page/Aside/History/HistoryShowMore/HistoryShowMore";
-import {Participants} from "shared/pages/main-page/Aside/Participants/Participants";
-import {ParticipantsTitle} from "shared/pages/main-page/Aside/Participants/ParticipantsTitle/ParticipantsTitle";
-import {ParticipantsList} from "shared/pages/main-page/Aside/Participants/ParticipantsList/ParticipantsList";
-import {Participant} from "shared/pages/main-page/Aside/Participants/ParticipantsList/Participant/Participant";
-import {RoomControlPanel} from "shared/pages/main-page/Aside/Participants/RoomControlPanel/RoomControlPanel";
-import {LeaveButton} from "shared/pages/main-page/Aside/Participants/RoomControlPanel/LeaveButton/LeaveButton";
-import {InviteButton} from "shared/pages/main-page/Aside/Participants/RoomControlPanel/InviteButton/InviteButton";
-import {Aside} from "shared/pages/main-page/Aside/Aside";
+} from "components/shared/pages/main-page/Aside/History/HistoryBody/UserHistoryMsg/Game21HistoryMsg/Game21HistoryMsg";
+import {HistoryShowMore} from "components/shared/pages/main-page/Aside/History/HistoryShowMore/HistoryShowMore";
+import {Participants} from "components/shared/pages/main-page/Aside/Participants/Participants";
+import {
+    ParticipantsTitle
+} from "components/shared/pages/main-page/Aside/Participants/ParticipantsTitle/ParticipantsTitle";
+import {ParticipantsList} from "components/shared/pages/main-page/Aside/Participants/ParticipantsList/ParticipantsList";
+import {
+    PlayerActionsList
+} from "components/shared/components/modals/PlayerActionsModal/PlayerActionsList/PlayerActionsList";
+import {
+    Participant
+} from "components/shared/pages/main-page/Aside/Participants/ParticipantsList/Participant/Participant";
+import {RoomControlPanel} from "components/shared/pages/main-page/Aside/Participants/RoomControlPanel/RoomControlPanel";
+import {
+    LeaveButton
+} from "components/shared/pages/main-page/Aside/Participants/RoomControlPanel/LeaveButton/LeaveButton";
+import {
+    InviteButton
+} from "components/shared/pages/main-page/Aside/Participants/RoomControlPanel/InviteButton/InviteButton";
 import {v4} from "uuid";
-import {usePlayerInfoSelector} from "BL/slices/player-info/use-player-info-selector";
-import {
-    useGame21PlayersSelector,
-    useInRoomSelector, useRoomDataSelector
-} from "BL/slices/game21/use-game21-selector";
-import {useDispatch} from "react-redux";
-import {usePlayerActionModalSelector} from "BL/slices/modals/use-modals-selector";
-import React from "react";
-import {PlayerActionModal, resetModalsState, setPlayerActionModal} from "BL/slices/modals/modals.slice";
-import {PlayerActionsList} from "shared/components/modals/PlayerActionsModal/PlayerActionsList/PlayerActionsList";
-import {usePlayerSelector} from "BL/slices/player/use-player-selector";
-import {
-    useKickPlayerFromRoomHub, useRemoveFromRoomHub,
-    useTransferLeadershipHub
-} from "BL/hooks/hub-connection/server-methods/server-methods";
-import {IKickPlayerFromRoomRequest} from "contracts/requests/kick-player-from-room-request";
-import {ITransferLeadershipRequest} from "contracts/requests/transfer-leadership-request";
-import {IRemoveFromRoomRequest} from "contracts/requests/remove-from-room-request";
-
 
 
 export type PlayerActionsListHandlers = {

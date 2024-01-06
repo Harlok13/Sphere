@@ -67,5 +67,13 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.Property(e => e.UpperStartMoneyBound)
             .HasColumnName("upper_start_money_bound")
             .IsRequired();
+
+        builder.Property(e => e.CardsDeck)
+            .HasColumnName("cards_deck")
+            .HasColumnType("jsonb");
+
+        builder.Property(e => e.GameHistory)
+            .HasColumnName("game_history")
+            .HasColumnType("jsonb");
     }
 }

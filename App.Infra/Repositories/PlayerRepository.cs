@@ -22,7 +22,7 @@ public class PlayerRepository : IPlayerRepository
         {
             if (id is null) return InvalidResult<PlayerDto>.Create(
                 new Error(ErrorMessages.Player.IdIsNull()));
-
+            
             var playerDto = await _context.Set<Player>()
                 // .AsNoTracking()
                 .Where(p => p.Id == id)

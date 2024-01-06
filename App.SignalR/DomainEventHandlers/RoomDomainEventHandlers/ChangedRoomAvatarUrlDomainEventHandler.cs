@@ -28,9 +28,10 @@ public class ChangedRoomAvatarUrlDomainEventHandler : INotificationHandler<Chang
 
         await _hubContext.Clients.All.ReceiveAll_ChangedRoomAvatarUrl(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The updated value \"{UpdatedValue}\" of room \"{RoomId}\" has been sent to all users.",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of room \"{RoomId}\" has been sent to all users.",
             nameof(_hubContext.Clients.All.ReceiveAll_ChangedRoomAvatarUrl),
-            nameof(avatarUrl).ToUpper(),
+            nameof(notification.AvatarUrl),
+            avatarUrl,
             roomId);
     }
 }

@@ -1,12 +1,11 @@
 using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Data;
-using App.Contracts.Responses;
+using App.Contracts.Enums;
 using App.Domain.Entities;
 using App.SignalR.Commands.ConnectionCommands;
-using App.SignalR.Hubs;
+using App.SignalR.Events;
 using Mediator;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace App.Application.Handlers.ConnectionHandlers;
@@ -15,13 +14,16 @@ public class ConnectPlayerHandler : ICommandHandler<ConnectPlayerCommand, bool>
 {
     private readonly IAppUnitOfWork _unitOfWork;
     private readonly ILogger<ConnectPlayerHandler> _logger;
-    private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
+    private readonly IPublisher _publisher;
 
-    public ConnectPlayerHandler(IAppUnitOfWork unitOfWork, ILogger<ConnectPlayerHandler> logger, IHubContext<GlobalHub, IGlobalHub> hubContext)
+    public ConnectPlayerHandler(
+        IAppUnitOfWork unitOfWork,
+        ILogger<ConnectPlayerHandler> logger,
+        IPublisher publisher)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _hubContext = hubContext;
+        _publisher = publisher;
     }
 
     public async ValueTask<bool> Handle(ConnectPlayerCommand command, CancellationToken cT)
@@ -36,8 +38,10 @@ public class ConnectPlayerHandler : ICommandHandler<ConnectPlayerCommand, bool>
             return false;
         }
 
-        await _hubContext.Clients.User(authUser.Id.ToString()).ReceiveUser_NavigateToLobby(cT);
-        _logger.LogInformation("");
+        await _publisher.Publish(new UserNavigateEvent(
+                TargetId: authUser.Id,
+                Navigate: NavigateEnum.Lobby),
+            cT);
 
         var roomIdResult = await _unitOfWork.RoomRepository.GetIdByPlayerIdAsync(authUser.Id, cT);
         if (!roomIdResult.TryFromResult(out RoomIdDto? data, out var errors))
@@ -46,10 +50,10 @@ public class ConnectPlayerHandler : ICommandHandler<ConnectPlayerCommand, bool>
             return false;
         }
 
-        var response = new ReconnectToRoomResponse(data!.RoomId);
-
-        await _hubContext.Clients.User(authUser.Id.ToString()).ReceiveUser_ReconnectToRoom(response, cT);
-        _logger.LogInformation("");
+        await _publisher.Publish(new UserReconnectToRoomEvent(
+                RoomId: data!.RoomId,
+                PlayerId: authUser.Id),
+            cT);
 
         return true;
     }

@@ -8,5 +8,5 @@ public interface ICardsDeckService
 
     Task ResetAsync(Guid roomId, CancellationToken cT);
 
-    Task CreateAsync(Guid roomId, CancellationToken cT);
+    IEnumerable<CardInDeck> Create();
 }

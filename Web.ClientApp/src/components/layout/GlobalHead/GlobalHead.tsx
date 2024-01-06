@@ -1,7 +1,7 @@
-import {Nav} from "../../../shared/pages/main-page/Center/Head/Nav/Nav";
-import {NavItems} from "../../../shared/pages/main-page/Center/Head/Nav/NavItems/NavItems";
-import {NavItem} from "../../../shared/pages/main-page/Center/Head/Nav/NavItems/NavItem/NavItem";
-import {Head} from "../../../shared/pages/main-page/Center/Head/Head";
+import {Head} from "components/shared/pages/main-page/Center/Head/Head";
+import {Nav} from "components/shared/pages/main-page/Center/Head/Nav/Nav";
+import {NavItems} from "components/shared/pages/main-page/Center/Head/Nav/NavItems/NavItems";
+import {NavItem} from "components/shared/pages/main-page/Center/Head/Nav/NavItems/NavItem/NavItem";
 
 export const GlobalHead = () => {
     return (

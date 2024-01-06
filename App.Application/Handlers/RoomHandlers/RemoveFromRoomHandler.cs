@@ -1,13 +1,13 @@
 using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Enums;
 using App.Domain.DomainResults;
-using App.Domain.DomainResults.CustomResults;
 using App.Domain.Entities.PlayerInfoEntity;
 using App.Domain.Entities.RoomEntity;
+using App.Domain.Extensions;
 using App.SignalR.Commands.RoomCommands;
-using App.SignalR.Hubs;
+using App.SignalR.Events;
 using Mediator;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace App.Application.Handlers.RoomHandlers;
@@ -16,16 +16,16 @@ public class RemoveFromRoomHandler : ICommandHandler<RemoveFromRoomCommand, bool
 {
     private readonly ILogger<RemoveFromRoomHandler> _logger;
     private readonly IAppUnitOfWork _unitOfWork;
-    private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
-
+    private readonly IPublisher _publisher;
+    
     public RemoveFromRoomHandler(
         ILogger<RemoveFromRoomHandler> logger,
         IAppUnitOfWork unitOfWork,
-        IHubContext<GlobalHub, IGlobalHub> hubContext)
+        IPublisher publisher)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _hubContext = hubContext;
+        _publisher = publisher;
     }
 
     public async ValueTask<bool> Handle(RemoveFromRoomCommand command, CancellationToken cT)
@@ -48,9 +48,23 @@ public class RemoveFromRoomHandler : ICommandHandler<RemoveFromRoomCommand, bool
             return false;
         }
 
-        var removePlayerData = removePlayerResult as RemovePlayerFromRoomDomainResult;
+        if (removePlayerResult is DomainFailure removePlayerFailure)
+        {
+            await _publisher.Publish(new UserNotificationEvent(
+                    NotificationText: removePlayerFailure.Reason,
+                    TargetId: playerId),
+                cT);
+            
+            return false;
+        }
 
-        
+        if (!removePlayerResult.TryFromDomainResult(out int incrementMoney, out DomainError? removeError))
+        {
+            _logger.LogError(removeError!.Reason);
+
+            return false;
+        }
+
         var playerInfoResult = await _unitOfWork.PlayerInfoRepository.GetPlayerInfoByIdAsync(playerId, cT);
         if (!playerInfoResult.TryFromResult(out PlayerInfo? playerInfo, out var playerInfoErrors))
         {
@@ -58,12 +72,15 @@ public class RemoveFromRoomHandler : ICommandHandler<RemoveFromRoomCommand, bool
 
             return false;
         }
-        playerInfo!.IncrementMoney(removePlayerData!.IncrementMoney);
+        playerInfo!.IncrementMoney(incrementMoney);
         
         var saveChangesResult = await _unitOfWork.SaveChangesAsync(cT);
         if (saveChangesResult)
         {
-            await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_NavigateToLobby(cT);
+            await _publisher.Publish(new UserNavigateEvent(
+                    TargetId: playerId,
+                    Navigate: NavigateEnum.Lobby),
+                cT);
         }
         
         return saveChangesResult;

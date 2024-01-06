@@ -1,11 +1,11 @@
 import 'index.scss';
 import {Router} from "routes/Router";
-import Wrapper from "shared/components/Wrapper/Wrapper";
-import {useGlobalHubConnection} from "BL/hooks/hub-connection/use-gloabl-hub-connection";
 import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
-import {useHub} from "react-use-signalr";
-import {Notifications} from "shared/components/Notifications/Notifications";
-import UserService from "./services/user/user.service";
+import UserService from "services/user/user.service";
+import {Notifications} from "components/shared/components/Notifications/Notifications";
+import {useGlobalHubConnection} from "hooks/hub-connection/use-gloabl-hub-connection";
+import Wrapper from "components/shared/components/Wrapper/Wrapper";
+import {useHub} from "./react-signalr/use-hub";
 
 export const signalRConnection = new HubConnectionBuilder()
     .withUrl("https://localhost:7170/hubs/global", {

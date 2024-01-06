@@ -29,9 +29,20 @@ public class ChangedPlayerOnlineDomainEventHandler : INotificationHandler<Change
         var response = new ChangedPlayerOnlineResponse(Online: online, PlayerId: playerId);
 
         await _hubContext.Clients.Client(connectionId).ReceiveClient_ChangedPlayerOnline(response, cT);
+        _logger.LogInformation(
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
+            nameof(_hubContext.Clients.All.ReceiveClient_ChangedPlayerOnline),
+            nameof(notification.Online),
+            online,
+            connectionId);
         
         await _hubContext.Clients.GroupExcept(roomId.ToString(), connectionId).ReceiveGroup_ChangedPlayerOnline(response, cT);
-        _logger.LogInformation("");
+        _logger.LogInformation(
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the group \"{RoomId}\".",
+            nameof(_hubContext.Clients.All.ReceiveGroup_ChangedPlayerOnline),
+            nameof(notification.Online),
+            online,
+            roomId);
         
         // TODO: send notification about connect/disconnect 
     }
