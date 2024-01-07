@@ -10,7 +10,7 @@ using App.SignalR.Events;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
-namespace App.Application.Handlers.RoomHandlers.PlayerActionHandlers;
+namespace App.Application.Handlers.RoomHandlers.ParticipantActionHandlers;
 
 public class KickPlayerFromRoomHandler : ICommandHandler<KickPlayerFromRoomCommand, bool>
 {
