@@ -4,6 +4,7 @@ using App.Application.Repositories.UnitOfWork;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.PlayerInfoEntity;
 using App.Domain.Entities.RoomEntity;
+using App.Domain.Enums;
 using App.SignalR.Commands.RoomCommands;
 using Mediator;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ public class EndGameHandler : ICommandHandler<EndGameCommand, bool>
         _unitOfWork = unitOfWork;
     }
     
-    public async ValueTask<bool> Handle(EndGameCommand command, CancellationToken cT)
+    public async ValueTask<bool> Handle(EndGameCommand command, CancellationToken cT)  // Todo add room status
     {
         command.Deconstruct(out Guid roomId);
 
@@ -38,6 +39,15 @@ public class EndGameHandler : ICommandHandler<EndGameCommand, bool>
         var players = room.Players.ToArray();
         var bank = room.Bank;
         room.ResetBank();
+
+        if (room.Players.Count == room.RoomSize)
+        {
+            room.SetRoomStatus(RoomStatus.Waiting);
+        }
+        else
+        {
+            room.SetRoomStatus(RoomStatus.Waiting);
+        }
 
         var losingPlayers = players.Where(p => p.Score > 21).ToArray();
         var has21Players = players.Where(p => p.Score == 21).ToImmutableArray();

@@ -9,12 +9,12 @@ import {
 import {NotificationPanel} from "components/shared/pages/main-page/Center/Bottom/NotificationPanel/NotificationPanel";
 
 export const LobbyBottom = () => {
-    const {handlers, newRoomData} = useConfigureRoom();
+    const {handlers, newRoomData, playerInfo} = useConfigureRoom();
 
     return (
         <Bottom>
             <CreateLobbyPanel>
-                <LobbyPanelSettings handlers={handlers} newRoomData={newRoomData}/>
+                <LobbyPanelSettings handlers={handlers} newRoomData={newRoomData} playerInfo={playerInfo}/>
             </CreateLobbyPanel>
             <NotificationPanel/>
         </Bottom>

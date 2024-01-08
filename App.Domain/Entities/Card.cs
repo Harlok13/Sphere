@@ -5,7 +5,7 @@ namespace App.Domain.Entities;
 
 public class Card
 {
-    private Card(Guid id, int x, int y, int width, int height, int value, string suitValue)
+    public Card(Guid id, int x, int y, int width, int height, int value, string suitValue, bool faceDown, Guid playerId)
     {
         Id = id;
         X = x;
@@ -14,6 +14,8 @@ public class Card
         Height = height;
         Value = value;
         SuitValue = suitValue;
+        FaceDown = faceDown;
+        PlayerId = playerId;
     }
 
     private Card(Guid id, Guid playerId, CardInDeck cardInDeck)
@@ -38,11 +40,11 @@ public class Card
     public bool FaceDown { get; private init; }
 
     public Guid PlayerId { get; set;}
-    
-    public virtual PlayerEntity.Player Player { get; set; }
+    //
+    // public virtual PlayerEntity.Player Player { get; set; }
 
-    public static Card Create(Guid id, int x, int y, int width, int height, int value, string suitValue) =>
-        new Card(id: id, x: x, y: y, width: width, height: height, value: value, suitValue: suitValue);
+    // public static Card Create(Guid id, int x, int y, int width, int height, int value, string suitValue) =>
+    //     new Card(id: id, x: x, y: y, width: width, height: height, value: value, suitValue: suitValue);
 
     public static Card Create(Guid id, Guid playerId, CardInDeck cardInDeck) =>
         new (id, playerId, cardInDeck);

@@ -18,7 +18,7 @@ export const notificationsSlice = createSlice({
         setNewNotification: (state, action: PayloadAction<INotificationResponse>) => {
             const nextState = produce(state, draft => {
                 if (draft.notifications.some(n => n.notificationText === action.payload.notificationText)){
-                    draft.notifications.filter(n => n.notificationText !== action.payload.notificationText)
+                    draft.notifications = draft.notifications.filter(n => n.notificationText !== action.payload.notificationText)
                 }
                 draft.notifications.push(action.payload);
             });

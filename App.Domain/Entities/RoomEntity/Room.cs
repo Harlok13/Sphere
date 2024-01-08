@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Text.Json;
+using App.Domain.DomainEvents.NotificationDomainEvent;
 using App.Domain.DomainEvents.RoomDomainEvents;
 using App.Domain.DomainResults;
 using App.Domain.Entities.PlayerEntity;
@@ -14,6 +15,7 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
     private readonly List<Player> _players = new();
     private readonly List<KickedPlayer> _kickedPlayers = new();
     private List<CardInDeck>? _cardsDeck;
+    private List<GameHistoryMessage>? _gameHistories;
 
     private const int DefaultPlayersInRoom = 1;
     private const RoomStatus DefaultRoomStatus = RoomStatus.Waiting;
@@ -179,7 +181,7 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
         _domainEvents.Add(new ChangedRoomPlayersInRoomDomainEvent(RoomId: Id, PlayersInRoom: PlayersInRoom));
     }
 
-    private void SetRoomStatus(RoomStatus status)
+    public void SetRoomStatus(RoomStatus status)  // todo make private
     {
         Status = status;
         _domainEvents.Add(new ChangedRoomStatusDomainEvent(RoomId: Id, RoomStatus: Status));
@@ -227,11 +229,11 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
                 room: this);
             _kickedPlayers.Add(kP);
             
-            _domainEvents.Add(new AddedKickedPlayerDomainEvent(
-                InitiatorConnectionId: initiator.ConnectionId,
-                KickedPlayerConnectionId: kickedPlayer.ConnectionId,
-                NotificationForInitiator: Message.Notification.Room.AddKickedPlayer.SuccessKick(kickedPlayer.PlayerName),
-                NotificationForKickedPlayer: Message.Notification.Room.AddKickedPlayer.WasKicked(initiator.PlayerName)));
+            _domainEvents.Add(new BothSideNotifiedDomainEvent(
+                MainSideId: initiator.Id,
+                SecondSideId: kickedPlayer.Id,
+                NotificationForMainSide: Message.Notification.Room.AddKickedPlayer.SuccessKick(kickedPlayer.PlayerName),
+                NotificationForSecondSide: Message.Notification.Room.AddKickedPlayer.WasKicked(initiator.PlayerName)));
         }
     }
 
@@ -253,5 +255,35 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
                 Message.Error.DeserializeError(nameof(_cardsDeck), nameof(Room)));
 
         return new DomainSuccessResult<List<CardInDeck>>(_cardsDeck);
+    }
+
+    private void SyncGameHistoryMessages()
+    {
+        if (GameHistory is null)
+        {
+            _gameHistories ??= new();
+        }
+        else
+        {
+            _gameHistories = JsonSerializer.Deserialize<List<GameHistoryMessage>>(GameHistory);
+        }
+    }
+
+    private void AddNewGameHistoryMessage(GameHistoryType type, string currentTime, string message, string? playerName = default)
+    {
+        SyncGameHistoryMessages();  // TODO: ref
+        var gameHistoryMessage = new GameHistoryMessage(
+            Type: type.ToString(),
+            CurrentTime: currentTime,
+            Message: message,
+            PlayerName: playerName);
+        
+        _gameHistories.Add(gameHistoryMessage);
+        GameHistory = JsonSerializer.Serialize(_gameHistories);
+        // SyncGameHistoryMessages();
+        
+        _domainEvents.Add(new AddedGameHistoryMessageDomainEvent(  
+            RoomId: Id,
+            Message: gameHistoryMessage));
     }
 }

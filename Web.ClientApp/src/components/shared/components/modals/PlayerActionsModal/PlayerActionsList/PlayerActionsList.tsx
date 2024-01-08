@@ -1,12 +1,12 @@
 import {MdGroupRemove} from "react-icons/md";
 import {PiCrownSimpleBold} from "react-icons/pi";
 import {FC} from "react";
-import {PlayerActionsListHandlers} from "components/layout/GlobalAside/GlobalAside";
 import cn from "classnames";
 import style from "./PlayerActionsList.module.css";
+import {ParticipantActionsListHandlers} from "hooks/layout/global-aside/participants/use-participants";
 
 interface PlayerActionListProps {
-    handlers: PlayerActionsListHandlers;
+    handlers: ParticipantActionsListHandlers;
     isLeader: boolean;
 }
 
@@ -20,7 +20,7 @@ export const PlayerActionsList: FC<PlayerActionListProps> = ({handlers, isLeader
                 <span>Kick from room</span>
                 <MdGroupRemove/>
             </li>
-            <li className={cn({[style.isNotLeader]: !isLeader})} onClick={transferLeadershipHandler}>
+            <li className={cn({[style.isNotLeader]: !isLeader}, style.actionLine)} onClick={transferLeadershipHandler}>
                 <span>Transfer leadership</span>
                 <PiCrownSimpleBold/>
             </li>

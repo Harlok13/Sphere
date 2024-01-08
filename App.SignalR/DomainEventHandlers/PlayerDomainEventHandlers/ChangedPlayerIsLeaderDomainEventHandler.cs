@@ -23,17 +23,17 @@ public class ChangedPlayerIsLeaderDomainEventHandler : INotificationHandler<Chan
     public async ValueTask Handle(ChangedPlayerIsLeaderDomainEvent notification, CancellationToken cT)
     {
         notification.Deconstruct(
-            out Guid roomId, out Guid playerId, out bool isLeader, out string connectionId);
+            out Guid roomId, out Guid playerId, out bool isLeader);
 
         var response = new ChangedPlayerIsLeaderResponse(playerId, isLeader);
         
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerIsLeader(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedPlayerIsLeader(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerIsLeader),
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveUser_ChangedPlayerIsLeader),
             nameof(notification.IsLeader),
             isLeader,
-            connectionId);
+            playerId);
 
         /*
          We don't need to check the number of players in the room, because this

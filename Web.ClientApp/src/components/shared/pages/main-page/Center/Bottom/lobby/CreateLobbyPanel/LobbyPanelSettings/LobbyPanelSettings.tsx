@@ -2,22 +2,20 @@ import style from "./LobbyPanelSettings.module.css";
 import {FC} from "react";
 import {NewRoomConfig} from "store/lobby/lobby.slice";
 import {LobbyPanelHandlers} from "hooks/lobby/configure-room/use-configure-room";
-import {usePlayerInfoSelector} from "store/player-info/use-player-info-selector";
 import {RoomSize} from "shared/constants/configure-room-constants";
+import {IPlayerInfoResponse} from "shared/contracts/player-info-response";
 
-interface ILobbyPanelSettingsProps {
+
+export const LobbyPanelSettings: FC<{
     newRoomData: NewRoomConfig;
     handlers: LobbyPanelHandlers;
-}
-
-export const LobbyPanelSettings: FC<ILobbyPanelSettingsProps> = ({newRoomData, handlers}) => {
+    playerInfo: IPlayerInfoResponse
+}> = ({newRoomData, handlers, playerInfo}) => {
     const {
         minBidHandler, maxBidHandler, startBidHandler,
         roomSizeHandler, roomNameHandler, createRoomHandler,
         lowBidHandler, mediumBidHandler, highBidHandler
     } = handlers;
-
-    const playerInfo = usePlayerInfoSelector();  // TODO: hard code
 
     const {roomSize, startBid, minBid, maxBid, roomName, lowerBound, upperBound} = newRoomData;
 

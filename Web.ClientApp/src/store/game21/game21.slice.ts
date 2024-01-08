@@ -12,6 +12,10 @@ import {IChangedPlayerMoneyResponse} from "shared/contracts/responses/changed-pl
 import {IChangedPlayerInGameResponse} from "shared/contracts/responses/changed-player-in-game-response";
 import {IAddedCardResponse} from "shared/contracts/responses/added-card-response";
 import {IChangedPlayerOnlineResponse} from "shared/contracts/responses/changed-player-online-response";
+import {
+    GameHistoryMessage,
+    IAddedGameHistoryMessageResponse
+} from "shared/contracts/responses/added-game-history-message-response";
 
 
 
@@ -23,7 +27,7 @@ export interface Game21State {
     gameStarted: boolean;
     roomData: RoomData;
     players: Array<Player>;
-    gameHistory: Array<string>;
+    gameHistory: Array<GameHistoryMessage>;
 }
 
 const initialState: Game21State = {
@@ -138,6 +142,12 @@ export const game21Slice = createSlice({
         updateOnlineInPlayers: (state, action: PayloadAction<IChangedPlayerOnlineResponse>) => {
             const index = state.players.findIndex(p => p.id === action.payload.playerId);
             state.players[index].online = action.payload.online;
+        },
+        setNewGameHistoryMessage: (state, action: PayloadAction<IAddedGameHistoryMessageResponse>) => {
+            state.gameHistory.push(action.payload);
+        },
+        initGameHistory: (state, action: PayloadAction<Array<GameHistoryMessage>>) => {
+            state.gameHistory = action.payload;
         }
     }
 });
@@ -161,6 +171,8 @@ export const {
     updateInGameInPlayers,
     setCardInPlayersCards,
     updateOnlineInPlayers,
+    setNewGameHistoryMessage,
+    initGameHistory,
 } = game21Slice.actions;
 
 export default game21Slice.reducer;

@@ -22,25 +22,25 @@ public class ChangedPlayerMoneyDomainEventHandler : INotificationHandler<Changed
 
     public async ValueTask Handle(ChangedPlayerMoneyDomainEvent notification, CancellationToken cT)
     {
-        notification.Deconstruct(out int money, out string connectionId, out Guid roomId, out Guid playerId);
+        notification.Deconstruct(out int money, out Guid roomId, out Guid playerId);
 
         var response = new ChangedPlayerMoneyResponse(PlayerId: playerId, Money: money);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerMoney(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedPlayerMoney(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerMoney),
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveUser_ChangedPlayerMoney),
             nameof(notification.Money),
             money,
-            connectionId);
+            playerId);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerMoney(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of player \"{ConnectionId}\" has been sent to the group \"{RoomId}\".",
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of player \"{PlayerId}\" has been sent to the group \"{RoomId}\".",
             nameof(_hubContext.Clients.All.ReceiveGroup_ChangedPlayerMoney),
             nameof(notification.Money),
             money,
-            connectionId,
+            playerId,
             roomId);
     }
 }

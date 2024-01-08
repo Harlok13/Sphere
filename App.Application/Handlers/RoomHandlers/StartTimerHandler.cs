@@ -1,6 +1,4 @@
-using App.Contracts.Requests;
 using App.SignalR.Commands.RoomCommands;
-using App.SignalR.Commands.RoomCommands.GameActionCommands;
 using App.SignalR.Hubs;
 using Mediator;
 using Microsoft.AspNetCore.SignalR;
@@ -12,26 +10,22 @@ public class StartTimerHandler : ICommandHandler<StartTimerCommand, bool>
 {
     private readonly ILogger<StartTimerHandler> _logger;
     private readonly IHubContext<GlobalHub, IGlobalHub> _hubContext;
-    private readonly IMediator _mediator;
     private const int StartTimerValue = 1;
     private const int SecondsCount = 10;
 
     public StartTimerHandler(
         ILogger<StartTimerHandler> logger,
-        IHubContext<GlobalHub, IGlobalHub> hubContext,
-        IMediator mediator)
+        IHubContext<GlobalHub, IGlobalHub> hubContext)
     {
         _logger = logger;
         _hubContext = hubContext;
-        _mediator = mediator;
     }
 
-    public async ValueTask<bool> Handle(StartTimerCommand command, CancellationToken cT)
+    public async ValueTask<bool> Handle(StartTimerCommand command, CancellationToken cT)  // TODO: event handler?
     {
         command.Request.Deconstruct(
             out Guid roomId, 
             out Guid playerId);
-        var connectionId = command.ConnectionId;
         var cts = command.Cts;
 
         _ = Task.Run(async () =>
@@ -45,13 +39,13 @@ public class StartTimerHandler : ICommandHandler<StartTimerCommand, bool>
                 }
 
                 var seconds = i;
-                await _hubContext.Clients.Client(connectionId).ReceiveOwn_UpdatedTimer(seconds, cT);
+                await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedTimer(seconds, cT);
                 await Task.Delay(1000, cT);
                 
-                _logger.LogInformation($"Time has passed: {seconds}");
+                _logger.LogDebug($"Time has passed: {seconds}");
             }
-            await _hubContext.Clients.Client(connectionId).ReceiveClient_TimeOut(cT);
-            _logger.LogInformation("en!! StartTimer end of work.");
+            await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_TimeOut(cT);  
+            _logger.LogInformation("en!! StartTimer end of work.");  // TODO finish log
 
             return false;
         }, cT);

@@ -146,15 +146,21 @@ export const lobbySlice = createSlice({
 
         updateRoomStatus: (state, action: PayloadAction<IChangedRoomStatusResponse>) => {
             const index = state.rooms.findIndex(r => r.id === action.payload.roomId)
-            state.rooms[index].status = action.payload.status;
+            if (index > -1){
+                state.rooms[index].status = action.payload.status;
+            }
         },
         updatePlayersInRoom: (state, action: PayloadAction<IChangedRoomPlayersInRoomResponse>) => {
             const index = state.rooms.findIndex(r => r.id === action.payload.roomId);
-            state.rooms[index].playersInRoom = action.payload.playersInRoom;
+            if(index > -1){
+                state.rooms[index].playersInRoom = action.payload.playersInRoom;
+            }
         },
         updateRoomNameInRooms: (state, action: PayloadAction<IChangedRoomRoomNameResponse>) => {
             const index = state.rooms.findIndex(r => r.id === action.payload.roomId);
-            state.rooms[index].roomName = action.payload.roomName;
+            if (index > -1){
+                state.rooms[index].roomName = action.payload.roomName;
+            }
         },
 
     }

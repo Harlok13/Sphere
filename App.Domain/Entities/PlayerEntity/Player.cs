@@ -1,11 +1,11 @@
 using System.ComponentModel;
-using System.Text.Json;
 using App.Domain.DomainEvents.PlayerDomainEvents;
 using App.Domain.DomainResults;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Enums;
 using App.Domain.Messages;
 using App.Domain.Primitives;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace App.Domain.Entities.PlayerEntity;
 
@@ -103,7 +103,6 @@ public sealed partial class Player : Entity, IHasDomainEvent
         IsLeader = value;
         _domainEvents.Add(new ChangedPlayerIsLeaderDomainEvent(
             IsLeader: IsLeader,
-            ConnectionId: ConnectionId,
             RoomId: RoomId,
             PlayerId: Id));
     }
@@ -127,7 +126,6 @@ public sealed partial class Player : Entity, IHasDomainEvent
         Money -= value;
         _domainEvents.Add(new ChangedPlayerMoneyDomainEvent(
             Money: Money,
-            ConnectionId: ConnectionId,
             RoomId: RoomId,
             PlayerId: Id));
 
@@ -139,7 +137,6 @@ public sealed partial class Player : Entity, IHasDomainEvent
         Money += value;
         _domainEvents.Add(new ChangedPlayerMoneyDomainEvent(
             Money: Money,
-            ConnectionId: ConnectionId,
             RoomId: RoomId,
             PlayerId: Id));
     }
@@ -147,7 +144,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
     internal void SetMove(bool value)
     {
         Move = value;
-        _domainEvents.Add(new ChangedPlayerMoveDomainEvent(Move: Move, ConnectionId: ConnectionId));
+        _domainEvents.Add(new ChangedPlayerMoveDomainEvent(Move: Move, PlayerId: Id));
     }
 
     private DomainResult AddNewCard(Card card, int delayMs = default) 
@@ -164,8 +161,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
             Card: card,
             DelayMs: delayMs,
             RoomId: RoomId,
-            PlayerId: Id,
-            ConnectionId: ConnectionId));
+            PlayerId: Id));
 
         return new DomainSuccessResult();
     }
@@ -187,8 +183,7 @@ public sealed partial class Player : Entity, IHasDomainEvent
         _domainEvents.Add(new ChangedPlayerInGameDomainEvent(
             RoomId: RoomId,
             PlayerId: Id,
-            InGame: InGame,
-            ConnectionId: ConnectionId));
+            InGame: InGame));
     }
 
     public void SetMoveStatus(MoveStatus moveStatus)  // TODO: make private/internal
@@ -229,7 +224,11 @@ public sealed partial class Player : Entity, IHasDomainEvent
     {
         if (Cards is null) _cards ??= new List<Card>();
 
+        // try
+        // {
         _cards ??= JsonSerializer.Deserialize<List<Card>>(Cards!);
+        // }
+        // catch ()
         if (_cards is null)
             return new DomainError(
                 Message.Error.DeserializeError(nameof(_cards), nameof(Room)));

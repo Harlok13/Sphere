@@ -1,11 +1,14 @@
-import {useReconnectToRoom} from "hooks/lobby/reconnect-to-room/use-reconnect-to-room";
+import {ReconnectToRoomHandlers} from "hooks/lobby/reconnect-to-room/use-reconnect-to-room";
+import {FC} from "react";
 
-export const ReconnectToRoomButtons = () => {
-    const {confirmReconnectingToRoom, cancelReconnectingToRoomHandler} = useReconnectToRoom();
+export const ReconnectToRoomButtons: FC<{
+    handlers: ReconnectToRoomHandlers;
+}> = ({handlers}) => {
+    const {confirmReconnectingToRoomHandler, cancelReconnectingToRoomHandler} = handlers;
 
     return (
         <div>
-            <button onClick={(e) => confirmReconnectingToRoom(e)}>Confirm</button>
+            <button onClick={(e) => confirmReconnectingToRoomHandler(e)}>Confirm</button>
             <button onClick={cancelReconnectingToRoomHandler}>Cancel</button>
         </div>
     )

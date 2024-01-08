@@ -7,5 +7,5 @@ export const useSelectStartMoneyModalSelector = () =>
 export const useReconnectToRoomModalSelector = () =>
     useTypedSelector(state => state.modals.reconnectToRoomModal);
 
-export const usePlayerActionModalSelector = () =>
-    useTypedSelector(state => state.modals.playerActionModal);
+export const useParticipantActionsModalSelector = () =>
+    useTypedSelector(state => state.modals.participantActionsModal);

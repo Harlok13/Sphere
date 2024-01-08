@@ -47,21 +47,37 @@ public class RoomRepository : IRoomRepository
         return SuccessResult<Room>.Create(room);
     }
 
-    public async Task<Room?> GetByIdAsNoTrackingAsync(Guid roomId, CancellationToken cT)
+    public Task<Result<RoomDto>> GetByIdAsNoTrackingAsync(Guid roomId, CancellationToken cT)
     {
-        return await _context.Set<Room>()
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<RoomDto>> GetByIdAsNoTrackingAsync(Guid? roomId, CancellationToken cT)
+    {
+        if (roomId is null)
+            return InvalidResult<RoomDto>.Create(
+                new Error(ErrorMessages.ArgumentIsNull(nameof(roomId), nameof(GetByIdAsync))));
+        
+        var room = await _context.Set<Room>()
             .AsNoTracking()
             .Include(e => e.Players
                 .OrderBy(p => p.Id))
             .Include(r => r.KickedPlayers)
             .SingleOrDefaultAsync(r => r.Id == roomId, cT);
-        var roomDto = _context.Set<Room>()
-            .AsNoTracking()
-            .Where(r => r.Id == roomId)
-            .Include(e => e.Players)
-            .AsEnumerable()
-            .Select(r => RoomMapper.MapRoomToRoomDto(r, PlayerMapper.MapManyPlayersToManyPlayersDto(r.Players)))
-            .SingleOrDefault()!;
+        
+        if (room is null)
+            return NotFoundResult<RoomDto>.Create(
+                new Error(ErrorMessages.NotFound(nameof(room), nameof(GetByIdAsync))));
+
+        return SuccessResult<RoomDto>.Create(
+            RoomMapper.MapRoomToRoomDto(room, PlayerMapper.MapManyPlayersToManyPlayersDto(room.Players)));
+        // var roomDto = _context.Set<Room>()
+        //     .AsNoTracking()
+        //     .Where(r => r.Id == roomId)
+        //     .Include(e => e.Players)
+        //     .AsEnumerable()
+        //     .Select(r => RoomMapper.MapRoomToRoomDto(r, PlayerMapper.MapManyPlayersToManyPlayersDto(r.Players)))
+        //     .SingleOrDefault()!;
         // var roomDto = await _context.Set<Room>()
         //     .AsNoTracking()
         //     .Where(r => r.Id == roomId)

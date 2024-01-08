@@ -1,4 +1,3 @@
-import {signalRConnection} from "App";
 import {useHubMethod} from "react-signalr/use-hub-method";
 import {ICreateRoomRequest} from "shared/contracts/requests/create-room-request";
 import {IJoinToRoomRequest} from "shared/contracts/requests/join-to-room-request";
@@ -12,6 +11,7 @@ import {IHitRequest} from "shared/contracts/requests/hit-request";
 import {IStayRequest} from "shared/contracts/requests/stay-request";
 import {IKickPlayerFromRoomRequest} from "shared/contracts/requests/kick-player-from-room-request";
 import {ITransferLeadershipRequest} from "shared/contracts/requests/transfer-leadership-request";
+import {signalRConnection} from "providers/SignalrProvider";
 
 
 

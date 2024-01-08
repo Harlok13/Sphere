@@ -45,12 +45,12 @@ public class CreatedPlayerDomainEventHandler : INotificationHandler<CreatedPlaye
             InitRoomData: initRoomDataDto,
             Players: playersDto);
         
-        await _hubContext.Clients.User(player.Id.ToString()).ReceiveOwn_CreatedPlayer(response, cT);
+        await _hubContext.Clients.User(player.Id.ToString()).ReceiveUser_CreatedPlayer(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The init data of room \"{RoomId} - {RoomName}\" has been sent to the player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_CreatedPlayer),
+            "{InvokedMethod} - The init data of room \"{RoomId} - {RoomName}\" has been sent to the player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveUser_CreatedPlayer),
             room.Id,
             room.RoomName,
-            player.ConnectionId);
+            player.Id);
     }
 }

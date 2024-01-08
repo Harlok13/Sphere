@@ -28,13 +28,13 @@ public class ChangedPlayerOnlineDomainEventHandler : INotificationHandler<Change
         
         var response = new ChangedPlayerOnlineResponse(Online: online, PlayerId: playerId);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveClient_ChangedPlayerOnline(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedPlayerOnline(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveClient_ChangedPlayerOnline),
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveUser_ChangedPlayerOnline),
             nameof(notification.Online),
             online,
-            connectionId);
+            playerId);
         
         await _hubContext.Clients.GroupExcept(roomId.ToString(), connectionId).ReceiveGroup_ChangedPlayerOnline(response, cT);
         _logger.LogInformation(

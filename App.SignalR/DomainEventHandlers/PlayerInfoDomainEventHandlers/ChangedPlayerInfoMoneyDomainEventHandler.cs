@@ -26,10 +26,10 @@ public class ChangedPlayerInfoMoneyDomainEventHandler : INotificationHandler<Cha
 
         var response = new ChangedPlayerInfoMoneyResponse(money);
 
-        await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_ChangedPlayerInfoMoney(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedPlayerInfoMoney(response, cT);
         _logger.LogInformation(
             "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerInfoMoney),
+            nameof(_hubContext.Clients.All.ReceiveUser_ChangedPlayerInfoMoney),
             nameof(notification.Money),
             notification,
             playerId);

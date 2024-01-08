@@ -81,11 +81,11 @@ public class GlobalHub : Hub<IGlobalHub>
     public async ValueTask<bool> StartTimer(StartTimerRequest request)
     {
         var cts = new CancellationTokenSource();
-        Context.Items.TryAdd(Context.ConnectionId, cts);
+        var user = Context.ToAuthUser();
+        Context.Items.TryAdd(user.Id, cts);
 
         var command = new StartTimerCommand(
             Request: request,
-            ConnectionId: Context.ConnectionId, 
             Cts: cts);
         
         return await _mediator.Send(command);
@@ -94,9 +94,10 @@ public class GlobalHub : Hub<IGlobalHub>
     public async ValueTask<bool> StopTimer(StopTimerRequest request)
     {
         var result = Context.Items.TryGetValue(Context.ConnectionId, out var cts);
-        Context.Items.Remove(Context.ConnectionId);
+        var user = Context.ToAuthUser();
+        Context.Items.Remove(user.Id);
         
-        _logger.LogInformation("ResultT of getting cts is {ResultT}.", result);
+        _logger.LogInformation("Result of getting cts is {Result}.", result);
         
         var command = new StopTimerCommand(
             Request: request,

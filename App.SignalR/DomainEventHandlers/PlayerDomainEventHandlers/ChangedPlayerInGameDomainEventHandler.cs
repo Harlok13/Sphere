@@ -22,17 +22,17 @@ public class ChangedPlayerInGameDomainEventHandler : INotificationHandler<Change
 
     public async ValueTask Handle(ChangedPlayerInGameDomainEvent notification, CancellationToken cT)
     {
-        notification.Deconstruct(out Guid roomId, out Guid playerId, out bool inGame, out string connectionId);
+        notification.Deconstruct(out Guid roomId, out Guid playerId, out bool inGame);
 
         var response = new ChangedPlayerInGameResponse(PlayerId: playerId, InGame: inGame);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerInGame(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedPlayerInGame(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerInGame),
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveUser_ChangedPlayerInGame),
             nameof(notification.InGame),
             inGame,
-            connectionId);
+            playerId);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerInGame(response, cT);
         _logger.LogInformation(

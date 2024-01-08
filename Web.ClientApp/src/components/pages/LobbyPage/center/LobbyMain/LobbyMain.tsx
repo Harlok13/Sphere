@@ -6,17 +6,11 @@ import {Lobby} from "components/shared/pages/main-page/Center/Main/lobby/Lobby/L
 import {RoomsHead} from "components/shared/pages/main-page/Center/Main/lobby/Lobby/RoomsHead/RoomsHead";
 import {RoomsSearch} from "components/shared/pages/main-page/Center/Main/lobby/Lobby/RoomsHead/RoomsSearch/RoomsSearch";
 import {
-    MoneySelectorModal
-} from "components/shared/pages/main-page/Center/Main/lobby/MoneySelectorModal/MoneySelectorModal";
-import {
     MoneySelectorInput
 } from "components/shared/pages/main-page/Center/Main/lobby/MoneySelectorModal/MoneySelectorInput/MoneySelectorInput";
 import {
     MoneySelectorButtons
 } from "components/shared/pages/main-page/Center/Main/lobby/MoneySelectorModal/MoneySelectorButtons/MoneySelectorButtons";
-import {
-    ReconnectToRoomModal
-} from "components/shared/pages/main-page/Center/Main/lobby/ReconnectToRoomModal/ReconnectToRoomModal";
 import {
     ReconnectToRoomHead
 } from "components/shared/pages/main-page/Center/Main/lobby/ReconnectToRoomModal/ReconnectToRoomHead/ReconnectToRoomHead";
@@ -29,6 +23,10 @@ import {
 } from "components/shared/pages/main-page/Center/Main/lobby/Lobby/RoomsList/RoomItemHead/RoomItemHead";
 import {RoomItem} from "components/shared/pages/main-page/Center/Main/lobby/Lobby/RoomsList/RoomItem/RoomItem";
 import {v4} from "uuid";
+import {Modal} from "components/shared/components/Modal/Modal";
+import {useDispatch} from "react-redux";
+import {setReconnectToRoomModal, setSelectStartMoneyModal} from "store/modals/modals.slice";
+import {ReconnectToRoomHandlers, useReconnectToRoom} from "hooks/lobby/reconnect-to-room/use-reconnect-to-room";
 
 
 export const LobbyMain = () => {
@@ -37,29 +35,54 @@ export const LobbyMain = () => {
     const selectStartMoneyModal = useSelectStartMoneyModalSelector();
     const reconnectToRoomModal = useReconnectToRoomModalSelector();
 
+    const dispatch = useDispatch();
+    const closeSelectStartMoneyModalHandler = () => {
+        dispatch(setSelectStartMoneyModal(false))
+    }
+
+    const closeReconnectToRoomModal = () => {
+        dispatch(setReconnectToRoomModal(false));
+    }
+
+    const reconnectToRoomHandlers: ReconnectToRoomHandlers = useReconnectToRoom();
+
     return (
         <Main>
             <Lobby>
                 <RoomsHead>
                     <RoomsSearch/>
                 </RoomsHead>
-                {selectStartMoneyModal
-                    ? (<MoneySelectorModal>
-                            <MoneySelectorInput selector={selectStartMoney} selectStartMoneyHandler={handlers.selectStartMoneyHandler}/>
-                            <MoneySelectorButtons handlers={handlers}/>
-                        </MoneySelectorModal>)
-                    : null}
-                {reconnectToRoomModal
-                    ? (<ReconnectToRoomModal>
-                        <ReconnectToRoomHead/>
-                        <ReconnectToRoomButtons/>
-                    </ReconnectToRoomModal>)
-                    : null}
+                <Modal
+                    isOpen={selectStartMoneyModal}
+                    onClose={closeSelectStartMoneyModalHandler}
+                    timeout={350}
+                >
+                    <MoneySelectorInput
+                        selector={selectStartMoney}
+                        selectStartMoneyHandler={handlers.selectStartMoneyHandler}
+                    />
+                    <MoneySelectorButtons
+                        handlers={handlers}
+                    />
+                </Modal>
+                <Modal
+                    isOpen={reconnectToRoomModal}
+                    onClose={closeReconnectToRoomModal}
+                    timeout={350}
+                >
+                    <ReconnectToRoomHead/>
+                    <ReconnectToRoomButtons
+                        handlers={reconnectToRoomHandlers}
+                    />
+                </Modal>
                 <RoomsList>
                     <RoomItemHead/>
-                    {rooms.length
-                        ? rooms.map(room => (<RoomItem key={v4()} joinToRoomHandler={joinToRoomHandler} roomData={room}/>))
-                        : null}
+                    {rooms.length > 0 && rooms.map(room => (
+                        <RoomItem
+                            key={v4()}
+                            joinToRoomHandler={joinToRoomHandler}
+                            roomData={room}
+                        />))}
                 </RoomsList>
                 {/*<RoomsPagination>*/}
                 {/*</RoomsPagination>*/}

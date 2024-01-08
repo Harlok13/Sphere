@@ -2,12 +2,11 @@ import style from "./MoneySelectorInput.module.css";
 import {ChangeEvent, FC} from "react";
 import {SelectStartGameMoney} from "shared/contracts/select-start-game-money-response";
 
-interface IMoneySelectorInputProps {
+
+export const MoneySelectorInput: FC<{
     selector: SelectStartGameMoney;
     selectStartMoneyHandler: (e: ChangeEvent<HTMLInputElement>) => void;
-}
-
-export const MoneySelectorInput: FC<IMoneySelectorInputProps> = ({selector, selectStartMoneyHandler}) => {
+}> = ({selector, selectStartMoneyHandler}) => {
     return (
         <div>
             <p>Select start money</p>

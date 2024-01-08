@@ -3,16 +3,9 @@ import {FC} from "react";
 import {SelectStartMoneyHandlers} from "hooks/lobby/select-start-money/use-select-start-money";
 
 
-// type ModalButtonHandlers = {
-//     confirmHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
-//     cancelHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
-// }
-
-interface IMoneySelectorButtonsProps {
-    handlers: SelectStartMoneyHandlers
-}
-
-export const MoneySelectorButtons: FC<IMoneySelectorButtonsProps> = ({handlers}) => {
+export const MoneySelectorButtons: FC<{
+    handlers: SelectStartMoneyHandlers;
+}> = ({handlers}) => {
     return (
         <div>
             <button onClick={handlers.confirmHandler} className={`${style.button} ${style.confirm}`}>Confirm</button>

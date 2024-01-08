@@ -26,13 +26,13 @@ public class ChangedPlayerReadinessDomainEventHandler : INotificationHandler<Cha
 
         var response = new ChangedPlayerReadinessResponse(PlayerId: playerId, Readiness: readiness);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerReadiness(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedPlayerReadiness(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerReadiness),
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveUser_ChangedPlayerReadiness),
             nameof(notification.Readiness),
             readiness,
-            connectionId);
+            playerId);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_ChangedPlayerReadiness(response, cT);
         _logger.LogInformation(

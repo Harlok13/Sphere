@@ -25,16 +25,16 @@ public class RemovedPlayerDomainEventHandler : INotificationHandler<RemovedPlaye
         notification.Deconstruct(out Guid roomId, out Guid playerId, out string connectionId, out int playersInRoom);
 
         /* Reset the player state */
-        await _hubContext.Clients.User(playerId.ToString()).ReceiveOwn_RemoveFromRoom(cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_RemoveFromRoom(cT);
         _logger.LogInformation(
             "{InvokedMethod} - A command to leave from the room \"{RoomId}\" has been sent to the player \"{PlayerId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_RemoveFromRoom),
+            nameof(_hubContext.Clients.All.ReceiveUser_RemoveFromRoom),
             roomId,
             playerId);
 
         await _hubContext.Groups.RemoveFromGroupAsync(connectionId, roomId.ToString(), cT);
         _logger.LogInformation(
-            "{InvokedMethod} | The player \"{ConnectionId}\" has been removed from group \"{RoomId}\".",
+            "{InvokedMethod} - The player \"{ConnectionId}\" has been removed from group \"{RoomId}\".",
             nameof(_hubContext.Groups.RemoveFromGroupAsync),
             connectionId,
             roomId);
@@ -45,7 +45,7 @@ public class RemovedPlayerDomainEventHandler : INotificationHandler<RemovedPlaye
 
             await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_RemovedPlayer(response, cT);
             _logger.LogInformation(
-                "{InvokedMethod} | The removed player \"{ConnectionId}\" from room \"{RoomId}\" has been sent to group.",
+                "{InvokedMethod} - The removed player \"{ConnectionId}\" from room \"{RoomId}\" has been sent to group.",
                 nameof(_hubContext.Clients.All.ReceiveGroup_RemovedPlayer),
                 connectionId,
                 roomId);

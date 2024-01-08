@@ -1,6 +1,7 @@
 using App.Application.Extensions;
 using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Data;
 using App.Contracts.Requests;
 using App.Contracts.Responses;
 using App.SignalR.Commands.LobbyCommands;
@@ -30,8 +31,8 @@ public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyC
 
     public async ValueTask<bool> Handle(SelectStartGameMoneyCommand command, CancellationToken cT)
     {
-        command.Request.Deconstruct(out RoomRequest roomRequest, out Guid playerId, out Guid? roomId);
-
+        command.Request.Deconstruct(out RoomRequest? roomRequest, out Guid playerId, out Guid? roomId);
+        
         var playerInfoMoneyResult = await _unitOfWork.PlayerInfoRepository.GetMoneyByIdAsync(playerId, cT);
         if (!playerInfoMoneyResult.TryFromResult(out var playerInfoData, out var errors))
         {
@@ -45,8 +46,48 @@ public class SelectStartGameMoneyHandler : ICommandHandler<SelectStartGameMoneyC
             return false;
         }
 
+        if (roomRequest is null)
+        {
+            var roomResult = await _unitOfWork.RoomRepository.GetByIdAsNoTrackingAsync(roomId, cT);
+            if (!roomResult.TryFromResult(out RoomDto? room, out var roomErrors))
+            {
+                foreach(var error in roomErrors) _logger.LogError(error.Message);
+
+                await _publisher.Publish(new UserNotificationEvent(
+                        NotificationText: NotificationMessages.SomethingWentWrong(),
+                        TargetId: playerId),
+                    cT);
+                
+                return false;
+            }
+
+            var computeSelectStartGameMoneyResult = ComputeSelectStartGameMoney(
+                startBid: room!.StartBid,
+                minBid: room.MinBid,
+                maxBid: room.MaxBid,
+                playerMoney: playerInfoData!.Money,
+                roomId: room.Id);
+            
+            if (computeSelectStartGameMoneyResult.Success)
+            {
+                await _publisher.Publish(new UserSelectStartGameMoneyEvent(
+                        PlayerId: playerId,
+                        Response: computeSelectStartGameMoneyResult.Selector!),
+                    cT);
+
+                return true;
+            }
+
+            await _publisher.Publish(new UserNotificationEvent(
+                    NotificationText: computeSelectStartGameMoneyResult.ErrorMessage!,
+                    TargetId: playerId),
+                cT);
+
+            return false;
+        }
+
         var selectorResult = ComputeSelectStartGameMoney(
-            startBid: roomRequest.StartBid,
+            startBid: roomRequest!.StartBid,
             minBid: roomRequest.MinBid,
             maxBid: roomRequest.MaxBid,
             playerMoney: playerInfoData!.Money,

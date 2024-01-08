@@ -4,15 +4,14 @@ import { VscDebugDisconnect } from "react-icons/vsc";
 import cn from "classnames";
 import {Player} from "shared/contracts/player-dto";
 
-interface IParticipantProps {
-    playerData: Player;
-    playerActionModalHandler: (e: React.MouseEvent<HTMLLIElement>, playerId: string) => void;
-}
 
-export const Participant: FC<IParticipantProps> = ({playerData, playerActionModalHandler}) => {
+export const Participant: FC<{
+    playerData: Player;
+    participantActionsModalHandler: (e: React.MouseEvent<HTMLLIElement>, playerId: string, playerName: string) => void;
+}> = ({playerData, participantActionsModalHandler}) => {
     return (
         <li
-            onClick={(e) => playerActionModalHandler(e, playerData.id)}
+            onClick={(e) => participantActionsModalHandler(e, playerData.id, playerData.playerName)}
             className={cn(style.item, {[style.inactive]: !playerData.online})}
         >
             {playerData.online

@@ -1,4 +1,5 @@
 export enum NavigateEnum {
     Room = "/room/5",
-    Lobby = "/lobby"
+    Lobby = "/lobby",
+    Profile = "/profile"
 }

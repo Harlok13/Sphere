@@ -1,21 +1,19 @@
 import {useTypedSelector} from "hooks/use-typed-selector";
 
-export const useInRoomSelector = () => {
-    return useTypedSelector(state => state.game21.inRoom);
-}
+export const useInRoomSelector = () =>
+    useTypedSelector(state => state.game21.inRoom);
 
-export const useGame21PlayersSelector = () => {
-    return useTypedSelector(state => state.game21.players);
-}
+export const useGame21PlayersSelector = () =>
+    useTypedSelector(state => state.game21.players);
 
-export const useRoomDataSelector = () => {
-    return useTypedSelector(state => state.game21.roomData);
-}
+export const useRoomDataSelector = () =>
+    useTypedSelector(state => state.game21.roomData);
 
-export const useRoomBankSelector = () => {
-    return useTypedSelector(state => state.game21.bank);
-}
+export const useRoomBankSelector = () =>
+    useTypedSelector(state => state.game21.bank);
 
-export const useGameStartedSelector = () => {
-    return useTypedSelector(state => state.game21.gameStarted);
-}
+export const useGameStartedSelector = () =>
+    useTypedSelector(state => state.game21.gameStarted);
+
+export const useGameHistorySelector = () =>
+    useTypedSelector(state => state.game21.gameHistory);

@@ -52,6 +52,9 @@ internal abstract partial class Message
 
                 internal static string SomeoneNotEnoughMoney(string playersList)
                     => $"Not all players ({playersList}) have enough money for the start bet.";
+
+                internal static string AlreadyStarted()
+                    => "The game has already started";
             }
 
             internal abstract class GetNextCard

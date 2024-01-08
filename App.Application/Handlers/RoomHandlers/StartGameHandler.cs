@@ -42,54 +42,47 @@ public class StartGameHandler : ICommandHandler<StartGameCommand, bool>
         }
 
         var canStartGameResult = room!.CanStartGame(playerId);
-        if (canStartGameResult is DomainFailure canStartGameFailure)
+        switch (canStartGameResult)
         {
-            await _publisher.Publish(new UserNotificationEvent(
-                    NotificationText: canStartGameFailure.Reason,
-                    TargetId: playerId),
-                cT);
+            case DomainFailure canStartGameFailure:
+                await _publisher.Publish(new UserNotificationEvent(
+                        NotificationText: canStartGameFailure.Reason,
+                        TargetId: playerId),
+                    cT);
 
-            return false;
-        }
+                return false;
+            case DomainNotificationFailure notificationFailure:
+                await _publisher.Publish(new UserNotificationEvent(
+                        NotificationText: notificationFailure.Reason,
+                        TargetId: playerId),
+                    cT);
 
-        if (canStartGameResult is DomainNotificationFailure notificationFailure)
-        {
-            await _publisher.Publish(new UserNotificationEvent(
-                    NotificationText: notificationFailure.Reason,
-                    TargetId: playerId),
-                cT);
+                await _publisher.Publish(new UsersNotificationEvent(
+                        NotificationText: notificationFailure.NotificationForPlayers,
+                        TargetIds: notificationFailure.PlayerIds),
+                    cT);
 
-            await _publisher.Publish(new UsersNotificationEvent(
-                    NotificationText: notificationFailure.NotificationForPlayers,
-                    TargetIds: notificationFailure.PlayerIds),
-                cT);
-
-            return false;
-        }
-
-        if (canStartGameResult is DomainError canStartGameError)
-        {
-            return await SendSomethingWentWrongNotificationAsync(cT, playerId, singleError: canStartGameError);
+                return false;
+            case DomainError canStartGameError:
+                return await SendSomethingWentWrongNotificationAsync(cT, playerId, singleError: canStartGameError);
         }
 
         var cardsDeck = _cardsDeckService.Create();
         var startGameResult = room.StartGame(leaderId: playerId, cardsDeck: cardsDeck);
-        if (startGameResult is DomainError startGameError)
+        switch (startGameResult)
         {
-            return await SendSomethingWentWrongNotificationAsync(cT, playerId, singleError: startGameError);
-        }
+            case DomainError startGameError:
+                return await SendSomethingWentWrongNotificationAsync(cT, playerId, singleError: startGameError);
+            case DomainFailure startGameFailure:
+                await _publisher.Publish(new UserNotificationEvent(
+                        NotificationText: startGameFailure.Reason,
+                        TargetId: playerId),
+                    cT);
 
-        if (startGameResult is DomainFailure startGameFailure)
-        {
-            await _publisher.Publish(new UserNotificationEvent(
-                    NotificationText: startGameFailure.Reason,
-                    TargetId: playerId),
-                cT);
-
-            return false;
+                return false;
+            default:
+                return await _unitOfWork.SaveChangesAsync(cT);
         }
-        
-        return await _unitOfWork.SaveChangesAsync(cT);
     }
     
     private async ValueTask<bool> SendSomethingWentWrongNotificationAsync(

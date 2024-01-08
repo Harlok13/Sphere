@@ -22,17 +22,17 @@ public class ChangedPlayerMoveDomainEventHandler : INotificationHandler<ChangedP
 
     public async ValueTask Handle(ChangedPlayerMoveDomainEvent notification, CancellationToken cT)
     {
-        notification.Deconstruct(out bool move, out string connectionId);
+        notification.Deconstruct(out bool move, out Guid playerId);
 
         var response = new ChangedPlayerMoveResponse(Move: move);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_ChangedPlayerMove(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_ChangedPlayerMove(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\".",
-            nameof(_hubContext.Clients.All.ReceiveOwn_ChangedPlayerMove),
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\".",
+            nameof(_hubContext.Clients.All.ReceiveUser_ChangedPlayerMove),
             nameof(notification.Move),
             move,
-            connectionId);
+            playerId);
         
         // TODO: send to group (need to see whose turn it is now and the timer itself)
     }

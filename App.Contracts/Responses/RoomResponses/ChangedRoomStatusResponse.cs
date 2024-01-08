@@ -4,4 +4,4 @@ namespace App.Contracts.Responses.RoomResponses;
 
 public sealed record ChangedRoomStatusResponse(
     Guid RoomId,
-    RoomStatus RoomStatus);
+    string Status);

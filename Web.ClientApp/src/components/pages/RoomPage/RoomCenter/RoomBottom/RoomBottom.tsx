@@ -1,4 +1,4 @@
-import {useRoomControlButtons} from "hooks/room/use-room-control-buttons";
+import {useRoomControlButtons} from "hooks/room/control-buttons/use-room-control-buttons";
 import {Bottom} from "components/shared/pages/main-page/Center/Bottom/Bottom";
 import {ControlPanel} from "components/shared/pages/main-page/Center/Bottom/room/ControlPanel/ControlPanel";
 import {
@@ -24,27 +24,31 @@ import {
 } from "components/shared/pages/main-page/Center/Bottom/room/AboutRoom/AboutRoomList/AboutRoomItem/AboutRoomItem";
 import {NotificationPanel} from "components/shared/pages/main-page/Center/Bottom/NotificationPanel/NotificationPanel";
 import {v4} from "uuid";
+import {useGameHistorySelector} from "store/game21/use-game21-selector";
+import {
+    GameHistoryMsg
+} from "components/shared/pages/main-page/Center/Bottom/room/GameHistory/GameHistoryList/GameHistoryMsg/GameHistoryMsg";
 
 
-export const RoomBottom = () => {
-    const {roomInfoData, handlers, player, players, gameStarted} = useRoomControlButtons();
+export const RoomBottom = () => {  // TODO: remove redundant arg
+    const {roomInfoData, handlers, player, players,} = useRoomControlButtons();
 
+    const gameHistory = useGameHistorySelector();  //TODO reloc
     return (
         <Bottom>
             <ControlPanel>
-                {!gameStarted
+                {!player.inGame
                     ? (player.readiness
                             ? (<ControlButton disabled={false} clickHandler={handlers.readinessHandler} displayName="Not Ready"/>)
                             : (<ControlButton disabled={false} clickHandler={handlers.readinessHandler} displayName="Ready"/>))
                     : null}
 
-                {gameStarted
+                {player.inGame
                     ? (<>
-                        <ControlButton disabled={!player.move} clickHandler={handlers.passHandler} displayName="Pass"/>
-                        <ControlButton disabled={!player.move} clickHandler={handlers.getCardHandler} displayName="Get card"/>
+                        <ControlButton disabled={!player.move} clickHandler={handlers.stayHandler} displayName="Stay"/>
+                        <ControlButton disabled={!player.move} clickHandler={handlers.hitHandler} displayName="Hit"/>
                     </>)
                     : players.every(p => p.readiness) && player.isLeader && players.length > 1
-                        // ? (<ControlButton clickHandler={() => game21.setStartGame(true)} displayName="Start game"/>)
                         ? (<ControlButton disabled={false} clickHandler={handlers.startGameHandler} displayName="Start game"/>)
                         : null
                 }
@@ -52,7 +56,10 @@ export const RoomBottom = () => {
             <GameHistory>
                 <GameHistoryTitle/>
                 <GameHistoryList>
-
+                    {gameHistory.length > 0 && gameHistory.map(messageData => (<GameHistoryMsg
+                        key={v4()}
+                        msgData={messageData}
+                    />))}
                 </GameHistoryList>
             </GameHistory>
             <AboutRoom>

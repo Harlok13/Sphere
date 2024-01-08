@@ -1,4 +1,4 @@
-import {useGame21PlayersSelector, useGameStartedSelector, useRoomDataSelector} from "store/game21/use-game21-selector";
+import {useGame21PlayersSelector, useRoomDataSelector} from "store/game21/use-game21-selector";
 import {usePlayerSelector} from "store/player/use-player-selector";
 import {
     useHitHub,
@@ -20,12 +20,11 @@ export const useRoomControlButtons = () => {
     const players = useGame21PlayersSelector();
     const toggleReadiness = useToggleReadinessHub()
     const startGame = useStartGameHub();
-    const gameStarted = useGameStartedSelector();
     const stopTimer = useStopTimerHub();
     const hit = useHitHub();
     const stay = useStayHub();
 
-    const getCardHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const hitHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         console.log("invoke stop handler")
         const hitRequest: IHitRequest = {
@@ -46,7 +45,7 @@ export const useRoomControlButtons = () => {
             .catch(err => console.error(err.toString()));
     }
 
-    const passHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const stayHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const stayRequest: IStayRequest = {
             roomId: player.roomId,
@@ -100,11 +99,11 @@ export const useRoomControlButtons = () => {
     ];
 
     const handlers = {
-        getCardHandler,
-        passHandler,
+        hitHandler,
+        stayHandler,
         readinessHandler,
         startGameHandler,
     }
 
-    return {roomInfoData, handlers, player, players, gameStarted}
+    return {roomInfoData, handlers, player, players}
 }

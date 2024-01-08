@@ -1,23 +1,29 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-export type PlayerActionModal = {
+export type ParticipantActionsModal = {
     playerId: string;
+    playerName: string;
     showModal: boolean;
+    positionX: number;
+    positionY: number;
 }
 
 interface ModalsState {
     selectStartMoneyModal: boolean;
     reconnectToRoomModal: boolean;
-    playerActionModal: PlayerActionModal;
+    participantActionsModal: ParticipantActionsModal;
 }
 
 
 const initialState: ModalsState = {
     selectStartMoneyModal: false,
     reconnectToRoomModal: false,
-    playerActionModal: {
+    participantActionsModal: {
         playerId: "",
-        showModal: false
+        playerName: "",
+        showModal: false,
+        positionX: 0,
+        positionY: 0
     },
 }
 
@@ -31,8 +37,8 @@ export const modalsSlice = createSlice({
         setReconnectToRoomModal: (state, action: PayloadAction<boolean>) => {
             state.reconnectToRoomModal = action.payload;
         },
-        setPlayerActionModal: (state, action: PayloadAction<PlayerActionModal>) => {
-            state.playerActionModal = action.payload;
+        setParticipantActionsModal: (state, action: PayloadAction<ParticipantActionsModal>) => {
+            state.participantActionsModal = action.payload;
         },
         resetModalsState: () => {
             return initialState;
@@ -43,7 +49,7 @@ export const modalsSlice = createSlice({
 export const {
     setSelectStartMoneyModal,
     setReconnectToRoomModal,
-    setPlayerActionModal,
+    setParticipantActionsModal,
     resetModalsState,
 } = modalsSlice.actions;
 

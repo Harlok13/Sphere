@@ -27,7 +27,8 @@
         "services/*": ["./services/*"],
         "shared/*": ["./shared/*"],
         "store/*": ["./store/*"],
-        "utils/*": ["./utils/*"]
+        "utils/*": ["./utils/*"],
+        "react-signalr/*": ["./react-signalr/*"]
       },
     "target": "es5",
     "lib": [

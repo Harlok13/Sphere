@@ -25,11 +25,19 @@ public class ChangedRoomStatusDomainEventHandler : INotificationHandler<ChangedR
     {
         notification.Deconstruct(out Guid roomId, out RoomStatus roomStatus);
 
-        var response = new ChangedRoomStatusResponse(RoomId: roomId, RoomStatus: roomStatus);
+        var response = new ChangedRoomStatusResponse(RoomId: roomId, Status: roomStatus.ToString());
         
         await _hubContext.Clients.All.ReceiveAll_ChangedRoomStatus(response, cT);
         _logger.LogInformation(
             "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of room \"{RoomId}\" has been sent to all users.",
+            nameof(_hubContext.Clients.All.ReceiveAll_ChangedRoomStatus),
+            nameof(notification.RoomStatus),
+            roomStatus,
+            roomId);
+        
+        await _hubContext.Clients.All.ReceiveGroup_ChangedRoomStatus(response, cT);
+        _logger.LogInformation(
+            "{InvokedMethod} - The changed value \"{ValueName} - {Value}\" of room \"{RoomId}\" has been sent to group.",
             nameof(_hubContext.Clients.All.ReceiveAll_ChangedRoomStatus),
             nameof(notification.RoomStatus),
             roomStatus,

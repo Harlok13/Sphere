@@ -1,3 +1,4 @@
+using System.Text.Json;
 using App.Application.Extensions;
 using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
@@ -10,6 +11,7 @@ using App.Domain.Entities;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Extensions;
+using App.Domain.Primitives;
 using App.Domain.Shared;
 using App.SignalR.Commands.ConnectionCommands;
 using App.SignalR.Events;
@@ -78,15 +80,21 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
         var playerDto = PlayerMapper.MapPlayerToPlayerDto(reconnectPlayer!);  // TODO: RoomMapper.MapToReconnectingInitRoomDataResponse
         var initRoomDataDto = RoomMapper.MapRoomToInitRoomDataDto(room);
         var playersDto = PlayerMapper.MapManyPlayersToManyPlayersDto(room.Players);
+        var gameHistory = new List<GameHistoryMessage>();
+        if (room.GameHistory is not null)
+        {
+            gameHistory = JsonSerializer.Deserialize<List<GameHistoryMessage>>(room.GameHistory); // TODO fix
+        }
 
         var response = new ReconnectingInitRoomDataResponse(  // TODO: init cards
             Player: playerDto,
             InitRoomData: initRoomDataDto,
+            GameHistory: gameHistory,
             Players: playersDto);
 
         await _hubContext.Clients  // TODO: event handler
-            .Client(reconnectPlayer!.ConnectionId)
-            .ReceiveClient_ReconnectingInitRoomData(response, cT);
+            .User(reconnectPlayer!.Id.ToString())
+            .ReceiveUser_ReconnectingInitRoomData(response, cT);
         _logger.LogInformation("");
 
         await _publisher.Publish(new UserNavigateEvent(

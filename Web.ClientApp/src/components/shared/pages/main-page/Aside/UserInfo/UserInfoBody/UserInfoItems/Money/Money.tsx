@@ -1,11 +1,9 @@
 import style from "../UserInfoItems.module.css";
 import React, {FC} from "react";
 
-interface IMoneyProps {
+export const Money: FC<{
     money: number;
-}
-
-export const Money: FC<IMoneyProps> = ({money}) => {
+}> = ({money}) => {
     return (
         <li className={style.item}>
             <span className="material-icons-outlined">attach_money</span>

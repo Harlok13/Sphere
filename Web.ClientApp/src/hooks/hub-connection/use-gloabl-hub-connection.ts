@@ -3,7 +3,6 @@ import {usePlayerSelector} from "store/player/use-player-selector";
 import {useStartTimerHub, useStayHub} from "hooks/hub-connection/server-methods/server-methods";
 import {useNavigate} from "react-router-dom";
 import {IAddedPlayerResponse} from "shared/contracts/responses/added-player-response";
-import {signalRConnection} from "../../App";
 import {useClientMethod} from "react-use-signalr";
 import {
     addNewRoom,
@@ -13,10 +12,11 @@ import {
     updateRoomStatus
 } from "store/lobby/lobby.slice";
 import {
+    initGameHistory,
     initRoomData,
     removePlayerFromPlayers,
     setCardInPlayersCards,
-    setGameStarted,
+    setGameStarted, setNewGameHistoryMessage,
     setNewPlayer,
     updateBankValue,
     updateInGameInPlayers,
@@ -63,6 +63,9 @@ import {IReconnectToRoomResponse} from "shared/contracts/responses/reconnect-to-
 import {IReconnectingInitRoomDataResponse} from "shared/contracts/responses/reconnecting-init-room-data-response";
 import {INavigateResponse} from "shared/contracts/responses/navigate-response";
 import {ICreatedPlayerResponse} from "shared/contracts/responses/created-player-response";
+import {signalRConnection} from "providers/SignalrProvider";
+import {IAddedGameHistoryMessageResponse} from "shared/contracts/responses/added-game-history-message-response";
+import {RoomStatusEnum} from "shared/constants/room-status.enum";
 
 
 export const useGlobalHubConnection = () => {
@@ -82,20 +85,15 @@ export const useGlobalHubConnection = () => {
         dispatch(addNewRoom(response));
     });
 
-    // useClientMethod(signalRConnection, "ReceiveAll_UpdatedRoom", (updatedRoom: IRoomInLobbyDto) => {
-    //     console.log("receive updated room");
-    //     dispatch(updateRoom(updatedRoom));
-    // });
-
-    useClientMethod(signalRConnection, "ReceiveOwn_CreatedPlayer", (response: ICreatedPlayerResponse) => {
-            console.log("receive own created player");
+    useClientMethod(signalRConnection, "ReceiveUser_CreatedPlayer", (response: ICreatedPlayerResponse) => {
+            console.log("receive user created player");
             dispatch(initPlayerData(response.player));
             dispatch(updatePlayersList(response.players));
             dispatch(initRoomData(response.initRoomData));
         });
 
-    useClientMethod(signalRConnection, "ReceiveOwn_RemoveFromRoom", () => {
-        console.log("receive remove from room");
+    useClientMethod(signalRConnection, "ReceiveUser_RemoveFromRoom", () => {
+        console.log("receive user remove from room");
         dispatch(resetPlayerState());
     });
 
@@ -104,26 +102,13 @@ export const useGlobalHubConnection = () => {
         dispatch(removePlayerFromPlayers(removedPlayerResponse));
     });
 
-    // useClientMethod(signalRConnection, "ReceiveGroup_NewRoomLeader", (newRoomLeader: IPlayerResponse) => {
-    //     console.log("receive new room leader");
-    //     dispatch(updatePlayerInPlayers(newRoomLeader));
-    //     if (player.id === newRoomLeader.id) {  // TODO: remove hard code. receive in extra client method
-    //         dispatch(setIsLeader());
-    //     }
-    // });
-
     useClientMethod(signalRConnection, "ReceiveAll_RemovedRoom", (response: IRemovedRoomResponse) => {
         console.log("receive removed room");
         dispatch(removeRoom(response));
     });
 
-    // useClientMethod(signalRConnection, "ReceiveGroup_UpdatedPlayer", (updatedPlayer: IPlayerDto) => {
-    //     console.log("receive updated player");
-    //     dispatch(updatePlayerInPlayers(updatedPlayer));
-    // });
-
-    useClientMethod(signalRConnection, "ReceiveOwn_ChangedPlayerReadiness", (response: IChangedPlayerReadinessResponse) => {
-        console.log("receive own changed player readiness");
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedPlayerReadiness", (response: IChangedPlayerReadinessResponse) => {
+        console.log("receive user changed player readiness");
         dispatch(setReadiness(response));
     });
 
@@ -138,8 +123,8 @@ export const useGlobalHubConnection = () => {
         dispatch(setSelectStartMoneyModal(true));
     });
 
-    useClientMethod(signalRConnection, "ReceiveOwn_ChangedPlayerInfoMoney", (response: IChangedPlayerInfoMoneyResponse) => {
-        console.log("receive changed player info money");
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedPlayerInfoMoney", (response: IChangedPlayerInfoMoneyResponse) => {
+        console.log("receive user changed player info money");
         dispatch(setMoney(response));
     });
 
@@ -161,13 +146,8 @@ export const useGlobalHubConnection = () => {
         }, 5000);
     });
 
-    // useClientMethod(signalRConnection, "ReceiveGroup_NewRoomName", (newRoomName: string) => {
-    //     console.log("receive new room name");
-    //     dispatch(updateRoomName(newRoomName));
-    // });
-
-    useClientMethod(signalRConnection, "ReceiveOwn_AddedCard", (response: IAddedCardResponse) => {
-        console.log("receive own added card", response.cardDto);
+    useClientMethod(signalRConnection, "ReceiveUser_AddedCard", (response: IAddedCardResponse) => {
+        console.log("receive user added card", response.cardDto);
         dispatch(setNewCard(response));
     });
 
@@ -181,8 +161,8 @@ export const useGlobalHubConnection = () => {
         dispatch(updateBankValue(response));
     });
 
-    useClientMethod(signalRConnection, "ReceiveOwn_ChangedPlayerMove", (response: IChangedPlayerMoveResponse) => {
-        console.log("receive own changed player move");
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedPlayerMove", (response: IChangedPlayerMoveResponse) => {
+        console.log("receive user changed player move");
         dispatch(setMove(response));
 
         const startTimerRequest: IStartTimerRequest = {
@@ -197,18 +177,8 @@ export const useGlobalHubConnection = () => {
         }
     });
 
-
-    // useClientMethod(signalRConnection, "ReceiveMoveEnd", () => {
-    //     console.log("receive move end");
-    //     dispatch(setMove(false));
-    // })
-
-    // useClientMethod(signalRConnection, "ReceiveGroup_StartGameErrorNotification", (notification: string) => {
-    //     // TODO: finish
-    // });
-
-    useClientMethod(signalRConnection, "ReceiveOwn_ChangedPlayerMoney", (response: IChangedPlayerMoneyResponse) => {
-        console.log("receive own changed player money");
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedPlayerMoney", (response: IChangedPlayerMoneyResponse) => {
+        console.log("receive user changed player money");
         dispatch(setGameMoney(response));
     });
 
@@ -217,18 +187,26 @@ export const useGlobalHubConnection = () => {
         dispatch(updateMoneyInPlayers(response));
     });
 
-    useClientMethod(signalRConnection, "ReceiveGroup_StartGame", () => {
-        console.log("receive start game");
-        dispatch(setGameStarted(true));
+    useClientMethod(signalRConnection, "ReceiveGroup_ChangedRoomStatus", (response: IChangedRoomStatusResponse) => {
+        console.log("receive group changed room status");
+
+        console.log(response)
+        if (response.status === RoomStatusEnum.Playing){
+            dispatch(setGameStarted(true));
+            console.log("invoke")
+        }
+        else {
+            dispatch(setGameStarted(false));
+        }
     });
 
-    useClientMethod(signalRConnection, "ReceiveOwn_UpdatedTimer", (seconds: number) => {
-        console.log("receive updated timer");
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedTimer", (seconds: number) => {
+        console.log("receive user changed timer");
         dispatch(setTimer(seconds));
     });
 
-    useClientMethod(signalRConnection, "ReceiveOwn_ChangedPlayerInGame", (response: IChangedPlayerInGameResponse) => {
-        console.log("receive own changed player in game");
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedPlayerInGame", (response: IChangedPlayerInGameResponse) => {
+        console.log("receive user changed player in game");
         dispatch(setInGame(response));
     });
 
@@ -247,8 +225,8 @@ export const useGlobalHubConnection = () => {
         dispatch(updatePlayersInRoom(response));
     });
 
-    useClientMethod(signalRConnection, "ReceiveOwn_ChangedPlayerIsLeader", (response: IChangedPlayerIsLeader) => {
-        console.log("receive own changed player is leader");
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedPlayerIsLeader", (response: IChangedPlayerIsLeader) => {
+        console.log("receive user changed player is leader");
         dispatch(setIsLeader(response));
     });
 
@@ -272,14 +250,8 @@ export const useGlobalHubConnection = () => {
         dispatch(setRoomAvatarUrl(response));
     });
 
-    // useClientMethod(signalRConnection, "ReceiveGroup_PlayerInGame", (playerId: string, inGame: boolean) => {
-    //     console.log("receive player in game");
-    //     // TODO: is redundant?
-    //
-    // });
-
-    useClientMethod(signalRConnection, "ReceiveClient_TimeOut", () => {
-        console.log("receive client time out")
+    useClientMethod(signalRConnection, "ReceiveUser_TimeOut", () => {
+        console.log("receive user time out")
         const request: IStayRequest = {
             playerId: player.id,
             roomId: player.roomId
@@ -289,21 +261,13 @@ export const useGlobalHubConnection = () => {
             .catch(err => console.error(err.toString()));
     });
 
-    // useClientMethod(signalRConnection, "ReceiveGroup_DisconnectedPlayer", (response: IDisconnectedPlayerResponse) => {
-    //     console.log("receive group disconnected player - ", response.playerId);
-    // });
-    //
-    // useClientMethod(signalRConnection, "ReceiveGroup_ReconnectedPlayer", (response: IReconnectedPlayerResponse) => {
-    //     console.log("receive group reconnected player - ", response.playerId)
-    // });
-
     useClientMethod(signalRConnection, "ReceiveGroup_ChangedPlayerOnline", (response: IChangedPlayerOnlineResponse) => {
         console.log("receive group changed player online", response);
         dispatch(updateOnlineInPlayers(response));
     });
 
-    useClientMethod(signalRConnection, "ReceiveClient_ChangedPlayerOnline", (response: IChangedPlayerOnlineResponse) => {
-        console.log("receive client changed player online", response);
+    useClientMethod(signalRConnection, "ReceiveUser_ChangedPlayerOnline", (response: IChangedPlayerOnlineResponse) => {
+        console.log("receive user changed player online", response);
         dispatch(setOnline(response));
     });
 
@@ -313,11 +277,13 @@ export const useGlobalHubConnection = () => {
         dispatch(setRoomId(response));
     });
 
-    useClientMethod(signalRConnection, "ReceiveClient_ReconnectingInitRoomData", (response: IReconnectingInitRoomDataResponse) => {
-        console.log("receive client reconnecting init room data");
+    useClientMethod(signalRConnection, "ReceiveUser_ReconnectingInitRoomData", (response: IReconnectingInitRoomDataResponse) => {
+        console.log("receive user reconnecting init room data");
         dispatch(initPlayerData(response.player));
         dispatch(initRoomData(response.initRoomData));
         dispatch(updatePlayersList(response.players));
+        dispatch(initGameHistory(response.gameHistory));
+        console.log(response.gameHistory);
     });
 
     useClientMethod(signalRConnection, "ReceiveUser_Navigate", (response: INavigateResponse) => {
@@ -332,9 +298,9 @@ export const useGlobalHubConnection = () => {
         console.log("receive client forbidden transfer leadership notification");
         dispatch(setNewNotification(response));
     });
-}
 
-export type PlayerInGame = {
-    playerId: string;
-    inGame: boolean;
+    useClientMethod(signalRConnection, "ReceiveGroup_AddedGameHistoryMessage", (response: IAddedGameHistoryMessageResponse) => {
+        console.log("receive group added game history message")
+        dispatch(setNewGameHistoryMessage(response));
+    });
 }

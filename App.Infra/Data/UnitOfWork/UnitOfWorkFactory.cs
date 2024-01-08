@@ -38,7 +38,7 @@ public abstract class UnitOfWorkFactory<TContext> : IUnitOfWorkFactory
         if (!result)
         {
             _logger.LogWarning(
-                "{InvokedMethod} | Saving did not yield any results.",
+                "{InvokedMethod} - Saving did not yield any results.",
                 nameof(SaveChangesAsync));
             
             return result;
@@ -55,7 +55,7 @@ public abstract class UnitOfWorkFactory<TContext> : IUnitOfWorkFactory
             @event.IsPublished = true;
             
             _logger.LogInformation(
-                "{InvokedMethod} | Receive new domain event \"{EventName}\".",
+                "{InvokedMethod} - Receive new domain event \"{EventName}\".",
                 nameof(SaveChangesAsync),
                 @event.GetType().Name);
 

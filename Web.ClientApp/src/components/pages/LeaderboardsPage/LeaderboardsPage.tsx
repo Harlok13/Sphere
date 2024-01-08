@@ -1,4 +1,4 @@
-import {ContentContainer} from "components/shared/pages/main-page/ContentContainer/ContentContainer";
+import {ContentContainer} from "components/shared/components/ContentContainer/ContentContainer";
 import {GlobalAside} from "components/layout/GlobalAside/GlobalAside";
 import {Center} from "components/shared/pages/main-page/Center/Center";
 import {GlobalHead} from "components/layout/GlobalHead/GlobalHead";

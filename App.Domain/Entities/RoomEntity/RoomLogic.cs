@@ -1,8 +1,7 @@
 using System.Collections.Immutable;
 using System.Text;
-using App.Domain.DomainEvents.RoomDomainEvents;
+using App.Domain.DomainEvents.NotificationDomainEvent;
 using App.Domain.DomainResults;
-using App.Domain.DomainResults.CustomResults;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Enums;
 using App.Domain.Extensions;
@@ -21,6 +20,10 @@ public sealed partial class Room
                 return new DomainError(
                     Message.Error.Room.PlayerNotFound(nameof(StartGame), leaderId));
 
+            if (Status == RoomStatus.Playing)
+                return new DomainFailure(
+                    Message.Failure.Room.CanStartGame.AlreadyStarted());
+            
             if (_players.Count < 2)
                 return new DomainFailure(
                     Message.Failure.Room.CanStartGame.NotEnoughPlayers());
@@ -105,6 +108,12 @@ public sealed partial class Room
 
     public DomainResult StartGame(Guid leaderId, IEnumerable<CardInDeck> cardsDeck)
     {
+        SetRoomStatus(RoomStatus.Playing);
+        AddNewGameHistoryMessage(
+            type: GameHistoryType.GameState, 
+            currentTime: DateTime.UtcNow.ToShortTimeString(),
+            message: "Game started.");
+
         UpdateCardsDeck(cardsDeck); // TODO: ref
 
         lock (_players)
@@ -122,11 +131,12 @@ public sealed partial class Room
                 var delayMs = indexAkaDelay * 1000;
 
                 var playerStartGameResult = player.StartGame(startBid: StartBid, card: card!, delayMs: delayMs);
-                if (playerStartGameResult is DomainFailure playerStartGameFailure)
-                    return playerStartGameFailure;
-
-                if (playerStartGameResult is DomainError playerStartGameError)
-                    return playerStartGameError;
+                if (!playerStartGameResult.Success) return playerStartGameResult;
+                // if (playerStartGameResult is DomainFailure playerStartGameFailure)
+                //     return playerStartGameFailure;
+                //
+                // if (playerStartGameResult is DomainError playerStartGameError)
+                //     return playerStartGameError;
 
                 IncreaseBank(StartBid);
 
@@ -162,12 +172,12 @@ public sealed partial class Room
             sender.SetIsLeader(false);
             receiver.SetIsLeader(true);
 
-            _domainEvents.Add(new TransferredLeadershipDomainEvent(
-                SenderId: senderId,
-                ReceiverId: receiverId,
-                NotificationForSender:
+            _domainEvents.Add(new BothSideNotifiedDomainEvent(
+                MainSideId: senderId,
+                SecondSideId: receiverId,
+                NotificationForMainSide:
                 Message.Notification.Room.TransferLeadership.SuccessTransfer(receiver.PlayerName),
-                NotificationForReceiver: Message.Notification.Room.TransferLeadership.ReceiveLeadership(
+                NotificationForSecondSide: Message.Notification.Room.TransferLeadership.ReceiveLeadership(
                     sender.PlayerName)));
 
             return new DomainSuccessResult();
@@ -415,4 +425,9 @@ public sealed partial class Room
             return false;
         }
     }
+
+    // public DomainResult GetInitData()
+    // {
+    //     
+    // }
 }

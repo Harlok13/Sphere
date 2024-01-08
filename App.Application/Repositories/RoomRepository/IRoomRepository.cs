@@ -12,7 +12,7 @@ public interface IRoomRepository
 
     Task<Result<Room>> GetByIdAsync(Guid? roomId, CancellationToken cT);
     
-    Task<Room?> GetByIdAsNoTrackingAsync(Guid roomId, CancellationToken cT);
+    Task<Result<RoomDto>> GetByIdAsNoTrackingAsync(Guid? roomId, CancellationToken cT);
 
     Task<ICollection<Room>?> GetFirstPageAsNoTrackingAsync(CancellationToken cT);
 

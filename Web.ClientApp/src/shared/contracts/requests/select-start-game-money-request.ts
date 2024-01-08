@@ -1,7 +1,7 @@
 import {IRoomRequest} from "./room-request";
 
 export interface ISelectStartGameMoneyRequest {
-    roomRequest: IRoomRequest;
+    roomRequest?: IRoomRequest;
     playerId: string;
     roomId?: string;
 }

@@ -41,7 +41,7 @@ public class GetInitDataHandler : IQueryHandler<GetInitDataQuery, InitDataRespon
     }
 
 
-    public async ValueTask<InitDataResponse> Handle(GetInitDataQuery query, CancellationToken cT)
+    public async ValueTask<InitDataResponse> Handle(GetInitDataQuery query, CancellationToken cT)  // TODO: ref all
     {
         query.Deconstruct(out Guid playerId);
         

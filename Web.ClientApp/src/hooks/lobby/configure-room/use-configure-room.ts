@@ -34,7 +34,6 @@ export type LobbyPanelHandlers = {
 
 export const useConfigureRoom = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const newRoomData = useNewRoomConfigSelector();
     const playerInfo = usePlayerInfoSelector();
@@ -125,5 +124,5 @@ export const useConfigureRoom = () => {
         highBidHandler
     }
 
-    return {handlers, newRoomData}
+    return {handlers, newRoomData, playerInfo}
 }

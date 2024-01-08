@@ -29,7 +29,7 @@ public class AddedCardDomainEventHandler : INotificationHandler<AddedCardDomainE
         
         sw.Start();
         notification.Deconstruct(
-            out Card card, out int delayMs, out Guid roomId, out Guid playerId, out string connectionId);
+            out Card card, out int delayMs, out Guid roomId, out Guid playerId);
 
         var cardDto = CardMapper.MapCardToCardDto(card);
         var response = new AddedCardResponse(PlayerId: playerId, CardDto: cardDto);
@@ -46,13 +46,13 @@ public class AddedCardDomainEventHandler : INotificationHandler<AddedCardDomainE
 
         await Task.Delay(resultDelay, cT);
 
-        await _hubContext.Clients.Client(connectionId).ReceiveOwn_AddedCard(response, cT);
+        await _hubContext.Clients.User(playerId.ToString()).ReceiveUser_AddedCard(response, cT);
         _logger.LogInformation(
-            "{InvokedMethod} - The new card \"{ValueName} - {Value}\" has been sent to the player \"{ConnectionId}\" with delay {Delay} ms.",
-            nameof(_hubContext.Clients.All.ReceiveOwn_AddedCard),
+            "{InvokedMethod} - The new card \"{ValueName} - {Value}\" has been sent to the player \"{PlayerId}\" with delay {Delay} ms.",
+            nameof(_hubContext.Clients.All.ReceiveUser_AddedCard),
             nameof(notification.Card),
             card.SuitValue,
-            connectionId,
+            playerId,
             resultDelay);
 
         await _hubContext.Clients.Group(roomId.ToString()).ReceiveGroup_AddedCard(response, cT);

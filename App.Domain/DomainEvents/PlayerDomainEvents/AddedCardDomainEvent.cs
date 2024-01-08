@@ -7,5 +7,4 @@ public sealed record AddedCardDomainEvent(
     Card Card,
     int DelayMs,
     Guid RoomId,
-    Guid PlayerId,
-    string ConnectionId) : DomainEvent;
+    Guid PlayerId) : DomainEvent;

@@ -1,6 +1,6 @@
 import {GlobalAside} from "components/layout/GlobalAside/GlobalAside";
 import {Center} from "components/shared/pages/main-page/Center/Center";
-import {ContentContainer} from "components/shared/pages/main-page/ContentContainer/ContentContainer";
+import {ContentContainer} from "components/shared/components/ContentContainer/ContentContainer";
 import {GlobalHead} from "components/layout/GlobalHead/GlobalHead";
 import {Main} from "components/shared/pages/main-page/Center/Main/Main";
 import {Bottom} from "components/shared/pages/main-page/Center/Bottom/Bottom";
