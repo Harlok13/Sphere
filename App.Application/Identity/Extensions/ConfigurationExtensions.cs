@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace App.Application.Identity.Extensions;
 
-public static class ConfigurationExtensions
+public static class ConfigurationExtensions  // TODO: add environment check
 {
     public static string GetAudience(this IConfiguration configuration)
     {

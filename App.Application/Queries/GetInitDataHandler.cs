@@ -1,11 +1,16 @@
+using App.Application.Extensions;
 using App.Application.Identity.Repositories;
-using App.Application.Mapper;
 using App.Application.Repositories;
+using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
+using App.Contracts.Data;
+using App.Contracts.Mapper;
 using App.Contracts.Responses;
 using App.Domain.Entities;
 using Mediator;
 using Microsoft.Extensions.Logging;
+using PlayerDto = App.Contracts.Data.PlayerDto;
+using RoomDto = App.Contracts.Data.RoomDto;
 
 namespace App.Application.Queries;
 
@@ -14,73 +19,75 @@ public class GetInitDataHandler : IQueryHandler<GetInitDataQuery, InitDataRespon
     private readonly ILogger<GetInitDataHandler> _logger;
     private readonly IPlayerRepository _playerRepository;
     private readonly IPlayerHistoryRepository _playerHistoryRepository;
-    private readonly IPlayerStatisticRepository _playerStatisticRepository;
+    private readonly IPlayerInfoRepository _playerInfoRepository;
     private readonly IApplicationUserRepository _applicationUserRepository;
     private readonly IRoomRepository _roomRepository;
     private readonly IAppUnitOfWork _appUnitOfWork;
+    private readonly IPublisher _publisher;
 
     public GetInitDataHandler(ILogger<GetInitDataHandler> logger, IPlayerRepository playerRepository,
-        IPlayerHistoryRepository playerHistoryRepository, IPlayerStatisticRepository playerStatisticRepository,
+        IPlayerHistoryRepository playerHistoryRepository, IPlayerInfoRepository playerInfoRepository,
         IRoomRepository roomRepository, IAppUnitOfWork appUnitOfWork,
-        IApplicationUserRepository applicationUserRepository)
+        IApplicationUserRepository applicationUserRepository, IPublisher publisher)
     {
         _logger = logger;
         _playerRepository = playerRepository;
         _playerHistoryRepository = playerHistoryRepository;
-        _playerStatisticRepository = playerStatisticRepository;
+        _playerInfoRepository = playerInfoRepository;
         _roomRepository = roomRepository;
         _appUnitOfWork = appUnitOfWork;
         _applicationUserRepository = applicationUserRepository;
+        _publisher = publisher;
     }
 
 
-    public async ValueTask<InitDataResponse> Handle(GetInitDataQuery query, CancellationToken cT)
+    public async ValueTask<InitDataResponse> Handle(GetInitDataQuery query, CancellationToken cT)  // TODO: ref all
     {
         query.Deconstruct(out Guid playerId);
-        _logger.LogInformation($"Player id: {playerId}");
-        var player = await _playerRepository.GetPlayerByIdAsync(playerId, cT);
-        var playerHistory = await _playerHistoryRepository.GetFirstFiveRecordsAsync(playerId, cT);
-        var playerStatistic = await _playerStatisticRepository.GetPlayerStatisticAsync(playerId, cT);
-        var rooms = await _roomRepository.GetFirstPageAsync(cT);
+        
+        var playerResult = await _playerRepository.GetPlayerByIdAsNoTrackingAsync(playerId, cT);
+        playerResult.TryFromResult(out PlayerDto? playerDto, out _);
 
-        // if (player is null)
+        // if (!playerResult.TryFromDomainResult(out PlayerDto? playerDto, out var errors))
         // {
-        //     var user = await _applicationUserRepository.GetUserByIdAsync(playerId, cT);
-        //     if (user is null) throw new Exception();
-        //     player = Player.Create(playerId, user.UserName!);
+        //     foreach (var error in errors) _logger.LogError(error.Message);
+        //     
+        //     await _publisher.Publish(new NotificationResponse(
+        //             NotificationId: Guid.NewGuid(),
+        //             NotificationText: "An error occurred while updating data, please try again."),
+        //         cT);
+        //
+        //     // return new InitDataResponse(null, null, null, null);
         // }
+        
+        
+        var playerHistory = await _playerHistoryRepository.GetFirstFiveRecordsAsNoTrackingAsync(playerId, cT);
+        var playerInfo = await _playerInfoRepository.GetPlayerInfoByIdAsNoTrackingAsync(playerId, cT);
+        var rooms = await _roomRepository.GetFirstPageAsNoTrackingAsync(cT);
 
-        // player ??= Player.Create(playerId,
-        //     _applicationUserRepository.GetUserByIdAsync(playerId, cT).GetAwaiter().GetResult().UserName!);
+        var playerInfoResponse = PlayerMapper.MapPlayerInfoToPlayerInfoResponse(playerInfo);
 
-        playerStatistic ??= PlayerStatistic.Create(Guid.NewGuid(), playerId);
-        var playerStatisticResponse = PlayerMapper.MapPlayerStatisticToPlayerStatisticResponse(playerStatistic);
-
-        PlayerResponse? playerResponse =
-            player is null
-                ? null
-                : PlayerMapper.MapPlayerToPlayerResponse(player);
+        // PlayerDto? playerDto =
+        //     player is null
+        //         ? null
+        //         : PlayerMapper.MapPlayerToPlayerDto(player);
 
 
-        IEnumerable<PlayerHistoryResponse>? playerHistoryResponse =
+        IEnumerable<PlayerHistoryResponse>? playerHistoryDto =
             playerHistory is null
                 ? null
                 : PlayerMapper.MapManyPlayerHistoryToManyPlayerHistoryResponse(playerHistory);
 
 
-        IEnumerable<RoomResponse>? roomsResponse =
+        IEnumerable<RoomInLobbyDto>? roomsDto =
             rooms is null
                 ? null
-                : RoomMapper.MapManyRoomsToManyRoomsResponse(rooms);
-
-
-        // TODO: change to ApplicationUserResponse 
-        var userResponse = await _applicationUserRepository.GetUserByIdAsync(playerId, cT);
+                : RoomMapper.MapManyRoomsToManyRoomsInLobbyDto(rooms);
+        
         return new InitDataResponse(
-            UserResponse: userResponse,
-            PlayerResponse: playerResponse,
-            PlayerHistoryResponse: playerHistoryResponse,
-            PlayerStatisticResponse: playerStatisticResponse,
-            RoomResponse: roomsResponse);
+            Player: playerDto,
+            PlayerHistories: playerHistoryDto,
+            PlayerInfo: playerInfoResponse,
+            Rooms: roomsDto);
     }
 }

@@ -6,4 +6,4 @@ public sealed record AuthenticateResponse(
     string Email,
     string Token,
     string RefreshToken,
-    PlayerStatisticResponse PlayerStatistic);
+    PlayerInfoResponse PlayerInfo);

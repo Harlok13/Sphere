@@ -1,10 +1,10 @@
-import {GlobalAside} from "../../layout/GlobalAside/GlobalAside";
-import {Center} from "../../../shared/pages/main-page/Center/Center";
-import {GlobalHead} from "../../layout/GlobalHead/GlobalHead";
-import {Main} from "../../../shared/pages/main-page/Center/Main/Main";
-import {Bottom} from "../../../shared/pages/main-page/Center/Bottom/Bottom";
-import {GlobalRightSide} from "../../layout/GlobalRightSide/GlobalRightSide";
-import {ContentContainer} from "../../../shared/pages/main-page/ContentContainer/ContentContainer";
+import React from "react";
+import {GlobalAside} from "components/layout/GlobalAside/GlobalAside";
+import {Center} from "components/shared/pages/main-page/Center/Center";
+import {ContentContainer} from "components/shared/components/ContentContainer/ContentContainer";
+import {GlobalHead} from "components/layout/GlobalHead/GlobalHead";
+import {Main} from "components/shared/pages/main-page/Center/Main/Main";
+import {GlobalRightSide} from "components/layout/GlobalRightSide/GlobalRightSide";
 
 export const SettingsPage = () => {
     return (
@@ -13,10 +13,11 @@ export const SettingsPage = () => {
             <Center>
                 <GlobalHead/>
                 <Main>
+                    control buttons settings
                 </Main>
-                <Bottom>
+                {/*<Bottom>*/}
 
-                </Bottom>
+                {/*</Bottom>*/}
             </Center>
             <GlobalRightSide/>
         </ContentContainer>

@@ -9,6 +9,7 @@ public class ApplicationUser : IdentityUser<Guid>
     //     RefreshToken = refreshToken;
     //     RefreshTokenExpiryTime = refreshTokenExpiryTime;
     // }
+    // public string AvatarUrl { get; set; }  // TODO: finish
     
     public string? RefreshToken { get; set; }  // TODO: private?
 

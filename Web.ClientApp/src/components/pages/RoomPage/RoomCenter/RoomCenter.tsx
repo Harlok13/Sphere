@@ -1,12 +1,11 @@
-import {Center} from "../../../../shared/pages/main-page/Center/Center";
-import {RoomBottom} from "./RoomBottom/RoomBottom";
-import {RoomMain} from "./RoomMain/RoomMain";
-import {GlobalHead} from "../../../layout/GlobalHead/GlobalHead";
+import {Center} from "components/shared/pages/main-page/Center/Center";
+import {RoomMain} from "components/pages/RoomPage/RoomCenter/RoomMain/RoomMain";
+import {RoomBottom} from "components/pages/RoomPage/RoomCenter/RoomBottom/RoomBottom";
 
 export const RoomCenter = () => {
     return (
         <Center>
-            <GlobalHead/>
+            {/*<GlobalHead/>*/}
             <RoomMain/>
             <RoomBottom/>
         </Center>

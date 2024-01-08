@@ -1,68 +1,71 @@
-import {ControlPanel} from "../../../../../shared/pages/main-page/Center/Bottom/ControlPanel/ControlPanel";
+import {useRoomControlButtons} from "hooks/room/control-buttons/use-room-control-buttons";
+import {Bottom} from "components/shared/pages/main-page/Center/Bottom/Bottom";
+import {ControlPanel} from "components/shared/pages/main-page/Center/Bottom/room/ControlPanel/ControlPanel";
 import {
     ControlButton
-} from "../../../../../shared/pages/main-page/Center/Bottom/ControlPanel/ControlButton/ControlButton";
-import {GameHistory} from "../../../../../shared/pages/main-page/Center/Bottom/GameHistory/GameHistory";
+} from "components/shared/pages/main-page/Center/Bottom/room/ControlPanel/ControlButton/ControlButton";
+import {GameHistory} from "components/shared/pages/main-page/Center/Bottom/room/GameHistory/GameHistory";
 import {
     GameHistoryTitle
-} from "../../../../../shared/pages/main-page/Center/Bottom/GameHistory/GameHistoryTitle/GameHistoryTitle";
+} from "components/shared/pages/main-page/Center/Bottom/room/GameHistory/GameHistoryTitle/GameHistoryTitle";
 import {
     GameHistoryList
-} from "../../../../../shared/pages/main-page/Center/Bottom/GameHistory/GameHistoryList/GameHistoryList";
-import {AboutRoom} from "../../../../../shared/pages/main-page/Center/Bottom/AboutRoom/AboutRoom";
+} from "components/shared/pages/main-page/Center/Bottom/room/GameHistory/GameHistoryList/GameHistoryList";
+import React from "react";
 import {
     AboutRoomTitle
-} from "../../../../../shared/pages/main-page/Center/Bottom/AboutRoom/AboutRoomTitle/AboutRoomTitle";
+} from "components/shared/pages/main-page/Center/Bottom/room/AboutRoom/AboutRoomTitle/AboutRoomTitle";
+import {AboutRoom} from "components/shared/pages/main-page/Center/Bottom/room/AboutRoom/AboutRoom";
 import {
     AboutRoomList
-} from "../../../../../shared/pages/main-page/Center/Bottom/AboutRoom/AboutRoomList/AboutRoomList";
+} from "components/shared/pages/main-page/Center/Bottom/room/AboutRoom/AboutRoomList/AboutRoomList";
 import {
-    NotificationPanel
-} from "../../../../../shared/pages/main-page/Center/Bottom/NotificationPanel/NotificationPanel";
-import {Bottom} from "../../../../../shared/pages/main-page/Center/Bottom/Bottom";
-import {useDispatch, useSelector} from "react-redux";
-import {setReadiness} from "../../../../../BL/slices/player.slice";
+    AboutRoomItem
+} from "components/shared/pages/main-page/Center/Bottom/room/AboutRoom/AboutRoomList/AboutRoomItem/AboutRoomItem";
+import {NotificationPanel} from "components/shared/pages/main-page/Center/Bottom/NotificationPanel/NotificationPanel";
+import {v4} from "uuid";
+import {useGameHistorySelector} from "store/game21/use-game21-selector";
+import {
+    GameHistoryMsg
+} from "components/shared/pages/main-page/Center/Bottom/room/GameHistory/GameHistoryList/GameHistoryMsg/GameHistoryMsg";
 
-export const RoomBottom = () => {
-    // @ts-ignore
-    const game21 = useSelector(state => state.game21);
-    const dispatch = useDispatch();
 
-    const getCardHandler = () => {
+export const RoomBottom = () => {  // TODO: remove redundant arg
+    const {roomInfoData, handlers, player, players,} = useRoomControlButtons();
 
-    }
-
-    const passHandler = () => {
-
-    }
-
+    const gameHistory = useGameHistorySelector();  //TODO reloc
     return (
         <Bottom>
             <ControlPanel>
-                {game21.readiness
-                    ? (<ControlButton clickHandler={() => dispatch(setReadiness(false))} displayName="Not Ready"/>)
-                    : (<ControlButton clickHandler={() => dispatch(setReadiness(true))} displayName="Ready"/>)}
+                {!player.inGame
+                    ? (player.readiness
+                            ? (<ControlButton disabled={false} clickHandler={handlers.readinessHandler} displayName="Not Ready"/>)
+                            : (<ControlButton disabled={false} clickHandler={handlers.readinessHandler} displayName="Ready"/>))
+                    : null}
 
-                {game21.startGame ?
-                    (<>
-                        <ControlButton clickHandler={getCardHandler} displayName="Pass"/>
-                        <ControlButton clickHandler={passHandler} displayName="Get card"/>
+                {player.inGame
+                    ? (<>
+                        <ControlButton disabled={!player.move} clickHandler={handlers.stayHandler} displayName="Stay"/>
+                        <ControlButton disabled={!player.move} clickHandler={handlers.hitHandler} displayName="Hit"/>
                     </>)
-                : game21.players.every(p => p.readiness) && game21.isLeader
-                        ? (<ControlButton clickHandler={() => dispatch(game21.setStartGame(true))} displayName="Start game"/>)
+                    : players.every(p => p.readiness) && player.isLeader && players.length > 1
+                        ? (<ControlButton disabled={false} clickHandler={handlers.startGameHandler} displayName="Start game"/>)
                         : null
                 }
             </ControlPanel>
             <GameHistory>
                 <GameHistoryTitle/>
                 <GameHistoryList>
-
+                    {gameHistory.length > 0 && gameHistory.map(messageData => (<GameHistoryMsg
+                        key={v4()}
+                        msgData={messageData}
+                    />))}
                 </GameHistoryList>
             </GameHistory>
             <AboutRoom>
                 <AboutRoomTitle/>
                 <AboutRoomList>
-
+                    {roomInfoData.map(raw => (<AboutRoomItem key={v4()} roomInfoData={raw}/>))}
                 </AboutRoomList>
             </AboutRoom>
             <NotificationPanel/>

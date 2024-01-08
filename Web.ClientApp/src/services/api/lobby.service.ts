@@ -1,6 +1,6 @@
 import {API} from "./config/axios.config";
 import {AxiosResponse} from "axios";
-import {IRequestLobbyData, IResponseLobbyData} from "../../interfaces/lobby/lobby.types";
+import {IRequestLobbyData, IResponseLobbyData} from "shared/interfaces/lobby/lobby.types";
 
 class LobbyService {
     async createLobby(lobbyData: IRequestLobbyData): Promise<IResponseLobbyData>{

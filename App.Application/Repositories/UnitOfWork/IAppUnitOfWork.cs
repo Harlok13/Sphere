@@ -1,3 +1,5 @@
+using App.Application.Repositories.RoomRepository;
+
 namespace App.Application.Repositories.UnitOfWork;
 
 public interface IAppUnitOfWork : IUnitOfWorkFactory
@@ -6,7 +8,7 @@ public interface IAppUnitOfWork : IUnitOfWorkFactory
     
     IPlayerHistoryRepository PlayerHistoryRepository { get; }
     
-    IPlayerStatisticRepository PlayerStatisticRepository { get; }
+    IPlayerInfoRepository PlayerInfoRepository { get; }
     
     IRoomRepository RoomRepository { get; }
 }

@@ -17,7 +17,7 @@ public class RefreshTokenHandler : ICommandHandler<RefreshTokenCommand, RefreshT
     private readonly ILogger<RefreshTokenHandler> _logger;
     private readonly IJwtService _jwtService;
     private readonly IPlayerRepository _playerRepository;
-    private readonly IPlayerStatisticRepository _playerStatisticRepository;
+    private readonly IPlayerInfoRepository _playerInfoRepository;
     private readonly IApplicationUserRepository _applicationUserRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAppUnitOfWork _appUnitOfWork;
@@ -27,7 +27,7 @@ public class RefreshTokenHandler : ICommandHandler<RefreshTokenCommand, RefreshT
         ILogger<RefreshTokenHandler> logger,
         IJwtService jwtService,
         IPlayerRepository playerRepository,
-        IPlayerStatisticRepository playerStatisticRepository,
+        IPlayerInfoRepository playerInfoRepository,
         IApplicationUserRepository applicationUserRepository,
         IAppUnitOfWork appUnitOfWork,
         UserManager<ApplicationUser> userManager,
@@ -36,7 +36,7 @@ public class RefreshTokenHandler : ICommandHandler<RefreshTokenCommand, RefreshT
         _logger = logger;
         _jwtService = jwtService;
         _playerRepository = playerRepository;
-        _playerStatisticRepository = playerStatisticRepository;
+        _playerInfoRepository = playerInfoRepository;
         _applicationUserRepository = applicationUserRepository;
         _appUnitOfWork = appUnitOfWork;
         _userManager = userManager;
