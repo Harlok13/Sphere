@@ -58,7 +58,7 @@ public class RegisterHandler : ICommandHandler<RegisterCommand, AuthenticateResp
         if (!result.Succeeded)
         {
             foreach(var err in result.Errors)
-                _logger.LogError(err.ToString());
+                _logger.LogError(err.Description);
             throw new Exception();  // TODO: ex
             // return new(Guid.NewGuid(), "", "", "", "", new PlayerInfoResponse(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  // TODO: ???
         }
