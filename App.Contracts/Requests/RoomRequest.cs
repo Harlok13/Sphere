@@ -6,6 +6,6 @@ public sealed record RoomRequest(
     int StartBid,
     int MinBid,
     int MaxBid,
-    string ImgUrl,
+    string AvatarUrl,
     string Status,
     int PlayersInRoom);

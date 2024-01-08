@@ -1,0 +1,19 @@
+.items {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.items .item {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+.items .item .scale {
+  margin-left: 1rem;
+  width: 100%;
+}
+.items .moneyCount {
+  transition: 0.5s ease-out;
+}
+
+/*# sourceMappingURL=UserInfoItems.module.css.map */

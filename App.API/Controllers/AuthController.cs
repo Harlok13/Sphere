@@ -30,7 +30,6 @@ public sealed class AuthController : Controller
         _logger.LogInformation($"Request to auth\nEmail: {request.Email}\nPassword: {request.Password}");
         var command = new AuthenticateCommand(request);
         return Ok(await _mediator.Send(command, cT));
-        // return Ok(new {Message = "hello"});
     }
 
     [HttpPost("register")]

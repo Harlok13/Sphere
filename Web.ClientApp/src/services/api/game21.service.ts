@@ -1,7 +1,7 @@
 import UserService from "../user/user.service";
 import userService from "../user/user.service";
 import axios from "axios";
-import {IGame21Result} from "../../interfaces/game21/game-21-result.types";
+import {IGame21Result} from "shared/interfaces/game21/game-21-result.types";
 
 // export const Game21Service = {
 //     startGame: async (token, userId) => {

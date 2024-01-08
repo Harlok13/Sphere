@@ -4,7 +4,7 @@
 // using FastEndpoints.Swagger;
 // using Infrastructure.Validation;
 // using Infrastructure.Web;
-// using Messages.SignalR.Hubs;
+// using Message.SignalR.Hubs;
 // using Microsoft.AspNetCore.Builder;
 // using Microsoft.AspNetCore.Http;
 // using Microsoft.AspNetCore.Mvc;

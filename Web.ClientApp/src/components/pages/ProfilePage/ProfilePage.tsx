@@ -1,12 +1,10 @@
-import Aside from "../Game/Aside/Aside";
-import Head from "../Game/Center/Head/Head";
-import {ContentContainer} from "../../../shared/pages/main-page/ContentContainer/ContentContainer";
-import {GlobalAside} from "../../layout/GlobalAside/GlobalAside";
-import {Main} from "../../../shared/pages/main-page/Center/Main/Main";
-import {GlobalHead} from "../../layout/GlobalHead/GlobalHead";
-import {Center} from "../../../shared/pages/main-page/Center/Center";
-import {GlobalRightSide} from "../../layout/GlobalRightSide/GlobalRightSide";
-import {Bottom} from "../../../shared/pages/main-page/Center/Bottom/Bottom";
+import {GlobalAside} from "components/layout/GlobalAside/GlobalAside";
+import {Center} from "components/shared/pages/main-page/Center/Center";
+import {ContentContainer} from "components/shared/components/ContentContainer/ContentContainer";
+import {GlobalHead} from "components/layout/GlobalHead/GlobalHead";
+import {Main} from "components/shared/pages/main-page/Center/Main/Main";
+import {Bottom} from "components/shared/pages/main-page/Center/Bottom/Bottom";
+import {GlobalRightSide} from "components/layout/GlobalRightSide/GlobalRightSide";
 
 const ProfilePage = () => {
     return (

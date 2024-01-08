@@ -1,6 +1,6 @@
 import axios from "axios";
-import UserService from "../user/user.service";
-import {IAuthResponse} from "../../interfaces/auth/auth-response.types";
+import {IAuthResponse} from "shared/interfaces/auth/auth-response.types";
+import UserService from "services/user/user.service";
 
 
 class AuthService {

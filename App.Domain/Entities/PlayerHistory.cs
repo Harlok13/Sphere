@@ -30,4 +30,6 @@ public sealed class PlayerHistory : Entity
     public string CardsPlayed { get; private init; }
 
     public GameResult Result { get; private init; }
+    
+    // TODO: money win or lose count
 }

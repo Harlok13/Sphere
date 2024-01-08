@@ -17,7 +17,7 @@ public class RegisterHandler : ICommandHandler<RegisterCommand, AuthenticateResp
     private readonly ILogger<RegisterHandler> _logger;
     private readonly IJwtService _jwtService;
     private readonly IPlayerRepository _playerRepository;
-    private readonly IPlayerStatisticRepository _playerStatisticRepository;
+    private readonly IPlayerInfoRepository _playerInfoRepository;
     private readonly IApplicationUserRepository _applicationUserRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAppUnitOfWork _appUnitOfWork;
@@ -27,7 +27,7 @@ public class RegisterHandler : ICommandHandler<RegisterCommand, AuthenticateResp
         ILogger<RegisterHandler> logger,
         IJwtService jwtService,
         IPlayerRepository playerRepository,
-        IPlayerStatisticRepository playerStatisticRepository,
+        IPlayerInfoRepository playerInfoRepository,
         IApplicationUserRepository applicationUserRepository,
         IAppUnitOfWork appUnitOfWork,
         UserManager<ApplicationUser> userManager,
@@ -36,7 +36,7 @@ public class RegisterHandler : ICommandHandler<RegisterCommand, AuthenticateResp
         _logger = logger;
         _jwtService = jwtService;
         _playerRepository = playerRepository;
-        _playerStatisticRepository = playerStatisticRepository;
+        _playerInfoRepository = playerInfoRepository;
         _applicationUserRepository = applicationUserRepository;
         _appUnitOfWork = appUnitOfWork;
         _userManager = userManager;
@@ -60,7 +60,7 @@ public class RegisterHandler : ICommandHandler<RegisterCommand, AuthenticateResp
             foreach(var err in result.Errors)
                 _logger.LogError(err.ToString());
             throw new Exception();  // TODO: ex
-            // return new(Guid.NewGuid(), "", "", "", "", new PlayerStatisticResponse(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  // TODO: ???
+            // return new(Guid.NewGuid(), "", "", "", "", new PlayerInfoResponse(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  // TODO: ???
         }
 
         var findUser = await _applicationUserRepository.GetUserByEmailAsync(registerRequest.Email, cT);
@@ -68,7 +68,7 @@ public class RegisterHandler : ICommandHandler<RegisterCommand, AuthenticateResp
         if (findUser is null)  throw new Exception($"User {registerRequest.Email} not found"); // TODO: custom ex
 
         await _applicationUserRepository.AddToRoleAsync(findUser, cT);
-        await _playerStatisticRepository.CreatePlayerStatisticAsync(findUser.Id, cT);
+        await _playerInfoRepository.CreatePlayerInfoAsync(findUser.Id, findUser.UserName!, cT);
         // await _playerRepository.CreatePlayerAsync(findUser, cT);
 
         // await _appUnitOfWork.SaveChangesAsync(cT);

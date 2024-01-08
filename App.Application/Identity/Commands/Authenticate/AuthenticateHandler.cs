@@ -1,10 +1,12 @@
+using App.Application.Extensions;
 using App.Application.Identity.Repositories;
 using App.Application.Identity.Services;
-using App.Application.Mapper;
 using App.Application.Repositories;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Identity.Responses;
+using App.Contracts.Mapper;
 using App.Domain.Entities;
+using App.Domain.Entities.PlayerInfoEntity;
 using App.Domain.Identity.Entities;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +19,7 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
     private readonly ILogger<AuthenticateHandler> _logger;
     private readonly IJwtService _jwtService;
     private readonly IPlayerRepository _playerRepository;
-    private readonly IPlayerStatisticRepository _playerStatisticRepository;
+    private readonly IPlayerInfoRepository _playerInfoRepository;
     private readonly IApplicationUserRepository _applicationUserRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAppUnitOfWork _appUnitOfWork;
@@ -26,7 +28,7 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
         ILogger<AuthenticateHandler> logger,
         IJwtService jwtService,
         IPlayerRepository playerRepository,
-        IPlayerStatisticRepository playerStatisticRepository,
+        IPlayerInfoRepository playerInfoRepository,
         IApplicationUserRepository applicationUserRepository,
         IAppUnitOfWork appUnitOfWork,
         UserManager<ApplicationUser> userManager)
@@ -34,7 +36,7 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
         _logger = logger;
         _jwtService = jwtService;
         _playerRepository = playerRepository;
-        _playerStatisticRepository = playerStatisticRepository;
+        _playerInfoRepository = playerInfoRepository;
         _applicationUserRepository = applicationUserRepository;
         _appUnitOfWork = appUnitOfWork;
         _userManager = userManager;
@@ -79,8 +81,12 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenValidityInDays);
 
         await _appUnitOfWork.SaveChangesAsync(cT);
-        var statistic = await _playerStatisticRepository.GetPlayerStatisticAsync(user.Id, cT);
-        var statisticResponse = PlayerMapper.MapPlayerStatisticToPlayerStatisticResponse(statistic);
+        var playerInfoResult = await _playerInfoRepository.GetPlayerInfoByIdAsync(user.Id, cT);
+        if (!playerInfoResult.TryFromResult(out PlayerInfo? playerInfo, out var playerInfoErrors))
+        {
+            // TODO: finish
+        }
+        var statisticResponse = PlayerMapper.MapPlayerInfoToPlayerInfoResponse(playerInfo!);
 
         return new AuthenticateResponse(
             PlayerId: user.Id,
@@ -88,6 +94,6 @@ public class AuthenticateHandler : ICommandHandler<AuthenticateCommand, Authenti
             Email: user.Email,
             Token: accessToken,
             RefreshToken: user.RefreshToken,
-            PlayerStatistic: statisticResponse);
+            PlayerInfo: statisticResponse);
     }
 }

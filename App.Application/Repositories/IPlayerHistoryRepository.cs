@@ -4,5 +4,5 @@ namespace App.Application.Repositories;
 
 public interface IPlayerHistoryRepository
 {
-    Task<ICollection<PlayerHistory>?> GetFirstFiveRecordsAsync(Guid playerId, CancellationToken cT);
+    Task<ICollection<PlayerHistory>?> GetFirstFiveRecordsAsNoTrackingAsync(Guid playerId, CancellationToken cT);
 }
