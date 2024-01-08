@@ -20,7 +20,8 @@ export const RoomItem: FC<ILobbyItemProps> = ({roomData, joinToRoomHandler}) => 
                 <div className={style.bid}><span className={style.value}>{roomData.minBid}/{roomData.maxBid}$</span></div>
                 <div className={style.status}>{roomData.status}</div>
             </div>
-            <button>Info</button>
+            {/*todo rename class*/}
+            <button className={style.join}>Info</button>
             {roomData.playersInRoom < roomData.roomSize
                 ? (<button onClick={(e) => joinToRoomHandler(e, roomData)} className={style.join}>Join</button>)
                 : null}

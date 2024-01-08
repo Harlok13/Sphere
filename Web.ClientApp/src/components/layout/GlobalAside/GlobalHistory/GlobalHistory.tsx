@@ -15,11 +15,11 @@ export const GlobalHistory = () => {
         <History>
             <HistoryHead/>
             <HistoryBody>
-                <UserHistoryMsg gameResult="Win">
-                    <Game21HistoryMsg gameResult={"Win"} userName={"Harlok"} opponentName={"Bot"} score={"21:17"}/>
-                </UserHistoryMsg>
+                {/*<UserHistoryMsg gameResult="Win">*/}
+                {/*    <Game21HistoryMsg gameResult={"Win"} userName={"Harlok"} opponentName={"Bot"} score={"21:17"}/>*/}
+                {/*</UserHistoryMsg>*/}
             </HistoryBody>
-            <HistoryShowMore/>
+            {/*<HistoryShowMore/>*/}
         </History>
     )
 }

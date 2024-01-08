@@ -8,6 +8,17 @@
 }
 .notificationPanel .icon {
   cursor: pointer;
+  position: relative;
+}
+.notificationPanel .selected:before {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  right: -10px;
+  top: 3px;
+  width: 0.2rem;
+  height: 1rem;
+  background-color: #5c7ed2;
 }
 
 /*# sourceMappingURL=NotificationPanel.module.css.map */

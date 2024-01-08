@@ -8,8 +8,8 @@ import {TextArea} from "components/shared/pages/main-page/RightSide/RoomChat/Tex
 export const GlobalRightSide = () => {
     const msgData : Message = {
         currentTime: "21:32",
-        playerName: "Harlok",
-        msgText: "some text"
+        playerName: "Lara",
+        msgText: "wow"
     }
 
     const props = {

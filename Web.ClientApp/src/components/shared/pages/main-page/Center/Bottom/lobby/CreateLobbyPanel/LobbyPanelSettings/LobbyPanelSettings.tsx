@@ -22,7 +22,7 @@ export const LobbyPanelSettings: FC<{
     return (
         <form className={style.settings}>
             <div className={style.roomNameBlock}>
-                <div className={playerInfo.money < lowerBound ? `${style.warning}`: ""}>{lowerBound} / {upperBound}</div>
+                {/*<div className={playerInfo.money < lowerBound ? `${style.warning}`: ""}>{lowerBound} / {upperBound}</div>*/}
                 <label className={style.roomLabel} htmlFor="roomName">Room name:</label>
                 <input className={style.roomNameInput} maxLength={20} required onChange={roomNameHandler} value={roomName} type="text"/>
             </div>

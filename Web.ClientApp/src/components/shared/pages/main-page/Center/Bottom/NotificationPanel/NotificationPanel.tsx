@@ -3,7 +3,7 @@ import style from "./NotificationPanel.module.css";
 const NotificationPanel = () => {
     return (
         <div className={style.notificationPanel}>
-                <span className={`${style.icon} material-icons-outlined`}>
+                <span className={`${style.icon} material-icons-outlined ${style.selected}`}>
                     mode_comment
                 </span>
             <span className={`${style.icon} material-icons-outlined`}>
@@ -20,3 +20,4 @@ const NotificationPanel = () => {
 }
 
 export {NotificationPanel};
+
