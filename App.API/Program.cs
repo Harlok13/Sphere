@@ -1,5 +1,4 @@
 using App.Application;
-using App.Application.Handlers.ConnectionHandlers;
 using App.Application.Identity;
 using App.Infra;
 using App.SignalR.HubFilters;
@@ -84,14 +83,6 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-// builder.Services.Scan(scan => scan
-//     .FromAssemblyOf<IInfrastructureAssemblyMarker>()
-//     .AddClasses(classes =>
-//         classes.Where(type => type.Name.EndsWith("Repository") || type.Name.EndsWith("Work")))
-//     .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-//     .AsImplementedInterfaces()
-//     .WithScopedLifetime());
-
 builder.Services.Scan(scan => scan
     .FromAssemblies(
         typeof(IApplicationAssemblyMarker).Assembly,
@@ -108,18 +99,8 @@ builder.Services
     .AddApplication();
 
 
-    // .AddClasses(classes => classes
-    //     .Where(type => type.Name.EndsWith("Work")))
-    // .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-    // .AsImplementedInterfaces()
-    // .WithScopedLifetime()
-    //
-    // .FromAssemblyOf<IApplicationAssemblyMarker>()
-    // .AddClasses(classes => classes.Where(type => type.IsClass)));
-
 
 var app = builder.Build();
-// app.ConfigurePipeline();
 
 if (!app.Environment.IsDevelopment()) app.UseHsts();
 
