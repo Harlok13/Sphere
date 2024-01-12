@@ -1,8 +1,6 @@
 .body {
-  //position: absolute;
   display: flex;
   align-items: center;
-  justify-content: center;
   top: 2.4rem;
   right: 2rem;
   z-index: 1;
@@ -21,9 +19,14 @@
   }
 
   .alert {
+    flex: 0 0 20%;
     font-size: 4rem;
     color: red;
     margin-right: 1rem;
+  }
+
+  .notificationText {
+    flex: 1;
   }
 
   .close {

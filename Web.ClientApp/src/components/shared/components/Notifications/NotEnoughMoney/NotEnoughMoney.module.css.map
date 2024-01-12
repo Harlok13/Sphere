@@ -1,1 +1,1 @@
-{"version":3,"sourceRoot":"","sources":["NotEnoughMoney.module.scss"],"names":[],"mappings":"AAAA;EAEE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAGF;EACE;EACA;EACA;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA","file":"NotEnoughMoney.module.css"}
+{"version":3,"sourceRoot":"","sources":["NotEnoughMoney.module.scss"],"names":[],"mappings":"AAAA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAGF;EACE;EACA;EACA;EACA;;AAGF;EACE;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA","file":"NotEnoughMoney.module.css"}
