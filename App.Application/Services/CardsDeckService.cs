@@ -1,8 +1,7 @@
-using App.Application.Repositories;
+using System.Text.Json;
 using App.Application.Services.Interfaces;
 using App.Domain.Entities;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace App.Application.Services;
 
@@ -11,29 +10,10 @@ public sealed class CardsDeckService : ICardsDeckService
     private const int CardDeckSize = 52;
 
     private readonly ILogger<CardsDeckService> _logger;
-    private readonly ICardsDeckRepository _cardsDeckRepository;
     
-    public CardsDeckService(ICardsDeckRepository cardsDeckRepository, ILogger<CardsDeckService> logger)
+    public CardsDeckService(ILogger<CardsDeckService> logger)
     {
-        _cardsDeckRepository = cardsDeckRepository;
         _logger = logger;
-    }
-
-    public async Task<Card> GetNextCardAsync(Guid roomId, Guid playerId, CancellationToken cT)
-    {
-        var cardsDeck = await _cardsDeckRepository.GetCardsDeckAsync(roomId, cT);
-        var cardInDeck = cardsDeck.FirstOrDefault();  // TODO: finish 
-        cardsDeck.Remove(cardInDeck);
-
-        await _cardsDeckRepository.SaveChangesAsync(roomId: roomId, cardsDeck: cardsDeck, cT);
-
-        return Card.Create(Guid.NewGuid(), playerId, cardInDeck);
-    }
-
-    public async Task ResetAsync(Guid roomId, CancellationToken cT)
-    {
-        await _cardsDeckRepository.RemoveCardsDeck(roomId, cT);
-        // await CreateAsync(roomId, cT);
     }
 
     public IEnumerable<CardInDeck> Create()
@@ -51,7 +31,6 @@ public sealed class CardsDeckService : ICardsDeckService
         Shuffle(cardsDeck);
 
         return cardsDeck;
-        // await _cardsDeckRepository.AddCardsDeckAsync(roomId: roomId, cardsDeck: cardsDeck, cT);
     }
 
     private void Shuffle(List<CardInDeck> cardsDeck)
@@ -72,9 +51,9 @@ public sealed class CardsDeckService : ICardsDeckService
     {
         var json = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "JsonData", "cards.json"));
 
-        return JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(json);
+        return JsonSerializer.Deserialize<Dictionary<string, dynamic>>(json);
     }
 
     private CardInDeck DeserializeCard(dynamic currentCard) =>
-        JsonConvert.DeserializeObject<CardInDeck>(currentCard.ToString());
+        JsonSerializer.Deserialize<CardInDeck>(currentCard.ToString());
 }
