@@ -23,10 +23,8 @@ public interface IGlobalHub
     Task ReceiveGroup_AddedCard(AddedCardResponse response, CancellationToken cT);
     Task ReceiveGroup_ChangedRoomBank(ChangedRoomBankResponse response, CancellationToken cT);
     Task ReceiveUser_ChangedPlayerMove(ChangedPlayerMoveResponse response, CancellationToken cT);
-    Task ReceiveGroup_StartGameErrorNotification(string? errorMsg, CancellationToken cT);
     Task ReceiveUser_ChangedPlayerMoney(ChangedPlayerMoneyResponse response, CancellationToken cT);
     Task ReceiveGroup_ChangedPlayerMoney(ChangedPlayerMoneyResponse response, CancellationToken cT);
-    Task ReceiveGroup_StartGame(CancellationToken cT);
     Task ReceiveUser_ChangedTimer(int seconds, CancellationToken cT);
     Task ReceiveUser_ChangedPlayerInGame(ChangedPlayerInGameResponse response, CancellationToken cT);
     Task ReceiveGroup_ChangedPlayerInGame(ChangedPlayerInGameResponse response, CancellationToken cT);
