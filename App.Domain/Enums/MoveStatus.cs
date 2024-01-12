@@ -9,9 +9,3 @@ public enum MoveStatus : byte
     Hit = 5,
     Stay = 7
 }
-
-// public static class MoveStatus
-// {
-//     public const int None = 1;
-//     public const int Hit = 2;
-// }
