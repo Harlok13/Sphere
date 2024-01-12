@@ -73,7 +73,7 @@ public static class ServiceCollectionExtensions
         services.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = builder.Configuration.GetRedisDsn();
-            options.Configuration = builder.Configuration.GetRedisInstanceName();
+            options.InstanceName = builder.Configuration.GetRedisInstanceName();
         });
 
         return services;
