@@ -1,3 +1,4 @@
+using App.SignalR.Extensions;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
 
