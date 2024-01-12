@@ -4,6 +4,7 @@ using App.SignalR.Commands.LobbyCommands;
 using App.SignalR.Commands.RoomCommands;
 using App.SignalR.Commands.RoomCommands.GameActionCommands;
 using App.SignalR.Commands.RoomCommands.PlayerActionCommands;
+using App.SignalR.Extensions;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -27,8 +28,9 @@ public class GlobalHub : Hub<IGlobalHub>
     {
         var user = Context.ToAuthUser();
         _logger.LogInformation(
-            "User {UserName}: Connected To GlobalHub. ConnectionId: {ConnectionId}",
+            "User {UserName}: Connected To GlobalHub. UserId: {UserId}. ConnectionId: {ConnectionId}",
             user.UserName,
+            user.Id,
             Context.ConnectionId
         );
 
@@ -40,8 +42,9 @@ public class GlobalHub : Hub<IGlobalHub>
     {
         var user = Context.ToAuthUser();
         _logger.LogInformation(
-            "User {UserName}: Disconnected From GlobalHub. ConnectionId: {ConnectionId}",
+            "User {UserName}: Disconnected From GlobalHub. UserId: {UserId}. ConnectionId: {ConnectionId}",
             user.UserName,
+            user.Id,
             Context.ConnectionId
         );
 
@@ -80,21 +83,32 @@ public class GlobalHub : Hub<IGlobalHub>
 
     public async ValueTask<bool> StartTimer(StartTimerRequest request)
     {
-        var cts = new CancellationTokenSource();
         var user = Context.ToAuthUser();
-        Context.Items.TryAdd(user.Id, cts);
-
-        var command = new StartTimerCommand(
-            Request: request,
-            Cts: cts);
+        if (!Context.Items.TryGetValue(user.Id, out var cts2))
+        {
+            var cts = new CancellationTokenSource();
+            Context.Items.TryAdd(user.Id, cts);
+            var command = new StartTimerCommand(
+                Request: request,
+                Cts: cts);
+            
+            return await _mediator.Send(command);
+        } 
         
-        return await _mediator.Send(command);
+        return await _mediator.Send(new StartTimerCommand(Request: request, Cts: cts2 as CancellationTokenSource));
     }
 
     public async ValueTask<bool> StopTimer(StopTimerRequest request)
     {
-        var result = Context.Items.TryGetValue(Context.ConnectionId, out var cts);
         var user = Context.ToAuthUser();
+        var result = Context.Items.TryGetValue(user.Id, out var cts);
+        if (!result)
+        {
+            _logger.LogInformation(
+                "{InvokingMethod} - Cts is not found.",
+                nameof(StopTimer));
+            return false;
+        }
         Context.Items.Remove(user.Id);
         
         _logger.LogInformation("Result of getting cts is {Result}.", result);
