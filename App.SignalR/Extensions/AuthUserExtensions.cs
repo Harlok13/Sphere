@@ -2,7 +2,7 @@ using System.Security.Claims;
 using App.Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
 
-namespace App.SignalR;
+namespace App.SignalR.Extensions;
 
 public static class AuthUserExtensions
 {
