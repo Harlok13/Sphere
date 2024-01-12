@@ -40,14 +40,7 @@ public class EndGameHandler : ICommandHandler<EndGameCommand, bool>
         var bank = room.Bank;
         room.ResetBank();
 
-        if (room.Players.Count == room.RoomSize)
-        {
-            room.SetRoomStatus(RoomStatus.Waiting);
-        }
-        else
-        {
-            room.SetRoomStatus(RoomStatus.Waiting);
-        }
+        room.SetRoomStatus(room.Players.Count == room.RoomSize ? RoomStatus.Full : RoomStatus.Waiting);
 
         var losingPlayers = players.Where(p => p.Score > 21).ToArray();
         var has21Players = players.Where(p => p.Score == 21).ToImmutableArray();
