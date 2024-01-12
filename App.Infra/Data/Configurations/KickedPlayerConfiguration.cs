@@ -12,10 +12,6 @@ public class KickedPlayerConfiguration : IEntityTypeConfiguration<KickedPlayer>
 
         builder.ToTable("kicked_players");
 
-        // builder.Property(e => e.PlayerId)
-        //     .HasColumnName("player_id")
-        //     .IsRequired();
-
         builder.Property(e => e.Id)
             .ValueGeneratedNever()
             .HasColumnName("id");
@@ -25,10 +21,6 @@ public class KickedPlayerConfiguration : IEntityTypeConfiguration<KickedPlayer>
             .HasColumnType("VARCHAR")
             .HasMaxLength(25)
             .IsRequired();
-
-        // builder.Property(e => e.WhoKickId)
-        //     .HasColumnName("who_kick_id")
-        //     .IsRequired();
 
         builder.Property(e => e.WhoKickName)
             .HasColumnName("who_kick_name")

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Sphere.Controllers;
 
-[Route("auth")]  // TODO: api/auth
+[Route("auth")]  
 [ApiController]
 public sealed class AuthController : Controller
 {
@@ -27,7 +27,6 @@ public sealed class AuthController : Controller
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticateResponse>> Authenticate([FromBody] AuthenticateRequest request, CancellationToken cT)
     {
-        _logger.LogInformation($"Request to auth\nEmail: {request.Email}\nPassword: {request.Password}");
         var command = new AuthenticateCommand(request);
         return Ok(await _mediator.Send(command, cT));
     }

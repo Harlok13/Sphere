@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text;
+using System.Text.Json;
 using App.Domain.DomainEvents.NotificationDomainEvent;
 using App.Domain.DomainResults;
 using App.Domain.Entities.PlayerEntity;
@@ -23,7 +24,7 @@ public sealed partial class Room
             if (Status == RoomStatus.Playing)
                 return new DomainFailure(
                     Message.Failure.Room.CanStartGame.AlreadyStarted());
-            
+
             if (_players.Count < 2)
                 return new DomainFailure(
                     Message.Failure.Room.CanStartGame.NotEnoughPlayers());
@@ -101,6 +102,8 @@ public sealed partial class Room
 
         cardsDeck!.Remove(cardInDeck);
 
+        CardsDeck = JsonSerializer.Serialize(cardsDeck); // TODO: ref
+
         var card = Card.Create(Guid.NewGuid(), playerId: playerId, cardInDeck: cardInDeck);
 
         return new DomainSuccessResult<Card>(card);
@@ -110,7 +113,7 @@ public sealed partial class Room
     {
         SetRoomStatus(RoomStatus.Playing);
         AddNewGameHistoryMessage(
-            type: GameHistoryType.GameState, 
+            type: GameHistoryType.GameState,
             currentTime: DateTime.UtcNow.ToShortTimeString(),
             message: "Game started.");
 
@@ -124,19 +127,12 @@ public sealed partial class Room
 
                 var cardResult = GetNextCard(player.Id);
                 if (!cardResult.Success) return cardResult;
-                // if (cardResult is DomainError cardError) return cardError;
-                // if (cardResult is DomainFailure cardFailure) return cardFailure;
                 if (!cardResult.TryFromDomainResult(out Card? card, out DomainError? error)) return error!;
 
                 var delayMs = indexAkaDelay * 1000;
 
                 var playerStartGameResult = player.StartGame(startBid: StartBid, card: card!, delayMs: delayMs);
                 if (!playerStartGameResult.Success) return playerStartGameResult;
-                // if (playerStartGameResult is DomainFailure playerStartGameFailure)
-                //     return playerStartGameFailure;
-                //
-                // if (playerStartGameResult is DomainError playerStartGameError)
-                //     return playerStartGameError;
 
                 IncreaseBank(StartBid);
 
@@ -425,9 +421,4 @@ public sealed partial class Room
             return false;
         }
     }
-
-    // public DomainResult GetInitData()
-    // {
-    //     
-    // }
 }

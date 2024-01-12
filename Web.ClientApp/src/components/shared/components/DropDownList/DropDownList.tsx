@@ -20,7 +20,7 @@ export const DropDownList: FC<{
 
     return (
         <>
-            <Transition in={isOpen} timeout={timeout} onmountOnExit={true}>
+            <Transition in={isOpen} timeout={timeout} unmountOnExit={true}>
                 <div className={style.dropDownList} style={{left: positionX, top: positionY}}>
                     <div className={style.wrapper}>
                         <ul className={style.list}>

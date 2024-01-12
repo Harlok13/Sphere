@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
 
-namespace App.SignalR;
+namespace App.SignalR.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {

@@ -12,11 +12,11 @@ public static class ConfigurationExtensions
         switch (builder.Environment.EnvironmentName)
         {
             case "Development":
-                return configuration.GetSection("ConnectionStrings:Secret_DevDb").Get<string>()
+                return configuration["ConnectionStrings:Secret_DevDb"]
                        ?? throw new InvalidOperationException("Connection string is not set.");
 
             case "Production":
-                return configuration.GetSection("ConnectionStrings:Secret_ProdDb").Get<string>()
+                return configuration["ConnectionStrings:Secret_ProdDb"]
                        ?? throw new InvalidOperationException("Connection string is not set."); 
 
             default: throw new InvalidOperationException("Invalid environment name."); // TODO: custom ex
