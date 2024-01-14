@@ -1,0 +1,43 @@
+.dropDownList {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0.2rem;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(15px);
+  border-radius: 15px;
+  overflow: hidden;
+  overflow-y: auto;
+  transition: opacity 0.3s;
+  z-index: 999;
+}
+.dropDownList .wrapper .list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.dropDownList .wrapper .list .participantName {
+  color: goldenrod;
+}
+.dropDownList .wrapper .list .icon {
+  margin-left: 1rem;
+}
+.dropDownList .wrapper .list .actionLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  transition: 0.3s ease-out;
+  cursor: pointer;
+}
+.dropDownList .wrapper .list .actionLine:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.isNotLeader {
+  opacity: 0.5;
+}
+
+/*# sourceMappingURL=DropDownList.module.css.map */
