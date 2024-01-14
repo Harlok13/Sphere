@@ -5,8 +5,8 @@ import UserService from "services/user/user.service";
 
 class AuthService {
     // private readonly URL = "/api/auth";
-    // private readonly URL = "https://localhost:7170/api/auth";  // TODO: relocate to settings
-    private readonly URL = "http://localhost:5083/api/auth";  // TODO: relocate to settings
+    private readonly URL = "https://localhost:7170/api/auth";  
+    // private readonly URL = "http://localhost:5083/api/auth";  // TODO: relocate to settings
 
     async register({email, userName, password, passwordConfirm}): Promise<void> {
         await axios.post<IAuthResponse>(`${this.URL}/register`, {
@@ -16,19 +16,6 @@ class AuthService {
             console.log("User data successfully received and saved.");
         }).catch(error => console.error("An error occurring during registration.\n", error.toString()));
     };
-
-    // async register({email, userName, password, passwordConfirm}){
-    //     try{
-    //         console.log(email, userName, password, passwordConfirm);
-    //         const response = await axios.post("https://localhost:7170/auth/register", {
-    //             email: email, userName: userName, password: password, passwordConfirm: passwordConfirm
-    //         }, {headers: {"Content-Type": "application/json"}})
-    //
-    //     }
-    //     catch(error){
-    //         console.log(error);
-    //     }
-    // }
 
     async login({email, password}): Promise<void> {
         await axios.post<IAuthResponse>(`${this.URL}/login`, {
