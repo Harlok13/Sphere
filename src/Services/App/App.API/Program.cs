@@ -29,6 +29,12 @@ if (!app.Environment.IsDevelopment()) app.UseHsts();
 
 app.UseSerilogRequestLogging();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseHttpsRedirection();
 app.UseRouting();
 
