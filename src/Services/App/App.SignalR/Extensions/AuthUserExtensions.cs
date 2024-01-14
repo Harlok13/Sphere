@@ -15,7 +15,6 @@ public static class AuthUserExtensions
 
     public static AuthUser ToAuthUser(this HubCallerContext context)
     {
-        var id = context.UserIdentifier;
         Guid userId = context.GetGuidUserId();
         var userName = context.GetUserName();
         return AuthUser.Create(userId, userName, context.ConnectionId);
