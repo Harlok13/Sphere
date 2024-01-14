@@ -1,4 +1,9 @@
+using System.IO;
 using App.SignalR.Hubs;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Sphere.Extensions;
 

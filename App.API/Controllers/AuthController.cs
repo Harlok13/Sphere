@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Sphere.Controllers;
 
-[Route("auth")]  
+[Route("api/auth")]  
 [ApiController]
 public sealed class AuthController : Controller
 {

@@ -4,7 +4,8 @@ import UserService from "services/user/user.service";
 
 
 class AuthService {
-    private readonly URL = "https://localhost:7170/auth";  // TODO: secrets, relocate to settings
+    // private readonly URL = "/api/auth";  
+    private readonly URL = "https://localhost:7170/api/auth";  // TODO: relocate to settings
 
     async register({email, userName, password, passwordConfirm}): Promise<void> {
         await axios.post<IAuthResponse>(`${this.URL}/register`, {
@@ -41,7 +42,7 @@ class AuthService {
             headers: {"Authorization": `Bearer ${UserService.getUser().token}`},
             withCredentials: true
         }).catch(error => {
-            console.error("an error occurred during the authorization check process.\n", error.toString())
+            console.error("An error occurred during the authorization check process.\n", error.toString())
             return false;
         });
 
