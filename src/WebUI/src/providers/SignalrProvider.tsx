@@ -4,14 +4,16 @@ import {useHub} from "react-signalr/use-hub";
 import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
 import UserService from "services/user/user.service";
 
-const URL = "http://localhost:5083/hubs/global"
-// const URL = "https://localhost:7170/hubs/global"
+// const URL = "http://localhost:5083/hubs/global"
+const URL = "https://localhost:7170/hubs/global"
+
+const token = UserService.getUser().token;
+console.log(token);
 
 export const signalRConnection = new HubConnectionBuilder()
     .withUrl(URL, {
-        accessTokenFactory(): string | Promise<string> {
-            return UserService.getUser().token;
-        }
+        accessTokenFactory: () => token
+
     })
     .configureLogging(LogLevel.Information)
     .withAutomaticReconnect()
