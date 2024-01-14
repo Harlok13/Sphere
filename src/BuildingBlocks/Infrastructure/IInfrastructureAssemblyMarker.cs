@@ -1,4 +1,4 @@
-namespace App.Infra;
+namespace Infrastructure;
 
 public interface IInfrastructureAssemblyMarker
 {
