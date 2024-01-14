@@ -3,10 +3,11 @@ using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
 using App.Infra.Data.Context;
 using App.Infra.Data.UnitOfWork;
+using App.Infra.Repositories;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
-namespace App.Infra.Repositories;
+namespace Infrastructure.Repositories;
 
 public class AppUnitOfWork : UnitOfWorkFactory<ApplicationContext>, IAppUnitOfWork
 {
