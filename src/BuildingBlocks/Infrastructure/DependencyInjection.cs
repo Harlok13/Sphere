@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace App.Infra;
+namespace Infrastructure;
 
 public static class DependencyInjection
 {
@@ -88,8 +88,8 @@ public static class DependencyInjection
 
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidIssuer = builder.Configuration.GetIssuer(),
                     ValidAudience = builder.Configuration.GetAudience(),
