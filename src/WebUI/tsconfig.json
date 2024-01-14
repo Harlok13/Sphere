@@ -1,0 +1,57 @@
+{
+//  "compilerOptions": {
+//    "baseUrl": "./src",
+//    "paths": {
+//      "BL/*": ["./BL/*"],
+//      "app/*": ["./app/*"],
+//      "components/*": ["./components/*"],
+//      "shared/*": ["./shared/*"],
+//      "pages/*": ["./pages/*"],
+//      "contracts/*": ["./contracts/*"],
+//      "services/*": ["./services/*"],
+//      "routes/*": ["./routes/*"],
+//      "interfaces/*": ["./interfaces/*"],
+//      "constants/*": ["./constants/*"],
+//      "contexts/*": ["./contexts/*"],
+//      "types/*": ["./types/*"]
+//    },
+    "compilerOptions": {
+      "baseUrl": "./src",
+      "paths": {
+        "assets/*": ["./assets/*"],
+        "components/*": ["./components/*"],
+        "configs/*": ["./configs/*"],
+        "data/*": ["./data/*"],
+        "hooks/*": ["./hooks/*"],
+        "providers/*": ["./providers/*"],
+        "services/*": ["./services/*"],
+        "shared/*": ["./shared/*"],
+        "store/*": ["./store/*"],
+        "utils/*": ["./utils/*"],
+        "react-signalr/*": ["./react-signalr/*"]
+      },
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": false,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,  // TODO: true
+    "noImplicitAny": false,  // TODO: true
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src"
+  ]
+}

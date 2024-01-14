@@ -3,6 +3,7 @@ using App.Application.Identity;
 using App.Infra;
 using App.SignalR.HubFilters;
 using App.SignalR.Hubs;
+using Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using Scrutor;
 

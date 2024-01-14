@@ -1,0 +1,22 @@
+.search {
+  font-style: italic;
+  font-size: 1.2rem;
+  margin-left: 1rem;
+  border: none;
+  background: transparent;
+  outline: none;
+  border-radius: 15px;
+  transition: .3s ease-out;
+  color: white;
+  padding-left: 1rem;
+
+  &:focus {
+    background: #c4c4c4;
+    color: black;
+  }
+}
+
+.searchIcon{
+  color: #cecece;
+  cursor: pointer;
+}

@@ -1,0 +1,65 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,.75);
+  overflow: hidden;
+  overflow-y: auto;
+  transition: opacity .3s;
+  z-index: 999;
+}
+
+.wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+}
+
+.content {
+  position: relative;
+  margin: 20px;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 20px;
+  background-color: #777171;
+  padding: 40px 20px 20px 20px;
+  transform: translateY(-50px);
+  transition: opacity .3s, transform .3s;
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background-color: transparent;
+}
+
+.entering,
+.entered {
+  opacity: 1;
+}
+
+.entering .content,
+.entered .content {
+  transform: translateY(0);
+}
+
+.exiting,
+.exited {
+  opacity: 0;
+}
+
+.exiting .content,
+.exited .content {
+  transform: translateY(-50px);
+}

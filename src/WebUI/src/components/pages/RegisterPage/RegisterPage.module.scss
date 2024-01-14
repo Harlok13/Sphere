@@ -1,0 +1,10 @@
+.content{
+  width: 40%;
+  height: 80%;
+  border-radius: 15px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  padding: .5rem;
+  flex-direction: column;
+}

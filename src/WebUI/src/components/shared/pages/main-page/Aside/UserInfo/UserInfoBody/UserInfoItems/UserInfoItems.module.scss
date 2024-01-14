@@ -1,0 +1,20 @@
+.items {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .item {
+    display: flex;
+    align-items: center;
+    margin-top: .5rem;
+
+    .scale {
+      margin-left: 1rem;
+      width: 100%;
+    }
+  }
+
+  .moneyCount{
+    transition: .5s ease-out;
+  }
+}
