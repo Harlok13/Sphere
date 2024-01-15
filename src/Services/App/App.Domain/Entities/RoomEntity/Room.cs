@@ -17,8 +17,8 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
     private List<CardInDeck>? _cardsDeck;
     private List<GameHistoryMessage>? _gameHistories;
 
-    private const int DefaultPlayersInRoom = 1;
-    private const RoomStatus DefaultRoomStatus = RoomStatus.Waiting;
+    public const int DefaultPlayersInRoom = 1;
+    public const RoomStatus DefaultRoomStatus = RoomStatus.Waiting;
     private const int MaxCardsCount = 6;
     
     private readonly object _lock = new();
@@ -111,7 +111,7 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
             avatarUrl: avatarUrl,
             lowerStartMoneyBound: lowerStartMoneyBound,
             upperStartMoneyBound: upperStartMoneyBound);
-        
+
         room._domainEvents.Add(new CreatedRoomDomainEvent(room));
         return room;
     }
