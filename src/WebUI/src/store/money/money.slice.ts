@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {ISelectStartGameMoneyResponse, SelectStartGameMoney} from "shared/contracts/select-start-game-money-response";
+import {ISelectStartGameMoneyResponse, SelectStartGameMoney} from "shared/contracts/responses/select-start-game-money-response";
 
 interface MoneyState {
     type: SelectStartMoneyType;

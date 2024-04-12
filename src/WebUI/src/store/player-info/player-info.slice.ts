@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {IPlayerInfoResponse, PlayerInfo} from "shared/contracts/player-info-response";
-import {IPlayerHistoryResponse, PlayerHistory} from "shared/contracts/player-history-response";
-import {IChangedPlayerInfoMoneyResponse} from "shared/contracts/responses/changed-player-info-money-response";
+import {IPlayerInfoDto, PlayerInfo} from "shared/contracts/data/player-info-dto";
+import {IPlayerHistoryDto, PlayerHistory} from "shared/contracts/data/player-history-dto";
+import {IChangedPlayerInfoMoneyResponse} from "shared/contracts/responses/player-info-responses/changed-player-info-money-response";
 
 export interface PlayerInfoState {
     playerInfo: PlayerInfo
@@ -74,13 +74,13 @@ export const playerInfoSlice = createSlice({
         setLikes: (state, action: PayloadAction<number>) => {
             state.playerInfo.likes = action.payload;
         },
-        setHistory: (state, action: PayloadAction<IPlayerHistoryResponse>) => {
+        setHistory: (state, action: PayloadAction<IPlayerHistoryDto>) => {
             state.playerHistory = [...state.playerHistory, action.payload];
         },
-        initPlayerHistory: (state, action: PayloadAction<Array<IPlayerHistoryResponse>>) => {
+        initPlayerHistory: (state, action: PayloadAction<Array<IPlayerHistoryDto>>) => {
             state.playerHistory = [...action.payload];
         },
-        initPlayerInfo: (state, action: PayloadAction<IPlayerInfoResponse>) => {
+        initPlayerInfo: (state, action: PayloadAction<IPlayerInfoDto>) => {
             state.playerInfo = action.payload;
         }
     }

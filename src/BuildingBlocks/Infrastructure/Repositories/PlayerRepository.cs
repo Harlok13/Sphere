@@ -3,12 +3,12 @@ using App.Contracts.Data;
 using App.Contracts.Mapper;
 using App.Domain.Shared;
 using App.Domain.Shared.ResultImplementations;
-using App.Infra.Data.Context;
-using App.Infra.Messages;
+using Infrastructure.Data.Context;
+using Infrastructure.Messages;
 using Microsoft.EntityFrameworkCore;
 using Player = App.Domain.Entities.PlayerEntity.Player;
 
-namespace App.Infra.Repositories;
+namespace Infrastructure.Repositories;
 
 public class PlayerRepository : IPlayerRepository
 {
@@ -24,7 +24,6 @@ public class PlayerRepository : IPlayerRepository
                 new Error(ErrorMessages.Player.IdIsNull()));
             
             var playerDto = await _context.Set<Player>()
-                // .AsNoTracking()
                 .Where(p => p.Id == id)
                 .Include(p => p.Room)
                 .Select(p => PlayerMapper.MapPlayerToPlayerDto(p))

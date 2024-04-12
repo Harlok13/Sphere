@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using App.Application.Extensions;
 using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
@@ -43,7 +44,7 @@ public class CancelReconnectingToRoomHandler : ICommandHandler<CancelReconnectin
             return false;
         }
 
-        var roomResult = await _unitOfWork.RoomRepository.GetIdByPlayerIdAsync(authUser.Id, cT);
+        var roomResult = await _unitOfWork.RoomRepository.GetIdByPlayerIdAsNoTrackingAsync(authUser.Id, cT);
         if (!roomResult.TryFromResult(out RoomIdDto? data, out var errors))
         {
             foreach (var error in errors) _logger.LogError(error.Message);

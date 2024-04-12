@@ -1,5 +1,5 @@
 import style from "./GameHistoryMsg.module.css";
-import {GameHistoryMessage} from "shared/contracts/responses/added-game-history-message-response";
+import {GameHistoryMessage} from "shared/contracts/responses/room-responses/added-game-history-message-response";
 import {FC} from "react";
 
 const GameHistoryMsg: FC<{

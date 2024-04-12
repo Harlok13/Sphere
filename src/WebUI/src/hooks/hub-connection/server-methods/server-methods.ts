@@ -12,6 +12,7 @@ import {IStayRequest} from "shared/contracts/requests/stay-request";
 import {IKickPlayerFromRoomRequest} from "shared/contracts/requests/kick-player-from-room-request";
 import {ITransferLeadershipRequest} from "shared/contracts/requests/transfer-leadership-request";
 import {signalRConnection} from "providers/SignalrProvider";
+import {IAddToFriendsRequest} from "shared/contracts/requests/add-to-friends-request";
 
 
 
@@ -56,3 +57,6 @@ export const useKickPlayerFromRoomHub = () =>
 
 export const useTransferLeadershipHub = () =>
     useHubMethod<boolean, ITransferLeadershipRequest>(signalRConnection, "TransferLeadership");
+
+export const useAddToFriendsHub = () =>
+    useHubMethod<boolean, IAddToFriendsRequest>(signalRConnection, "AddToFriends");

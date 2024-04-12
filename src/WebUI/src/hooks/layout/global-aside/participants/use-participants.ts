@@ -2,6 +2,7 @@ import {useGame21PlayersSelector, useInRoomSelector, useRoomDataSelector} from "
 import {useParticipantActionsModalSelector} from "store/modals/use-modals-selector";
 import {usePlayerSelector} from "store/player/use-player-selector";
 import {
+    useAddToFriendsHub,
     useKickPlayerFromRoomHub,
     useRemoveFromRoomHub,
     useTransferLeadershipHub
@@ -12,11 +13,13 @@ import {IRemoveFromRoomRequest} from "shared/contracts/requests/remove-from-room
 import {ParticipantActionsModal, resetModalsState, setParticipantActionsModal} from "store/modals/modals.slice";
 import {IKickPlayerFromRoomRequest} from "shared/contracts/requests/kick-player-from-room-request";
 import {ITransferLeadershipRequest} from "shared/contracts/requests/transfer-leadership-request";
+import {IAddToFriendsRequest} from "shared/contracts/requests/add-to-friends-request";
 
 
 export type ParticipantActionsListHandlers = {
     kickPlayerFromRoomHandler: (e: React.MouseEvent<HTMLLIElement>) => Promise<void>;
     transferLeadershipHandler: (e: React.MouseEvent<HTMLLIElement>) => Promise<void>;
+    addToFriendsHandler: (e: React.MouseEvent<HTMLLIElement>) => Promise<void>;
 }
 
 export const useParticipants = () => {
@@ -29,6 +32,7 @@ export const useParticipants = () => {
     const dispatch = useDispatch();
     const kickPlayerFromRoom = useKickPlayerFromRoomHub();
     const transferLeadership = useTransferLeadershipHub();
+    const addToFriends = useAddToFriendsHub();
 
     const removeFromRoomHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -102,9 +106,25 @@ export const useParticipants = () => {
         if (response) dispatch(resetModalsState())
     }
 
+    const addToFriendsHandler = async (e: React.MouseEvent<HTMLLIElement>) => {
+        e.preventDefault();
+
+        const request: IAddToFriendsRequest = {
+            playerId: player.id,
+            friendId: participantActionsModal.playerId,
+        }
+
+        const response = await addToFriends
+            .invoke(request)
+            .catch(err => console.error(err.toString()));
+
+        if (response) dispatch(resetModalsState());
+    }
+
     const handlers: ParticipantActionsListHandlers = {
-        kickPlayerFromRoomHandler: kickPlayerFromRoomHandler,
-        transferLeadershipHandler: transferLeadershipHandler
+        kickPlayerFromRoomHandler,
+        transferLeadershipHandler,
+        addToFriendsHandler
     }
 
     return {

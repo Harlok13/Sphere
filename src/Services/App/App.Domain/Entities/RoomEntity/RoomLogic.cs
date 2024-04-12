@@ -111,13 +111,15 @@ public sealed partial class Room
 
     public DomainResult StartGame(Guid leaderId, IEnumerable<CardInDeck> cardsDeck)
     {
+        const short delayDuration = 1000;
+        
         SetRoomStatus(RoomStatus.Playing);
         AddNewGameHistoryMessage(
             type: GameHistoryType.GameState,
             currentTime: DateTime.UtcNow.ToShortTimeString(),
             message: "Game started.");
 
-        UpdateCardsDeck(cardsDeck); // TODO: ref
+        UpdateCardsDeck(cardsDeck); 
 
         lock (_players)
         {
@@ -129,7 +131,7 @@ public sealed partial class Room
                 if (!cardResult.Success) return cardResult;
                 if (!cardResult.TryFromDomainResult(out Card? card, out DomainError? error)) return error!;
 
-                var delayMs = indexAkaDelay * 1000;
+                var delayMs = indexAkaDelay * delayDuration;
 
                 var playerStartGameResult = player.StartGame(startBid: StartBid, card: card!, delayMs: delayMs);
                 if (!playerStartGameResult.Success) return playerStartGameResult;

@@ -1,11 +1,11 @@
 using App.Application.Identity.Repositories;
 using App.Domain.Identity.Entities;
 using App.Domain.Identity.Enums;
-using App.Infra.Data.Context;
+using Infrastructure.Data.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace App.Infra.Identity.Repositories;
+namespace Infrastructure.Identity.Repositories;
 
 public class ApplicationUserRepository : IApplicationUserRepository
 {

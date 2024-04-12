@@ -14,6 +14,7 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
 {
     private readonly List<Player> _players = new();
     private readonly List<KickedPlayer> _kickedPlayers = new();
+    
     private List<CardInDeck>? _cardsDeck;
     private List<GameHistoryMessage>? _gameHistories;
 
@@ -116,10 +117,13 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
         return room;
     }
 
-    private void AddNewPlayer(Player player) // TODO: validation
+    private void AddNewPlayer(Player player) 
     {
         lock (_players)
         {
+            if (!(_players.Count < RoomSize))
+                return;  // TODO: return DomainResult instead of void
+            
             _players.Add(player);
             SetPlayersInRoom(_players.Count);
             
@@ -278,7 +282,7 @@ public sealed partial class Room : AggregateRoot, IHasDomainEvent
             Message: message,
             PlayerName: playerName);
         
-        _gameHistories.Add(gameHistoryMessage);
+        _gameHistories!.Add(gameHistoryMessage);
         GameHistory = JsonSerializer.Serialize(_gameHistories);
         // SyncGameHistoryMessages();
         

@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {HubConnection, HubConnectionState} from "@microsoft/signalr";
 import {v4} from "uuid";
 import {useDispatch} from "react-redux";
-import {INotificationResponse} from "shared/contracts/notification-response";
+import {INotificationResponse} from "shared/contracts/responses/notification-response";
 import {setNewNotification} from "store/notifications/notifications.slice";
 
 export const useHub = (hubConnection?: HubConnection) => {

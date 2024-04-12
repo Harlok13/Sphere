@@ -1,9 +1,8 @@
-using App.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
-namespace App.Infra.Data.Configurations;
+namespace Infrastructure.Data.Configurations;
 
 public class PlayerInfoConfiguration : IEntityTypeConfiguration<PlayerInfo>
 {
@@ -101,11 +100,9 @@ public class PlayerInfoConfiguration : IEntityTypeConfiguration<PlayerInfo>
             .HasDefaultValue(0)
             .IsRequired();
 
-        // builder.Property(e => e.CreatedAt)
-        //     .HasColumnName("created_at")
-        //     .HasDefaultValueSql("NOW()");
-        // builder.Property(e => e.UpdatedAt)
-        //     .HasColumnName("updated_at")
-        //     .HasDefaultValueSql("NOW()");
+        builder
+            .HasMany(e => e.Friends)
+            .WithMany()
+            .UsingEntity(e => e.ToTable("Friends"));
     }
 }

@@ -1,13 +1,11 @@
 using System.Collections.Immutable;
-using System.Data;
-using App.Application.Repositories.UnitOfWork;
 using App.Domain.Primitives;
+using Core;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
-namespace App.Infra.Data.UnitOfWork;
+namespace Infrastructure.Data.UnitOfWork;
 
 public abstract class UnitOfWorkFactory<TContext> : IUnitOfWorkFactory
     where TContext : DbContext
@@ -25,11 +23,6 @@ public abstract class UnitOfWorkFactory<TContext> : IUnitOfWorkFactory
         Context = context;
         _logger = logger;
         _publisher = publisher;
-    }
-
-    public virtual async Task<IDbContextTransaction> BeginTransaction(CancellationToken cT)
-    {
-        return await Context.Database.BeginTransactionAsync(cT);
     }
 
     public virtual async ValueTask<bool> SaveChangesAsync(CancellationToken cT)

@@ -1,11 +1,11 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import UserService from "services/user/user.service";
-import {ICreatedRoomResponse, IRoomInLobbyDto, Room} from "shared/contracts/room-in-lobby-dto";
-import {IRemovedRoomResponse} from "shared/contracts/responses/removed-room-response";
-import {IChangedRoomAvatarUrlResponse} from "shared/contracts/responses/changed-room-avatar-response";
-import {IChangedRoomStatusResponse} from "shared/contracts/responses/changed-room-status-response";
-import {IChangedRoomPlayersInRoomResponse} from "shared/contracts/responses/changed-room-players-in-room-response";
-import {IChangedRoomRoomNameResponse} from "shared/contracts/responses/changed-room-room-name-response";
+import {ICreatedRoomResponse, IRoomInLobbyDto, Room} from "shared/contracts/data/room-in-lobby-dto";
+import {IRemovedRoomResponse} from "shared/contracts/responses/room-responses/removed-room-response";
+import {IChangedRoomAvatarUrlResponse} from "shared/contracts/responses/room-responses/changed-room-avatar-response";
+import {IChangedRoomStatusResponse} from "shared/contracts/responses/room-responses/changed-room-status-response";
+import {IChangedRoomPlayersInRoomResponse} from "shared/contracts/responses/room-responses/changed-room-players-in-room-response";
+import {IChangedRoomRoomNameResponse} from "shared/contracts/responses/room-responses/changed-room-room-name-response";
 
 
 const userName = UserService.getUser().userName;
@@ -47,13 +47,6 @@ const initialState: LobbyState = {
     rooms: [],
 }
 
-// const computeStartMoney = (startBid: number, minBid: number, maxBid: number) => {
-//     const lowerBound = Math.round(startBid * 1.5 + minBid * 3 + maxBid * 3);
-//     const upperBound = Math.round(startBid * 3 + minBid * 8 + maxBid * 8);
-//
-//     return {lowerBound: lowerBound, upperBound: upperBound};
-// }
-
 const computeStartMoney = (state: LobbyState) => {
     const lowerBound = Math.round(state.newRoomConfig.startBid * 1.5 + state.newRoomConfig.minBid * 3 + state.newRoomConfig.maxBid * 3);
     const upperBound = Math.round(state.newRoomConfig.startBid * 3 + state.newRoomConfig.minBid * 8 + state.newRoomConfig.maxBid * 8);
@@ -71,9 +64,6 @@ export const lobbySlice = createSlice({
         },
         removeRoom: (state, action: PayloadAction<IRemovedRoomResponse>) => {
             state.rooms = [...state.rooms.filter(r => r.id !== action.payload.roomId)];
-        },
-        updateRoom: (state, action: PayloadAction<IRoomInLobbyDto>) => {
-            state.rooms = [...state.rooms.filter(r => r.id !== action.payload.id), action.payload]
         },
 
         setRoomName: (state, action: PayloadAction<string>) => {
@@ -179,7 +169,6 @@ export const {
     setHighBid,
     setRoomAvatarUrl,
     initRooms,
-    updateRoom,
     updateRoomStatus,
     updatePlayersInRoom,
     updateRoomNameInRooms,

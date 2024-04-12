@@ -2,7 +2,7 @@ using App.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace App.Infra.Data.Configurations;
+namespace Infrastructure.Data.Configurations;
 
 public class PlayerHistoryConfiguration : IEntityTypeConfiguration<PlayerHistory>
 {
@@ -18,7 +18,7 @@ public class PlayerHistoryConfiguration : IEntityTypeConfiguration<PlayerHistory
             .IsRequired();
 
         builder.Property(e => e.CardsPlayed)
-            // .HasColumnType("jsonb")  // TODO: text?
+            .HasColumnType("jsonb")  
             .HasColumnName("cards_played")
             .IsRequired();
 

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Player = App.Domain.Entities.PlayerEntity.Player;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
-namespace App.Infra.Data.Context;
+namespace Infrastructure.Data.Context;
 
 public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
@@ -17,7 +17,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(IInfrastructureAssemblyMarker).Assembly);
     }
 
     public DbSet<Player> Players { get; set; } = null!;
@@ -25,4 +25,6 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
     public DbSet<PlayerHistory> PlayerHistories { get; set; } = null!;
     public DbSet<PlayerInfo> PlayerInfos { get; set; } = null!;
     public DbSet<KickedPlayer> KickedPlayers { get; set; } = null!;
+
+    // public DbSet<Friends> Friends { get; set; } = null!;
 }

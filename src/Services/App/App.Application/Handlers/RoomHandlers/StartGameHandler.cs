@@ -51,6 +51,7 @@ public class StartGameHandler : ICommandHandler<StartGameCommand, bool>
                     cT);
 
                 return false;
+            
             case DomainNotificationFailure notificationFailure:
                 await _publisher.Publish(new UserNotificationEvent(
                         NotificationText: notificationFailure.Reason,
@@ -63,6 +64,7 @@ public class StartGameHandler : ICommandHandler<StartGameCommand, bool>
                     cT);
 
                 return false;
+            
             case DomainError canStartGameError:
                 return await SendSomethingWentWrongNotificationAsync(cT, playerId, singleError: canStartGameError);
         }
@@ -73,6 +75,7 @@ public class StartGameHandler : ICommandHandler<StartGameCommand, bool>
         {
             case DomainError startGameError:
                 return await SendSomethingWentWrongNotificationAsync(cT, playerId, singleError: startGameError);
+            
             case DomainFailure startGameFailure:
                 await _publisher.Publish(new UserNotificationEvent(
                         NotificationText: startGameFailure.Reason,
@@ -80,6 +83,7 @@ public class StartGameHandler : ICommandHandler<StartGameCommand, bool>
                     cT);
 
                 return false;
+            
             default:
                 return await _unitOfWork.SaveChangesAsync(cT);
         }

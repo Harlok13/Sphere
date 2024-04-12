@@ -45,8 +45,6 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
             return false;
         }
 
-        // var disconnectedPlayerNoTrack = await _unitOfWork.PlayerRepository.GetPlayerByIdAsNoTrackingAsync(authUser.Id, cT);
-        // if (!disconnectedPlayerNoTrack.TryFromDomainResult(out PlayerDto? disconnectedPlayerDto, out _))
         if (!_unitOfWork.PlayerRepository.CheckPlayerExists(authUser.Id))
         {
             _logger.LogInformation(
@@ -55,18 +53,13 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
             return false;
         }
 
-        // var roomResult = await _unitOfWork.RoomRepository.GetByIdAsync(disconnectedPlayerDto!.RoomId, cT);
-        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync1(authUser.Id, cT);
+        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync(authUser.Id, cT);
         if (!roomResult.TryFromResult(out Room? room, out var errors))
         {
             return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
         }
         
         var disconnectPlayerResult = room!.DisconnectPlayer(authUser.Id);
-        // if (!disconnectPlayerResult.TryFromDomainResult(out Room.DisconnectPlayerDto? disconnectData, out var errors))
-        // {
-        //     return await SendSomethingWentWrongNotification(errors, authUser.ConnectionId, cT);
-        // }
         if (disconnectPlayerResult is DomainError disconnectPlayerError)
         {
             _logger.LogError(disconnectPlayerError.Reason);
@@ -84,11 +77,7 @@ public class DisconnectPlayerHandler : ICommandHandler<DisconnectPlayerCommand, 
                 new {Request = request});
             return await _mediator.Send(new RemoveFromRoomCommand(request), cT);
         }
-        // if (disconnectData!.NeedRemoveRoom)
-        // {
-        //
-        //     await _unitOfWork.RoomRepository.RemoveAsync(room.Id, cT);
-        // }
+
         return true;
     }
     

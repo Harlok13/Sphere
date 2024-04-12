@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {produce} from "immer";
-import {INotificationResponse} from "shared/contracts/notification-response";
+import {INotificationResponse} from "shared/contracts/responses/notification-response";
 
 
 interface NotificationsState {

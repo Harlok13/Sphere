@@ -1,6 +1,6 @@
 import style from "../UserInfoItems.module.css";
 import {FC} from "react";
-import {PlayerInfo} from "shared/contracts/player-info-response";
+import {PlayerInfo} from "shared/contracts/data/player-info-dto";
 
 
 export const Level: FC<{

@@ -1,9 +1,8 @@
 using App.Application.Repositories;
 using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
-using App.Infra.Data.Context;
-using App.Infra.Data.UnitOfWork;
-using App.Infra.Repositories;
+using Infrastructure.Data.Context;
+using Infrastructure.Data.UnitOfWork;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
@@ -21,5 +20,5 @@ public class AppUnitOfWork : UnitOfWorkFactory<ApplicationContext>, IAppUnitOfWo
     public IPlayerHistoryRepository PlayerHistoryRepository => new PlayerHistoryRepository(Context);
     public IPlayerInfoRepository PlayerInfoRepository => new PlayerInfoRepository(Context);
     public IRoomRepository RoomRepository => new RoomRepository(Context);
-    // public IRoomRepository RoomRepository => new RoomRepositoryNotifyDecorator(new RoomRepository(Context));
+    public IFriendsRepository FriendsRepository => new FriendsRepository(Context);
 }

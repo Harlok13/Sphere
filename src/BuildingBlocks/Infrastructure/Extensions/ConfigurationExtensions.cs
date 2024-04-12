@@ -1,7 +1,8 @@
+using Infrastructure.Exceptions.DbConnectionExceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
-namespace App.Infra.Extensions;
+namespace Infrastructure.Extensions;
 
 public static class ConfigurationExtensions
 {
@@ -13,13 +14,13 @@ public static class ConfigurationExtensions
         {
             case "Development":
                 return configuration["ConnectionStrings:Secret_DevDb"]
-                       ?? throw new InvalidOperationException("Connection string is not set.");
+                       ?? throw new DevDbConnectionStringIsNotSet("Connection string is not set.");
 
             case "Production":
                 return configuration["ConnectionStrings:Secret_ProdDb"]
-                       ?? throw new InvalidOperationException("Connection string is not set."); 
+                       ?? throw new ProdDbConnectionStringIsNotSet("Connection string is not set."); 
 
-            default: throw new InvalidOperationException("Invalid environment name."); // TODO: custom ex
+            default: throw new InvalidEnvironmentName("Invalid environment name."); 
         }
     }
 }

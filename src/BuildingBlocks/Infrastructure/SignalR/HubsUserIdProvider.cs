@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 
-namespace App.Infra.SignalR;
+namespace Infrastructure.SignalR;
 
 public class HubsUserIdProvider : IUserIdProvider
 {

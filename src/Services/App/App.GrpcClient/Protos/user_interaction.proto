@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "UserInteractionClient";
+
+package user_interaction;
+
+service UserInteraction {
+    rpc AddToFriends(AddToFriendsRequest) returns (AddToFriendsResponse);
+}
+
+message AddToFriendsRequest {
+    string name = 1;
+}
+
+message AddToFriendsResponse {
+    string name = 1;
+}

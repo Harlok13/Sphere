@@ -1,4 +1,4 @@
-import {IInitDataResponse} from "shared/contracts/init-data-response";
+import {IInitDataResponse} from "shared/contracts/responses/init-data-response";
 import axios from "axios";
 import UserService from "services/user/user.service";
 

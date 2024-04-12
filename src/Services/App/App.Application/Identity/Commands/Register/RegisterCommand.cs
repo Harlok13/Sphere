@@ -4,4 +4,5 @@ using Mediator;
 
 namespace App.Application.Identity.Commands.Register;
 
-public sealed record RegisterCommand(RegisterRequest RegisterRequest) : ICommand<AuthenticateResponse>;
+public sealed record RegisterCommand(
+    RegisterRequest RegisterRequest) : ICommand<AuthenticateResponse>;

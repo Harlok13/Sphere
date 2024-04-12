@@ -2,11 +2,11 @@ import axios from "axios";
 import {IAuthResponse} from "shared/interfaces/auth/auth-response.types";
 import UserService from "services/user/user.service";
 
-
 class AuthService {
     // private readonly URL = "/api/auth";
-    private readonly URL = "https://localhost:7170/api/auth";  
+    private readonly URL = "https://localhost:7170/api/auth";
     // private readonly URL = "http://localhost:5083/api/auth";  // TODO: relocate to settings
+    // private readonly URL = "http://localhost:5001/api/auth";  // TODO: relocate to settings
 
     async register({email, userName, password, passwordConfirm}): Promise<void> {
         await axios.post<IAuthResponse>(`${this.URL}/register`, {

@@ -7,7 +7,7 @@ public sealed partial class PlayerInfo
 {
     public sealed record JoinToRoomDto(int Money, string PlayerName);
     
-    public Result<JoinToRoomDto> JoinToRoom(int selectedStartMoney)  // TODO: finish
+    public Result<JoinToRoomDto> JoinToRoom(int selectedStartMoney)   // TODO: domain result
     {
         DecrementMoney(selectedStartMoney);
         return SuccessResult<JoinToRoomDto>.Create(new JoinToRoomDto(selectedStartMoney, PlayerName));

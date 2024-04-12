@@ -1,6 +1,6 @@
 import style from "./MoneySelectorInput.module.css";
 import {ChangeEvent, FC} from "react";
-import {SelectStartGameMoney} from "shared/contracts/select-start-game-money-response";
+import {SelectStartGameMoney} from "shared/contracts/responses/select-start-game-money-response";
 
 
 export const MoneySelectorInput: FC<{

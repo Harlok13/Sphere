@@ -2,6 +2,7 @@ using App.Application.Repositories.UnitOfWork;
 using App.SignalR.Commands.RoomCommands;
 using Mediator;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace App.Application.Handlers.RoomHandlers;
 

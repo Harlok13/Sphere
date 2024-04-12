@@ -29,24 +29,24 @@ public class PlayerMapper
             Has21: entity.Has21);
     }
 
-    // public static PlayerInfoDto MapPlayerToPlayerInfoDto(PlayerInfo entity)
-    // {
-    //     return new PlayerInfoDto(
-    //         Id: entity.UserId,
-    //         AvatarUrl: entity.AvatarUrl,
-    //         PlayerName: entity.PlayerName,
-    //         Matches: entity.Matches,
-    //         Loses: entity.Loses,
-    //         Wins: entity.Wins,
-    //         Draws: entity.Draws,
-    //         AllExp: entity.AllExp,
-    //         CurrentExp: entity.CurrentExp,
-    //         TargetExp: entity.TargetExp,
-    //         Money: entity.Money,
-    //         Likes: entity.Likes,
-    //         Level: entity.Level,
-    //         Has21: entity.Has21);
-    // }
+    public static PlayerInfoDto MapPlayerInfoToPlayerInfoDto(PlayerInfo entity)
+    {
+        return new PlayerInfoDto(
+            Id: entity.UserId,
+            AvatarUrl: entity.AvatarUrl,
+            PlayerName: entity.PlayerName,
+            Matches: entity.Matches,
+            Loses: entity.Loses,
+            Wins: entity.Wins,
+            Draws: entity.Draws,
+            AllExp: entity.AllExp,
+            CurrentExp: entity.CurrentExp,
+            TargetExp: entity.TargetExp,
+            Money: entity.Money,
+            Likes: entity.Likes,
+            Level: entity.Level,
+            Has21: entity.Has21);
+    }
 
     public static PlayerDto MapPlayerToPlayerDto(Player entity)
     {
@@ -68,27 +68,18 @@ public class PlayerMapper
             Online: entity.Online);
     }
 
-    public static PlayerHistoryResponse MapPlayerHistoryToPlayerHistoryResponse(PlayerHistory entity)
+    public static IEnumerable<PlayerHistoryDto> MapManyPlayerHistoryToManyPlayerHistoryDtos(
+        ICollection<PlayerHistory> playerHistories)
     {
-        return new PlayerHistoryResponse(
-            Id: entity.Id,
-            Score: entity.Score,
-            PlayedAt: entity.PlayedAt,
-            CardsPlayed: entity.CardsPlayed,
-            Result: entity.Result);
-    }
-
-    public static IEnumerable<PlayerHistoryResponse> MapManyPlayerHistoryToManyPlayerHistoryResponse(ICollection<PlayerHistory> playerHistories)
-    {
-        var playerHistoriesResponse = new List<PlayerHistoryResponse>(playerHistories.Count);
+        var playerHistoryDtos = new List<PlayerHistoryDto>(playerHistories.Count);
 
         foreach (var playerHistory in playerHistories)
         {
             var playerHistoryResponse = MapPlayerHistoryToPlayerHistoryResponse(playerHistory);
-            playerHistoriesResponse.Add(playerHistoryResponse);
+            playerHistoryDtos.Add(playerHistoryResponse);
         }
 
-        return playerHistoriesResponse;
+        return playerHistoryDtos;
     }
 
     public static IEnumerable<PlayerDto> MapManyPlayersToManyPlayersDto(IReadOnlyCollection<Player> players)
@@ -102,5 +93,20 @@ public class PlayerMapper
         }
 
         return playersResponse;
+    }
+    
+    private static PlayerHistoryDto MapPlayerHistoryToPlayerHistoryResponse(PlayerHistory entity)
+    {
+        return new PlayerHistoryDto(
+            Id: entity.Id,
+            Score: entity.Score,
+            PlayedAt: entity.PlayedAt,
+            CardsPlayed: entity.CardsPlayed,
+            Result: entity.Result);
+    }
+
+    public static PlayerInfo MapPlayerInfoDtoToPlayerInfo(PlayerInfoDto friendDto)
+    {
+        throw new NotImplementedException();
     }
 }

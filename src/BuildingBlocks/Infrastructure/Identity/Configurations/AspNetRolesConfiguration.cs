@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace App.Infra.Identity.Configurations;
+namespace Infrastructure.Identity.Configurations;
 
 public class AspNetRoles : IEntityTypeConfiguration<IdentityRole<Guid>>
 {

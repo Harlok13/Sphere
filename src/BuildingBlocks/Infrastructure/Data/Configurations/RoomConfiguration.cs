@@ -1,9 +1,8 @@
-using App.Domain.Entities;
 using App.Domain.Entities.RoomEntity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace App.Infra.Data.Configurations;
+namespace Infrastructure.Data.Configurations;
 
 public class RoomConfiguration : IEntityTypeConfiguration<Room>
 {

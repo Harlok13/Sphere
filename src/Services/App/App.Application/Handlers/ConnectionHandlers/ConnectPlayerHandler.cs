@@ -47,14 +47,14 @@ public class ConnectPlayerHandler : ICommandHandler<ConnectPlayerCommand, bool>
                 Navigate: NavigateEnum.Lobby),
             cT);
 
-        // var roomIdResult = await _unitOfWork.RoomRepository.GetIdByPlayerIdAsync(authUser.Id, cT);
+        // var roomIdResult = await _unitOfWork.RoomRepository.GetIdByPlayerIdAsNoTrackingAsync(authUser.Id, cT);
         // if (!roomIdResult.TryFromResult(out RoomIdDto? data, out var errors))
         // {
         //     foreach(var error in errors) _logger.LogError(error.Message);
         //     return false;
         // }
         
-        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync1(authUser.Id, cT);  // TODO: ref, use dto
+        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync(authUser.Id, cT);  // TODO: ref, use dto
         if (!roomResult.TryFromResult(out Room? room, out var errors))
         {
             foreach(var error in errors) _logger.LogError(error.Message);

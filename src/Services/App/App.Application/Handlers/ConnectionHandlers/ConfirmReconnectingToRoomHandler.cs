@@ -53,7 +53,7 @@ public class ConfirmReconnectingToRoomHandler : ICommandHandler<ConfirmReconnect
             return false;
         }
         
-        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync1(authUser.Id, cT);
+        var roomResult = await _unitOfWork.RoomRepository.GetByPlayerIdAsync(authUser.Id, cT);
         if (!roomResult.TryFromResult(out Room? room, out var roomErrors))
         {
             return await SendSomethingWentWrongNotificationAsync(cT, authUser.ConnectionId, errors: roomErrors);

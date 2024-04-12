@@ -47,12 +47,7 @@ public class JwtService : IJwtService
             CreateJwtToken(CreateClaims(user, roles))
         );
     }
-
-    public string GetJwtToken(ApplicationUser user, IEnumerable<IdentityRole> roles)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public JwtSecurityToken CreateToken(IEnumerable<Claim> authClaims) 
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));

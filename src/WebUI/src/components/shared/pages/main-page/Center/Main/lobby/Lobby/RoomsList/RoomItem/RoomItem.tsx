@@ -1,7 +1,7 @@
 import style from "./RoomItem.module.css";
 import React, {FC} from "react";
 import {JoinToRoomHandler} from "hooks/lobby/rooms-list/use-rooms-list";
-import {Room} from "shared/contracts/room-in-lobby-dto";
+import {Room} from "shared/contracts/data/room-in-lobby-dto";
 // TODO: change the color to red if size is max
 
 interface ILobbyItemProps {

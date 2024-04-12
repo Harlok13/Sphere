@@ -1,7 +1,7 @@
 import React, {ChangeEvent} from "react";
-import {SelectStartGameMoney} from "shared/contracts/select-start-game-money-response";
+import {SelectStartGameMoney} from "shared/contracts/responses/select-start-game-money-response";
 import {useSelectStartMoneySelector, useSelectStartMoneyTypeSelector} from "store/money/use-money-selector";
-import {PlayerInfo} from "shared/contracts/player-info-response";
+import {PlayerInfo} from "shared/contracts/data/player-info-dto";
 import {usePlayerInfoSelector} from "store/player-info/use-player-info-selector";
 import {useNewRoomConfigSelector} from "store/lobby/use-lobby-selector";
 import {useDispatch} from "react-redux";

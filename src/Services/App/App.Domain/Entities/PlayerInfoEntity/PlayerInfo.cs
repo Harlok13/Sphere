@@ -8,6 +8,8 @@ public sealed partial class PlayerInfo : Entity, IHasDomainEvent
     private readonly List<DomainEvent> _domainEvents = new();
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents;
 
+    private readonly List<PlayerInfo> _friends;
+
     private PlayerInfo(
         Guid id,
         Guid userId, 
@@ -60,9 +62,9 @@ public sealed partial class PlayerInfo : Entity, IHasDomainEvent
     public int Has21 { get; private set; }
     
     public int HasGold21 { get; private set; }
+
     
-    // TODO: max money win prop
-    
+    public IReadOnlyCollection<PlayerInfo> Friends => _friends;
 
     public static PlayerInfo Create(
         Guid id,
@@ -78,7 +80,7 @@ public sealed partial class PlayerInfo : Entity, IHasDomainEvent
         _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, UserId));
     }
 
-    public void DecrementMoney(int value)
+    private void DecrementMoney(int value)
     {
         Money -= value;  // TODO: validation
         _domainEvents.Add(new ChangedPlayerInfoMoneyDomainEvent(Money, UserId));

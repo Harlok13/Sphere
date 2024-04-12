@@ -1,6 +1,6 @@
 using App.Application;
 using App.Application.Identity;
-using App.Infra;
+using App.Domain.Configurations;
 using App.SignalR.HubFilters;
 using App.SignalR.Hubs;
 using Infrastructure;
@@ -27,6 +27,13 @@ public static class ServiceCollectionExtensions
             .AddInfrastructure(builder)
             .AddIdentityServices()
             .AddApplication();
+        
+        return services;
+    }
+
+    public static IServiceCollection AddConfigurations(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<GrpcConfiguration>(configuration.GetSection("GrpcConfiguration"));
         
         return services;
     }

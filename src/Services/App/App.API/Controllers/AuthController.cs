@@ -18,7 +18,9 @@ public sealed class AuthController : Controller
     private readonly ILogger<AuthController> _logger;
     private readonly IMediator _mediator;
 
-    public AuthController(ILogger<AuthController> logger, IMediator mediator)
+    public AuthController(
+        ILogger<AuthController> logger,
+        IMediator mediator)
     {
         _logger = logger;
         _mediator = mediator;

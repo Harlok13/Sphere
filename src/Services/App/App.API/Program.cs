@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(
 
 builder.Configuration.AddJsonFile("appsettings.Secrets.json");
 
+builder.Services.AddConfigurations(builder.Configuration);
+
 builder.Host.UseSerilogWithConfig();
 
 builder.Services.AddControllers();

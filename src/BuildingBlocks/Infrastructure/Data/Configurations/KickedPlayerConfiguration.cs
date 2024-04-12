@@ -2,7 +2,7 @@ using App.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace App.Infra.Data.Configurations;
+namespace Infrastructure.Data.Configurations;
 
 public class KickedPlayerConfiguration : IEntityTypeConfiguration<KickedPlayer>
 {

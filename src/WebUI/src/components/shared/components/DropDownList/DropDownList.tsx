@@ -6,6 +6,7 @@ import {PiCrownSimpleBold} from "react-icons/pi";
 import {ParticipantActionsListHandlers} from "hooks/layout/global-aside/participants/use-participants";
 import {ParticipantActionsModal} from "store/modals/modals.slice";
 import {Transition} from "react-transition-group";
+import {IoPersonAddOutline} from "react-icons/io5";
 
 export const DropDownList: FC<{
     // children: ReactNode;
@@ -15,7 +16,7 @@ export const DropDownList: FC<{
     timeout: number;
     participantActionModal: ParticipantActionsModal;
 }> = ({handlers, isLeader, isOpen, timeout, participantActionModal}) => {
-    const {transferLeadershipHandler, kickPlayerFromRoomHandler} = handlers;
+    const {transferLeadershipHandler, kickPlayerFromRoomHandler, addToFriendsHandler} = handlers;
     const {playerName, positionX, positionY} = participantActionModal
 
     return (
@@ -37,6 +38,13 @@ export const DropDownList: FC<{
                             >
                                 <span>Transfer leadership to <span className={style.participantName}>{playerName}</span></span>
                                 <PiCrownSimpleBold className={style.icon}/>
+                            </li>
+                            <li
+                                className={style.actionLine}
+                                onClick={addToFriendsHandler}
+                            >
+                                <span>Add <span className={style.participantName}>{playerName}</span> to friends</span>
+                                <IoPersonAddOutline className={style.icon} />
                             </li>
                         </ul>
                     </div>

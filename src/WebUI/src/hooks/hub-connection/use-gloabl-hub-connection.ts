@@ -2,11 +2,12 @@ import {useDispatch} from "react-redux";
 import {usePlayerSelector} from "store/player/use-player-selector";
 import {useStartTimerHub, useStayHub} from "hooks/hub-connection/server-methods/server-methods";
 import {useNavigate} from "react-router-dom";
-import {IAddedPlayerResponse} from "shared/contracts/responses/added-player-response";
+import {IAddedPlayerResponse} from "shared/contracts/responses/room-responses/added-player-response";
 import {useClientMethod} from "react-use-signalr";
 import {
     addNewRoom,
-    removeRoom, setRoomAvatarUrl,
+    removeRoom,
+    setRoomAvatarUrl,
     updatePlayersInRoom,
     updateRoomNameInRooms,
     updateRoomStatus
@@ -27,7 +28,7 @@ import {
     updateReadinessInPlayers,
     updateRoomNameInRoomData
 } from "store/game21/game21.slice";
-import {ICreatedRoomResponse} from "shared/contracts/room-in-lobby-dto";
+import {ICreatedRoomResponse} from "shared/contracts/data/room-in-lobby-dto";
 import {
     initPlayerData,
     resetPlayerState,
@@ -36,35 +37,35 @@ import {
     setNewCard, setOnline,
     setReadiness, setRoomId, setTimer
 } from "store/player/player.slice";
-import {IRemovedPlayerResponse} from "shared/contracts/removed-player-response";
-import {IRemovedRoomResponse} from "shared/contracts/responses/removed-room-response";
-import {IChangedPlayerReadinessResponse} from "shared/contracts/responses/changed-player-readiness-response";
-import {ISelectStartGameMoneyResponse} from "shared/contracts/select-start-game-money-response";
+import {IRemovedPlayerResponse} from "shared/contracts/responses/room-responses/removed-player-response";
+import {IRemovedRoomResponse} from "shared/contracts/responses/room-responses/removed-room-response";
+import {IChangedPlayerReadinessResponse} from "shared/contracts/responses/player-responses/changed-player-readiness-response";
+import {ISelectStartGameMoneyResponse} from "shared/contracts/responses/select-start-game-money-response";
 import {initSelectStartMoney} from "store/money/money.slice";
 import {setReconnectToRoomModal, setSelectStartMoneyModal} from "store/modals/modals.slice";
-import {IChangedPlayerInfoMoneyResponse} from "shared/contracts/responses/changed-player-info-money-response";
+import {IChangedPlayerInfoMoneyResponse} from "shared/contracts/responses/player-info-responses/changed-player-info-money-response";
 import {setMoney} from "store/player-info/player-info.slice";
-import {INotificationResponse} from "shared/contracts/notification-response";
+import {INotificationResponse} from "shared/contracts/responses/notification-response";
 import {removeNotification, setNewNotification} from "store/notifications/notifications.slice";
-import {IAddedCardResponse} from "shared/contracts/responses/added-card-response";
-import {IChangedRoomBankResponse} from "shared/contracts/responses/changed-room-bank-response";
-import {IChangedPlayerMoveResponse} from "shared/contracts/responses/changed-player-move-response";
+import {IAddedCardResponse} from "shared/contracts/responses/player-responses/added-card-response";
+import {IChangedRoomBankResponse} from "shared/contracts/responses/room-responses/changed-room-bank-response";
+import {IChangedPlayerMoveResponse} from "shared/contracts/responses/player-responses/changed-player-move-response";
 import {IStartTimerRequest} from "shared/contracts/requests/start-timer-request";
-import {IChangedPlayerMoneyResponse} from "shared/contracts/responses/changed-player-money-response";
-import {IChangedPlayerInGameResponse} from "shared/contracts/responses/changed-player-in-game-response";
-import {IChangedRoomStatusResponse} from "shared/contracts/responses/changed-room-status-response";
-import {IChangedRoomPlayersInRoomResponse} from "shared/contracts/responses/changed-room-players-in-room-response";
-import {IChangedPlayerIsLeader} from "shared/contracts/responses/changed-player-is-leader-response";
-import {IChangedRoomRoomNameResponse} from "shared/contracts/responses/changed-room-room-name-response";
-import {IChangedRoomAvatarUrlResponse} from "shared/contracts/responses/changed-room-avatar-response";
+import {IChangedPlayerMoneyResponse} from "shared/contracts/responses/player-responses/changed-player-money-response";
+import {IChangedPlayerInGameResponse} from "shared/contracts/responses/player-responses/changed-player-in-game-response";
+import {IChangedRoomStatusResponse} from "shared/contracts/responses/room-responses/changed-room-status-response";
+import {IChangedRoomPlayersInRoomResponse} from "shared/contracts/responses/room-responses/changed-room-players-in-room-response";
+import {IChangedPlayerIsLeader} from "shared/contracts/responses/player-responses/changed-player-is-leader-response";
+import {IChangedRoomRoomNameResponse} from "shared/contracts/responses/room-responses/changed-room-room-name-response";
+import {IChangedRoomAvatarUrlResponse} from "shared/contracts/responses/room-responses/changed-room-avatar-response";
 import {IStayRequest} from "shared/contracts/requests/stay-request";
-import {IChangedPlayerOnlineResponse} from "shared/contracts/responses/changed-player-online-response";
+import {IChangedPlayerOnlineResponse} from "shared/contracts/responses/player-responses/changed-player-online-response";
 import {IReconnectToRoomResponse} from "shared/contracts/responses/reconnect-to-room-response";
 import {IReconnectingInitRoomDataResponse} from "shared/contracts/responses/reconnecting-init-room-data-response";
 import {INavigateResponse} from "shared/contracts/responses/navigate-response";
-import {ICreatedPlayerResponse} from "shared/contracts/responses/created-player-response";
+import {ICreatedPlayerResponse} from "shared/contracts/responses/player-responses/created-player-response";
 import {signalRConnection} from "providers/SignalrProvider";
-import {IAddedGameHistoryMessageResponse} from "shared/contracts/responses/added-game-history-message-response";
+import {IAddedGameHistoryMessageResponse} from "shared/contracts/responses/room-responses/added-game-history-message-response";
 import {RoomStatusEnum} from "shared/constants/room-status.enum";
 
 

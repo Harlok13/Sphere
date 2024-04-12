@@ -2,7 +2,7 @@ import style from "./Participant.module.css";
 import React, {FC} from "react";
 import { VscDebugDisconnect } from "react-icons/vsc";
 import cn from "classnames";
-import {Player} from "shared/contracts/player-dto";
+import {Player} from "shared/contracts/data/player-dto";
 
 
 export const Participant: FC<{

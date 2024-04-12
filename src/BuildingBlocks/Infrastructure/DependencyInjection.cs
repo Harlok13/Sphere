@@ -1,9 +1,9 @@
 using System.Text;
 using App.Application.Identity.Extensions;
 using App.Domain.Identity.Entities;
-using App.Infra.Data.Context;
-using App.Infra.Extensions;
-using App.Infra.SignalR;
+using Infrastructure.Data.Context;
+using Infrastructure.Extensions;
+using Infrastructure.SignalR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

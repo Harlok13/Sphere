@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 namespace App.Domain.Shared.ResultImplementations;
 
 public sealed class InvalidResult<TData> : Result<TData>
-    where TData: class
+    where TData: class?
 {
     private InvalidResult(IEnumerable<Error> errors) : base(isSuccess: false)
         => Errors = new ReadOnlyCollection<Error>(errors as List<Error> ?? new List<Error>());

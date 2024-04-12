@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace App.SignalR.Hubs;
 
 [Authorize]
-public class GlobalHub : Hub<IGlobalHub>
+public partial class GlobalHub : Hub<IGlobalHub>
 {
     private readonly ILogger<GlobalHub> _logger;
     private readonly IMediator _mediator;
@@ -104,14 +104,14 @@ public class GlobalHub : Hub<IGlobalHub>
         var result = Context.Items.TryGetValue(user.Id, out var cts);
         if (!result)
         {
-            _logger.LogInformation(
+            _logger.LogDebug(
                 "{InvokingMethod} - Cts is not found.",
                 nameof(StopTimer));
             return false;
         }
         Context.Items.Remove(user.Id);
         
-        _logger.LogInformation("Result of getting cts is {Result}.", result);
+        _logger.LogDebug("Result of getting cts is {Result}.", result);
         
         var command = new StopTimerCommand(
             Request: request,
@@ -137,4 +137,7 @@ public class GlobalHub : Hub<IGlobalHub>
 
     public async ValueTask<bool> TransferLeadership(TransferLeadershipRequest request) =>
         await _mediator.Send(new TransferLeadershipCommand(request));
+
+    // public async ValueTask<bool> AddToFriends(AddToFriendsRequest request) =>
+    //     await _mediator.Send(new AddToFriendsCommand(request));
 }

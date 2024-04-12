@@ -3,7 +3,7 @@ import { GoAlertFill } from "react-icons/go";
 import {IoMdCloseCircle} from "react-icons/io";
 import React, {FC} from "react";
 import {useDispatch} from "react-redux";
-import {INotificationResponse} from "shared/contracts/notification-response";
+import {INotificationResponse} from "shared/contracts/responses/notification-response";
 import {removeNotification} from "store/notifications/notifications.slice";
 
 

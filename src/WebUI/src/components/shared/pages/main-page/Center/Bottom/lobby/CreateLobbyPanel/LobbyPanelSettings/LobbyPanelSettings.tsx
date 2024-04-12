@@ -3,13 +3,13 @@ import {FC} from "react";
 import {NewRoomConfig} from "store/lobby/lobby.slice";
 import {LobbyPanelHandlers} from "hooks/lobby/configure-room/use-configure-room";
 import {RoomSize} from "shared/constants/configure-room-constants";
-import {IPlayerInfoResponse} from "shared/contracts/player-info-response";
+import {IPlayerInfoDto} from "shared/contracts/data/player-info-dto";
 
 
 export const LobbyPanelSettings: FC<{
     newRoomData: NewRoomConfig;
     handlers: LobbyPanelHandlers;
-    playerInfo: IPlayerInfoResponse
+    playerInfo: IPlayerInfoDto
 }> = ({newRoomData, handlers, playerInfo}) => {
     const {
         minBidHandler, maxBidHandler, startBidHandler,

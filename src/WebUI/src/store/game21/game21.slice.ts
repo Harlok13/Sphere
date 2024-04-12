@@ -1,21 +1,21 @@
 import {createSlice, current, PayloadAction} from "@reduxjs/toolkit";
-import {IInitRoomDataResponse} from "shared/contracts/init-room-data-dto";
-import {IPlayerDto, Player} from "shared/contracts/player-dto";
-import {IAddedPlayerResponse} from "shared/contracts/responses/added-player-response";
+import {IInitRoomDataResponse} from "shared/contracts/data/init-room-data-dto";
+import {IPlayerDto, Player} from "shared/contracts/data/player-dto";
+import {IAddedPlayerResponse} from "shared/contracts/responses/room-responses/added-player-response";
 import {produce} from "immer";
-import {IRemovedPlayerResponse} from "shared/contracts/removed-player-response";
-import {IChangedRoomBankResponse} from "shared/contracts/responses/changed-room-bank-response";
-import {IChangedPlayerIsLeader} from "shared/contracts/responses/changed-player-is-leader-response";
-import {IChangedRoomRoomNameResponse} from "shared/contracts/responses/changed-room-room-name-response";
-import {IChangedPlayerReadinessResponse} from "shared/contracts/responses/changed-player-readiness-response";
-import {IChangedPlayerMoneyResponse} from "shared/contracts/responses/changed-player-money-response";
-import {IChangedPlayerInGameResponse} from "shared/contracts/responses/changed-player-in-game-response";
-import {IAddedCardResponse} from "shared/contracts/responses/added-card-response";
-import {IChangedPlayerOnlineResponse} from "shared/contracts/responses/changed-player-online-response";
+import {IRemovedPlayerResponse} from "shared/contracts/responses/room-responses/removed-player-response";
+import {IChangedRoomBankResponse} from "shared/contracts/responses/room-responses/changed-room-bank-response";
+import {IChangedPlayerIsLeader} from "shared/contracts/responses/player-responses/changed-player-is-leader-response";
+import {IChangedRoomRoomNameResponse} from "shared/contracts/responses/room-responses/changed-room-room-name-response";
+import {IChangedPlayerReadinessResponse} from "shared/contracts/responses/player-responses/changed-player-readiness-response";
+import {IChangedPlayerMoneyResponse} from "shared/contracts/responses/player-responses/changed-player-money-response";
+import {IChangedPlayerInGameResponse} from "shared/contracts/responses/player-responses/changed-player-in-game-response";
+import {IAddedCardResponse} from "shared/contracts/responses/player-responses/added-card-response";
+import {IChangedPlayerOnlineResponse} from "shared/contracts/responses/player-responses/changed-player-online-response";
 import {
     GameHistoryMessage,
     IAddedGameHistoryMessageResponse
-} from "shared/contracts/responses/added-game-history-message-response";
+} from "shared/contracts/responses/room-responses/added-game-history-message-response";
 
 
 
@@ -72,39 +72,15 @@ export const game21Slice = createSlice({
             // state.players = [...action.payload];
             state.players = nextState.players;
         },
-        updatePlayerInPlayers: (state, action: PayloadAction<IPlayerDto>) => {
-            const nextState = produce(state, draft => {
-                const index = draft.players.findIndex(p => p.id === action.payload.id);
-                draft.players[index] = action.payload;
-            });
-            state.players = nextState.players;
-        },
-        clearPlayersList: (state) => {
-            state.players = [];
-        },
+
         removePlayerFromPlayers: (state, action: PayloadAction<IRemovedPlayerResponse>) => {
             state.players = [...state.players.filter(p => p.id !== action.payload.playerId)];
         },
-        updateRoomName: (state, action: PayloadAction<string>) => {
-            state.roomData.roomName = action.payload;
-        },
+
         updateBankValue: (state, action: PayloadAction<IChangedRoomBankResponse>) => {
             state.bank = action.payload.bank;
         },
-        resetGame21State: (state) => {
-            // state.bank = 0;
-            // state.inRoom = false;
-            // state.gameStarted = false;
-            // state.players = [];
-            // state.gameHistory = [];
-            // state.roomData = {
-            //     id: "",
-            //     roomSize: 0,
-            //     roomName: "",
-            //     startBid: 0,
-            //     minBid: 0,
-            //     maxBid: 0
-            // }
+        resetGame21State: () => {
             return initialState;
         },
         setGameStarted: (state, action: PayloadAction<boolean>) => {
@@ -113,9 +89,7 @@ export const game21Slice = createSlice({
             });
             state.gameStarted = newState.gameStarted;
         },
-        // setPlayerInGame: (state, action: PayloadAction<PlayerInGame>) => {
-        //     state.players.fil
-        // }
+
         updateIsLeaderInPlayers: (state, action: PayloadAction<IChangedPlayerIsLeader>) => {
             const index = state.players.findIndex(p => p.id === action.payload.playerId);
             state.players[index].isLeader = action.payload.isLeader;
@@ -157,10 +131,7 @@ export const {
     initRoomData,
     setNewPlayer,
     updatePlayersList,
-    updatePlayerInPlayers,
-    clearPlayersList,
     removePlayerFromPlayers,
-    updateRoomName,
     updateBankValue,
     resetGame21State,
     setGameStarted,

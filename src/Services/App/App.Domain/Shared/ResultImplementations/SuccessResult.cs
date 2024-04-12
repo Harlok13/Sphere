@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 namespace App.Domain.Shared.ResultImplementations;
 
 public sealed class SuccessResult<TData> : Result<TData>
-    where TData: class
+    where TData: class?
 {
     private SuccessResult(TData data) : base(isSuccess: true) 
         => Data = data;
