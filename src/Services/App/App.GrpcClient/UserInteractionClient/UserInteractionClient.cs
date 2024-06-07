@@ -1,13 +1,13 @@
-﻿using App.Domain.Configurations;
-using App.GrpcClient.Base;
+﻿using App.GrpcClient.Configurations;
+using Core.Base;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using UserInteractionClient;
+using GrpcUserInteractionClient;
 
 namespace App.GrpcClient.UserInteractionClient;
 
 public class UserInteractionClient : 
-    BaseClient<UserInteraction.UserInteractionClient, UserInteractionClient>, 
+    BaseGrpcClient<UserInteraction.UserInteractionClient, UserInteractionClient>, 
     IUserInteractionClient
 {
     public UserInteractionClient(
@@ -15,7 +15,12 @@ public class UserInteractionClient :
         IOptions<GrpcConfiguration> grpcConfiguration) : 
         base (logger, grpcConfiguration.Value.GrpcUserInteractionServiceUrl) { }
     
-    public Task<AddToFriendsResponse> AddToFriendsAsync(AddToFriendsRequest request)
-        => Task.FromResult(Client.AddToFriends(request));
+    public Task<GrpcAddToFriendsResponse> AddToFriendsAsync(GrpcAddToFriendsRequest request, CancellationToken cT)
+        => Task.FromResult(Client.AddToFriends(request, cancellationToken: cT));
 
+    public Task<GrpcCreatePlayerInfoResponse> CreatePlayerInfoAsync(GrpcCreatePlayerInfoRequest request, CancellationToken cT)
+        => Task.FromResult(Client.CreatePlayerInfo(request, cancellationToken: cT));
+
+    public Task<GrpcGetPlayerInfoResponse> GetPlayerInfoAsync(GrpcGetPlayerInfoRequest request, CancellationToken cT)
+        => Task.FromResult(Client.GetPlayerInfo(request, cancellationToken: cT));
 }

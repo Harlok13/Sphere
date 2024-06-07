@@ -1,36 +1,36 @@
-using App.Application.Identity.Commands.RefreshToken;
-using App.Application.Identity.Repositories;
-using App.Application.Identity.Services;
-using App.Application.Repositories;
-using App.Application.Repositories.UnitOfWork;
-using App.Domain.Identity.Entities;
-using Mediator;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-
-namespace App.Application.Identity.Commands.Revoke;
-
-public class RevokeHandler : ICommandHandler<RevokeCommand, bool>
-{
-    private readonly ILogger<RevokeHandler> _logger;
-    private readonly IApplicationUserRepository _applicationUserRepository;
-
-    public RevokeHandler(
-        ILogger<RevokeHandler> logger,
-        IApplicationUserRepository applicationUserRepository)
-    {
-        _logger = logger;
-        _applicationUserRepository = applicationUserRepository;
-    }
-    
-    public async ValueTask<bool> Handle(RevokeCommand command, CancellationToken cT)
-    {
-        var user = await _applicationUserRepository.GetManagedUserByNameAsync(command.UserName, cT);
-        if (user is null) return false;
-
-        user.RefreshToken = null;
-        await _applicationUserRepository.UpdateManagedUserAsync(user, cT);
-
-        return true;
-    }
-}
+// using App.Application.Identity.Commands.RefreshToken;
+// using App.Application.Identity.Repositories;
+// using App.Application.Identity.Services;
+// using App.Application.Repositories;
+// using App.Application.Repositories.UnitOfWork;
+// using App.Domain.Identity.Entities;
+// using Mediator;
+// using Microsoft.AspNetCore.Identity;
+// using Microsoft.Extensions.Logging;
+//
+// namespace App.Application.Identity.Commands.Revoke;
+//
+// public class RevokeHandler : ICommandHandler<RevokeCommand, bool>
+// {
+//     private readonly ILogger<RevokeHandler> _logger;
+//     private readonly IApplicationUserRepository _applicationUserRepository;
+//
+//     public RevokeHandler(
+//         ILogger<RevokeHandler> logger,
+//         IApplicationUserRepository applicationUserRepository)
+//     {
+//         _logger = logger;
+//         _applicationUserRepository = applicationUserRepository;
+//     }
+//     
+//     public async ValueTask<bool> Handle(RevokeCommand command, CancellationToken cT)
+//     {
+//         var user = await _applicationUserRepository.GetManagedUserByNameAsync(command.UserName, cT);
+//         if (user is null) return false;
+//
+//         user.RefreshToken = null;
+//         await _applicationUserRepository.UpdateManagedUserAsync(user, cT);
+//
+//         return true;
+//     }
+// }

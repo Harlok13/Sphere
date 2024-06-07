@@ -30,7 +30,7 @@
 //         
 //         _logger.LogDebug($"Auth request\nEmail: {request.Email}\nPassword: {request.Password}");
 //
-//         var managedUser = await _unitOfWork.ApplicationUserRepository.GetManagedUserByEmailAsync(request.Email, cT);
+//         var managedUser = await _unitOfWork.IdentityUserRepository.GetManagedUserByEmailAsync(request.Email, cT);
 //
 //         if (managedUser == null)
 //         {
@@ -38,7 +38,7 @@
 //             throw new Exception();  // TODO: ex
 //         }
 //
-//         var isPasswordValid = await _unitOfWork.ApplicationUserRepository.CheckManagedUserPasswordAsync(managedUser, request.Password, cT);
+//         var isPasswordValid = await _unitOfWork.IdentityUserRepository.CheckManagedUserPasswordAsync(managedUser, request.Password, cT);
 //
 //         if (!isPasswordValid)
 //         {
@@ -47,7 +47,7 @@
 //             throw new Exception();  // TODO: ex
 //         }
 //
-//         var user = await _unitOfWork.ApplicationUserRepository.GetUserByEmailAsync(request.Email, cT);
+//         var user = await _unitOfWork.IdentityUserRepository.GetUserByEmailAsync(request.Email, cT);
 //
 //         if (user is null)
 //         {
@@ -55,8 +55,8 @@
 //             throw new Exception();  // TODO: ex
 //         }
 //
-//         var roleIds = await _unitOfWork.ApplicationUserRepository.GetRoleIdsAsync(user, cT);
-//         var roles = await _unitOfWork.ApplicationUserRepository.GetRoleNamesAsync(roleIds, cT);
+//         var roleIds = await _unitOfWork.IdentityUserRepository.GetRoleIdsAsync(user, cT);
+//         var roles = await _unitOfWork.IdentityUserRepository.GetRoleNamesAsync(roleIds, cT);
 //
 //         var accessToken = _jwtService.GetJwtToken(user, roles);
 //         user.RefreshToken = _jwtService.GenerateRefreshToken();

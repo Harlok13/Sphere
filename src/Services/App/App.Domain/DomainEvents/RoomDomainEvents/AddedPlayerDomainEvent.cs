@@ -1,6 +1,6 @@
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.RoomEntity;
-using App.Domain.Primitives;
+using Core;
 
 namespace App.Domain.DomainEvents.RoomDomainEvents;
 

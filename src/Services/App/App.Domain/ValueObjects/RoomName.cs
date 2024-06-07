@@ -1,5 +1,5 @@
-using App.Domain.DomainResults;
 using App.Domain.Primitives;
+using Core.DomainResults;
 
 namespace App.Domain.ValueObjects;
 

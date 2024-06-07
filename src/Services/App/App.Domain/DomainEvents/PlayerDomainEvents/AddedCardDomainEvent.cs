@@ -1,5 +1,5 @@
 using App.Domain.Entities;
-using App.Domain.Primitives;
+using Core;
 
 namespace App.Domain.DomainEvents.PlayerDomainEvents;
 

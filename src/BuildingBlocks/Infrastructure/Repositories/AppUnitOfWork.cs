@@ -1,8 +1,8 @@
 using App.Application.Repositories;
 using App.Application.Repositories.RoomRepository;
 using App.Application.Repositories.UnitOfWork;
+using Core.UnitOfWork;
 using Infrastructure.Data.Context;
-using Infrastructure.Data.UnitOfWork;
 using Mediator;
 using Microsoft.Extensions.Logging;
 

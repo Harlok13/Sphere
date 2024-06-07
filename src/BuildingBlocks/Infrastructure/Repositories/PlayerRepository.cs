@@ -1,8 +1,8 @@
 using App.Application.Repositories;
 using App.Contracts.Data;
 using App.Contracts.Mapper;
-using App.Domain.Shared;
-using App.Domain.Shared.ResultImplementations;
+using Core.Shared;
+using Core.Shared.ResultImplementations;
 using Infrastructure.Data.Context;
 using Infrastructure.Messages;
 using Microsoft.EntityFrameworkCore;

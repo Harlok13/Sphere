@@ -1,7 +1,6 @@
 using App.Contracts.Data;
 using App.Domain.Entities.RoomEntity;
-using App.Domain.Primitives;
-using App.Domain.Shared;
+using Core.Shared;
 
 namespace App.Application.Repositories.RoomRepository;
 

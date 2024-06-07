@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using App.Domain.Primitives;
+using Core;
 
 namespace App.Application.Repositories;
 

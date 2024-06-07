@@ -12,12 +12,12 @@
 // {
 //     private readonly ILogger<RefreshTokenHandler> _logger;
 //     private readonly IJwtService _jwtService;
-//     private readonly IApplicationUserRepository _applicationUserRepository;
+//     private readonly IIdentityUserRepository _applicationUserRepository;
 //
 //     public RefreshTokenHandler(
 //         ILogger<RefreshTokenHandler> logger,
 //         IJwtService jwtService,
-//         IApplicationUserRepository applicationUserRepository)
+//         IIdentityUserRepository applicationUserRepository)
 //     {
 //         _logger = logger;
 //         _jwtService = jwtService;

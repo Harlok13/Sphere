@@ -1,5 +1,5 @@
 using App.Contracts.Data;
-using App.Domain.Shared;
+using Core.Shared;
 
 namespace App.Application.Repositories;
 

@@ -1,4 +1,3 @@
-using App.Application.Extensions;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Data;
 using App.Contracts.Enums;
@@ -6,6 +5,7 @@ using App.Domain.Entities;
 using App.Domain.Entities.RoomEntity;
 using App.SignalR.Commands.ConnectionCommands;
 using App.SignalR.Events;
+using Core.Extensions;
 using Mediator;
 using Microsoft.Extensions.Logging;
 

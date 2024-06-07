@@ -3,8 +3,8 @@ using App.Contracts.Data;
 using App.Contracts.Mapper;
 using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.RoomEntity;
-using App.Domain.Shared;
-using App.Domain.Shared.ResultImplementations;
+using Core.Shared;
+using Core.Shared.ResultImplementations;
 using Infrastructure.Data.Context;
 using Infrastructure.Messages;
 using Microsoft.EntityFrameworkCore;
@@ -95,7 +95,7 @@ public class RoomRepository : IRoomRepository
 
         return Result.CreateSuccess();
     }
-
+    
     public async Task<Result<Room>> GetByPlayerIdAsync(Guid? playerId, CancellationToken cT)
     {
         if (playerId is null)

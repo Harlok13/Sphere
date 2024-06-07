@@ -1,5 +1,5 @@
-using App.Domain.Shared;
-using App.Domain.Shared.ResultImplementations;
+using Core.Shared;
+using Core.Shared.ResultImplementations;
 
 namespace App.Domain.Entities.PlayerInfoEntity;
 

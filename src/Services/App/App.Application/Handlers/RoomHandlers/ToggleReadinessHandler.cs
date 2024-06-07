@@ -1,10 +1,10 @@
-using App.Application.Extensions;
 using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
-using App.Domain.DomainResults;
 using App.Domain.Entities.RoomEntity;
 using App.SignalR.Commands.RoomCommands;
 using App.SignalR.Events;
+using Core.DomainResults;
+using Core.Extensions;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
@@ -29,20 +29,20 @@ public class ToggleReadinessHandler : ICommandHandler<ToggleReadinessCommand, bo
     public async ValueTask<bool> Handle(ToggleReadinessCommand command, CancellationToken cT)
     {
         command.Request.Deconstruct(out Guid roomId, out Guid playerId);
-
+        
         var roomResult = await _unitOfWork.RoomRepository.GetByIdAsync(roomId, cT);
         if (!roomResult.TryFromResult(out Room? room, out var roomErrors))
         {
             foreach(var error in roomErrors) _logger.LogError(error.Message);
-
+        
             await _publisher.Publish(new UserNotificationEvent(
                     NotificationText: NotificationMessages.SomethingWentWrong(),
                     TargetId: playerId),
                 cT);
-
+        
             return false;
         }
-
+        
         var playerToggleReadinessResult = room!.PlayerToggleReadiness(playerId);
         if (playerToggleReadinessResult is DomainError playerToggleReadinessError)
         {

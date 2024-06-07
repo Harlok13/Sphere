@@ -1,80 +1,87 @@
 syntax = "proto3";
 
-option csharp_namespace = "IdentityClient";
+option csharp_namespace = "GrpcIdentityClient";
 
 package identity;
 
 service Identity {
-    rpc Authenticate (AuthenticateRequest) returns (AuthenticateResponse);
+    rpc Authenticate (GrpcAuthenticateRequest) returns (GrpcAuthenticateResponse);
 
-    rpc Register (RegisterRequest) returns (RegisterResponse);
+    rpc Register (GrpcRegisterRequest) returns (GrpcRegisterResponse);
 
-    rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+    rpc RefreshToken (GrpcRefreshTokenRequest) returns (GrpcRefreshTokenResponse);
 
-    rpc Revoke (RevokeRequest) returns (RevokeResponse);
+    rpc Revoke (GrpcRevokeRequest) returns (GrpcRevokeResponse);
 
-    rpc RevokeAll(RevokeAllRequest) returns (RevokeAllResponse);
+    rpc RevokeAll(GrpcRevokeAllRequest) returns (GrpcRevokeAllResponse);
 }
 
-message AuthenticateRequest {
+message GrpcAuthenticateRequest {
     string email = 1;
     string password = 2;
 }
 
-message PlayerInfoResponse {
-    string id = 1;
-    string avatar_url = 2;
-    string player_name = 3;
-    int32 matches = 4;
-    int32 loses = 5;
-    int32 wins = 6;
-    int32 draws = 7;
-    int32 all_exp = 8;
-    int32 current_exp = 9;
-    int32 target_exp = 10;
-    int32 money = 11;
-    int32 likes = 12;
-    int32 level = 13;
-    int32 has21 = 14;
-}
+//message PlayerInfoResponse {
+//    string id = 1;
+//    string avatar_url = 2;
+//    string player_name = 3;
+//    int32 matches = 4;
+//    int32 loses = 5;
+//    int32 wins = 6;
+//    int32 draws = 7;
+//    int32 all_exp = 8;
+//    int32 current_exp = 9;
+//    int32 target_exp = 10;
+//    int32 money = 11;
+//    int32 likes = 12;
+//    int32 level = 13;
+//    int32 has21 = 14;
+//}
 
-message AuthenticateResponse {
+message GrpcAuthenticateResponse {
     string player_id = 1;
     string player_name = 2;
     string email = 3;
     string token = 4;
     string refresh_token = 5;
-    PlayerInfoResponse player_info = 6;
+//    PlayerInfoResponse player_info = 6;
 }
 
-message RegisterRequest {
+message GrpcRegisterRequest {
+    string email = 1;
+    string user_name = 2;
+    string password = 3;
+    string password_confirm = 4;
+}
+
+message GrpcRegisterResponse {
+    string email = 1;
+    string password = 2;
+    string user_id = 3;
+}
+
+message GrpcRefreshTokenRequest {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+message GrpcRefreshTokenResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+message GrpcRevokeRequest {
+    string user_name = 1;
+}
+
+message GrpcRevokeResponse {
+    bool success = 1;
+}
+
+message GrpcRevokeAllRequest {
 
 }
 
-message RegisterResponse {
-
-}
-
-message RefreshTokenRequest {
-
-}
-
-message RefreshTokenResponse {
-
-}
-
-message RevokeRequest {
-
-}
-
-message RevokeResponse {
-
-}
-
-message RevokeAllRequest {
-
-}
-
-message RevokeAllResponse {
-
+message GrpcRevokeAllResponse {
+    bool success = 1;
 }

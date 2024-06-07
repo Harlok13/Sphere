@@ -9,7 +9,8 @@ using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace Infrastructure.Data.Context;
 
-public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+// public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+public class ApplicationContext : DbContext
 {
     public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
     

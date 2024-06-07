@@ -18,6 +18,7 @@
     <ItemGroup>
         <Protobuf Include="Protos\user_interaction.proto" GrpcServices="Client" />
         <Protobuf Include="Protos\identity.proto" GrpcServices="Client" />
+        <Protobuf Include="Protos\game_interaction.proto" GrpcServices="Client" />
     </ItemGroup>
     
     <ItemGroup>

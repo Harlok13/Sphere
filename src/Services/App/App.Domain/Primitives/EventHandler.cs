@@ -1,3 +1,5 @@
+using Core;
+
 namespace App.Domain.Primitives;
 
 public delegate Task EventHandlerAsync<in TEntity, in TEventArgs>(

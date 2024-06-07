@@ -1,17 +1,68 @@
 syntax = "proto3";
 
-option csharp_namespace = "UserInteractionClient";
+option csharp_namespace = "GrpcUserInteractionClient";
 
 package user_interaction;
 
 service UserInteraction {
-    rpc AddToFriends(AddToFriendsRequest) returns (AddToFriendsResponse);
+    rpc AddToFriends(GrpcAddToFriendsRequest) returns (GrpcAddToFriendsResponse);
+
+    rpc CreatePlayerInfo(GrpcCreatePlayerInfoRequest) returns (GrpcCreatePlayerInfoResponse);
+    
+    rpc GetPlayerInfo(GrpcGetPlayerInfoRequest) returns (GrpcGetPlayerInfoResponse);
 }
 
-message AddToFriendsRequest {
+message GrpcAddToFriendsRequest {
     string name = 1;
 }
 
-message AddToFriendsResponse {
+message GrpcAddToFriendsResponse {
     string name = 1;
+}
+
+message GrpcCreatePlayerInfoRequest {
+    string user_id = 1;
+    string player_name = 2;
+}
+
+message GrpcCreatePlayerInfoResponse {
+
+}
+
+message GrpcGetPlayerInfoRequest {
+    string player_id = 1;
+}
+
+//message GrpcPlayerInfo {
+//    string id = 1;
+//    string avatar_url = 2;
+//    string player_name = 3;
+//    int32 matches = 4;
+//    int32 loses = 5;
+//    int32 wins = 6;
+//    int32 draws = 7;
+//    int32 all_exp = 8;
+//    int32 current_exp = 9;
+//    int32 target_exp = 10;
+//    int32 money = 11;
+//    int32 likes = 12;
+//    int32 level = 13;
+//    int32 has21 = 14;
+//}
+
+message GrpcGetPlayerInfoResponse {
+    string id = 1;
+    string avatar_url = 2;
+    string player_name = 3;
+    int32 matches = 4;
+    int32 loses = 5;
+    int32 wins = 6;
+    int32 draws = 7;
+    int32 all_exp = 8;
+    int32 current_exp = 9;
+    int32 target_exp = 10;
+    int32 money = 11;
+    int32 likes = 12;
+    int32 level = 13;
+    int32 has21 = 14;
 }

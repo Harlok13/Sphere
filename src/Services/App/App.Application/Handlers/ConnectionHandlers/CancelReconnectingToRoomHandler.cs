@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using App.Application.Extensions;
 using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Data;
@@ -8,6 +7,7 @@ using App.Domain.Entities;
 using App.SignalR.Commands.ConnectionCommands;
 using App.SignalR.Commands.RoomCommands;
 using App.SignalR.Events;
+using Core.Extensions;
 using Mediator;
 using Microsoft.Extensions.Logging;
 

@@ -28,13 +28,13 @@
 //     {
 //         command.Deconstruct(out RegisterRequest request);
 //
-//         var user = new ApplicationUser
+//         var user = new User
 //         {
 //             Email = request.Email,
 //             UserName = request.UserName
 //         };
 //
-//         var result = await _unitOfWork.ApplicationUserRepository.CreateManagedUserAsync(user, request.Password, cT);
+//         var result = await _unitOfWork.IdentityUserRepository.CreateManagedUserAsync(user, request.Password, cT);
 //         if (!result.Succeeded)
 //         {
 //             foreach(var err in result.Errors)
@@ -42,10 +42,10 @@
 //             throw new Exception();  // TODO: ex
 //         }
 //
-//         var findUser = await _unitOfWork.ApplicationUserRepository.GetUserByEmailAsync(request.Email, cT);
+//         var findUser = await _unitOfWork.IdentityUserRepository.GetUserByEmailAsync(request.Email, cT);
 //         if (findUser is null)  throw new Exception($"User {request.Email} not found"); // TODO: custom ex
 //
-//         await _unitOfWork.ApplicationUserRepository.AddToRoleAsync(findUser, cT);
+//         await _unitOfWork.IdentityUserRepository.AddToRoleAsync(findUser, cT);
 //         await _unitOfWork.PlayerInfoRepository.CreatePlayerInfoAsync(findUser.Id, findUser.UserName!, cT);
 //
 //         var authCommand = new AuthenticateCommand(

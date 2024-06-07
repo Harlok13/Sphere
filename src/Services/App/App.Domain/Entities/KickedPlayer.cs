@@ -2,6 +2,7 @@ using App.Domain.Entities.PlayerEntity;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Messages;
 using App.Domain.Primitives;
+using Core;
 
 namespace App.Domain.Entities;
 

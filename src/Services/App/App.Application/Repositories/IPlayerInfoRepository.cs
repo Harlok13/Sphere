@@ -1,5 +1,5 @@
 using App.Contracts.Data;
-using App.Domain.Shared;
+using Core.Shared;
 using PlayerInfo = App.Domain.Entities.PlayerInfoEntity.PlayerInfo;
 
 namespace App.Application.Repositories;

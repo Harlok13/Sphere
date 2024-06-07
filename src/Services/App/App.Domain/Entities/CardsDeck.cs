@@ -1,5 +1,6 @@
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Primitives;
+using Core;
 
 namespace App.Domain.Entities;
 

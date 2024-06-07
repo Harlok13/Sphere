@@ -24,10 +24,10 @@ public static class DependencyInjection
     {
         services.AddSingleton<IUserIdProvider, HubsUserIdProvider>();
         
-        services
-            .AddIdentityWithOptions(builder)
-            .AddAuthenticationWithOptions(builder)
-            .AddAuthorizationWithOptions();
+        // services
+            // .AddIdentityWithOptions(builder)
+            // .AddAuthenticationWithOptions(builder)
+            // .AddAuthorizationWithOptions();
 
         services.AddApplicationContext(builder);
 

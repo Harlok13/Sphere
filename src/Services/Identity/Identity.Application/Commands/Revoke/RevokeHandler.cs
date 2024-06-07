@@ -7,11 +7,11 @@
 // public class RevokeHandler : ICommandHandler<RevokeCommand, bool>
 // {
 //     private readonly ILogger<RevokeHandler> _logger;
-//     private readonly IApplicationUserRepository _applicationUserRepository;
+//     private readonly IIdentityUserRepository _applicationUserRepository;
 //
 //     public RevokeHandler(
 //         ILogger<RevokeHandler> logger,
-//         IApplicationUserRepository applicationUserRepository)
+//         IIdentityUserRepository applicationUserRepository)
 //     {
 //         _logger = logger;
 //         _applicationUserRepository = applicationUserRepository;

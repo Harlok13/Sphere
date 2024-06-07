@@ -1,4 +1,3 @@
-using App.Application.Extensions;
 using App.Application.Messages;
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Data;
@@ -6,6 +5,7 @@ using App.Contracts.Requests;
 using App.Contracts.Responses;
 using App.SignalR.Commands.LobbyCommands;
 using App.SignalR.Events;
+using Core.Extensions;
 using Mediator;
 using Microsoft.Extensions.Logging;
 

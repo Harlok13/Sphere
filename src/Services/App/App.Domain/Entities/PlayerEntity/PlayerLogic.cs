@@ -1,5 +1,5 @@
-using App.Domain.DomainResults;
 using App.Domain.Enums;
+using Core.DomainResults;
 
 namespace App.Domain.Entities.PlayerEntity;
 

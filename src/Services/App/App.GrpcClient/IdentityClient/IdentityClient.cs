@@ -1,13 +1,13 @@
-using App.Domain.Configurations;
-using App.GrpcClient.Base;
-using IdentityClient;
+using App.GrpcClient.Configurations;
+using Core.Base;
+using GrpcIdentityClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace App.GrpcClient.IdentityClient;
 
 public class IdentityClient : 
-    BaseClient<Identity.IdentityClient, IdentityClient>,
+    BaseGrpcClient<Identity.IdentityClient, IdentityClient>,
     IIdentityClient
 {
     public IdentityClient(
@@ -15,18 +15,18 @@ public class IdentityClient :
         IOptions<GrpcConfiguration> grpcConfiguration) : 
         base(logger, grpcConfiguration.Value.GrpcIdentityServiceUrl) { }
 
-    public Task<AuthenticateResponse> AuthenticateAsync(AuthenticateRequest request)
-        => Task.FromResult(Client.Authenticate(request));
+    public Task<GrpcAuthenticateResponse> AuthenticateAsync(GrpcAuthenticateRequest request, CancellationToken cT) =>
+        Task.FromResult(Client.Authenticate(request, cancellationToken: cT));
 
-    public Task<RegisterResponse> RegisterAsync(RegisterRequest request)
-        => Task.FromResult(Client.Register(request));
+    public Task<GrpcRegisterResponse> RegisterAsync(GrpcRegisterRequest request, CancellationToken cT) =>
+        Task.FromResult(Client.Register(request, cancellationToken: cT));
 
-    public Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
-        => Task.FromResult(Client.RefreshToken(request));
+    public Task<GrpcRefreshTokenResponse> RefreshTokenAsync(GrpcRefreshTokenRequest request, CancellationToken cT) =>
+        Task.FromResult(Client.RefreshToken(request, cancellationToken: cT));
 
-    public Task<RevokeResponse> RevokeAsync(RevokeRequest request)
-        => Task.FromResult(Client.Revoke(request));
+    public Task<GrpcRevokeResponse> RevokeAsync(GrpcRevokeRequest request, CancellationToken cT) =>
+        Task.FromResult(Client.Revoke(request, cancellationToken: cT));
 
-    public Task<RevokeAllResponse> RevokeAllAsync(RevokeAllRequest request)
-        => Task.FromResult(Client.RevokeAll(request));
+    public Task<GrpcRevokeAllResponse> RevokeAllAsync(GrpcRevokeAllRequest request, CancellationToken cT) =>
+        Task.FromResult(Client.RevokeAll(request, cancellationToken: cT));
 }

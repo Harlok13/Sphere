@@ -9,7 +9,7 @@ public interface IJwtService
 {
     int RefreshTokenValidityInDays { get; }
     
-    string GetJwtToken(ApplicationUser user, IEnumerable<IdentityRole<Guid>> roles);
+    string GetJwtToken(User user, IEnumerable<IdentityRole<Guid>> roles);
     
     JwtSecurityToken CreateToken(IEnumerable<Claim> authClaims);
 

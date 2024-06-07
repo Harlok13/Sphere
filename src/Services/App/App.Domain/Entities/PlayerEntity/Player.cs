@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using App.Domain.DomainEvents.PlayerDomainEvents;
-using App.Domain.DomainResults;
 using App.Domain.Entities.RoomEntity;
 using App.Domain.Enums;
 using App.Domain.Messages;
-using App.Domain.Primitives;
+using Core;
+using Core.DomainResults;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace App.Domain.Entities.PlayerEntity;

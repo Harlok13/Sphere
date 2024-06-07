@@ -2,6 +2,7 @@ using System.ComponentModel;
 using App.Domain.Enums;
 using App.Domain.Primitives;
 using App.Domain.ValueObjects;
+using Core;
 
 namespace App.Domain.Entities;
 

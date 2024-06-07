@@ -1,5 +1,4 @@
 using App.Contracts.Data;
-using App.Domain.Shared;
 
 namespace App.Application.Repositories;
 

@@ -1,12 +1,9 @@
 using App.Application.Repositories.UnitOfWork;
 using App.Contracts.Requests;
 using App.Domain.Entities.RoomEntity;
-using App.GrpcClient.UserInteractionClient;
 using App.SignalR.Commands.LobbyCommands;
 using Mediator;
 using Microsoft.Extensions.Logging;
-using UserInteractionClient;
-using AddToFriendsRequest = UserInteractionClient.AddToFriendsRequest;
 
 namespace App.Application.Handlers.LobbyHandlers;
 
@@ -15,18 +12,15 @@ public class CreateRoomHandler : ICommandHandler<CreateRoomCommand, bool>
     private readonly ILogger<CreateRoomHandler> _logger;
     private readonly IAppUnitOfWork _unitOfWork;
     private readonly IMediator _mediator;
-    private readonly IUserInteractionClient _userInteractionClient;
 
     public CreateRoomHandler(
         ILogger<CreateRoomHandler> logger,
         IAppUnitOfWork unitOfWork,
-        IMediator mediator,
-        IUserInteractionClient userInteractionClient)
+        IMediator mediator)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mediator = mediator;
-        _userInteractionClient = userInteractionClient;
     }
 
     public async ValueTask<bool> Handle(CreateRoomCommand command, CancellationToken cT)
@@ -38,10 +32,6 @@ public class CreateRoomHandler : ICommandHandler<CreateRoomCommand, bool>
             out int upperBound,
             out int lowerBound);
         
-        var resp = await _userInteractionClient.AddToFriendsAsync(new AddToFriendsRequest{Name = "harlok"});
-        
-        _logger.LogCritical(resp.Name);
-
         var connectionId = command.ConnectionId;
 
         var room = Room.Create(

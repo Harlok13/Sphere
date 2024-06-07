@@ -1,8 +1,12 @@
-using UserInteractionClient;
+using GrpcUserInteractionClient;
 
 namespace App.GrpcClient.UserInteractionClient;
 
 public interface IUserInteractionClient
 {
-    Task<AddToFriendsResponse> AddToFriendsAsync(AddToFriendsRequest request);
+    Task<GrpcAddToFriendsResponse> AddToFriendsAsync(GrpcAddToFriendsRequest request, CancellationToken cT);
+
+    Task<GrpcCreatePlayerInfoResponse> CreatePlayerInfoAsync(GrpcCreatePlayerInfoRequest request, CancellationToken cT);
+
+    Task<GrpcGetPlayerInfoResponse> GetPlayerInfoAsync(GrpcGetPlayerInfoRequest request, CancellationToken cT);
 }

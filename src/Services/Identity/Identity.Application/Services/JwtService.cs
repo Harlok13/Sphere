@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Identity.Domain.Configurations;
+using Identity.Application.Configurations;
 using Identity.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -28,7 +28,7 @@ public class JwtService : IJwtService
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
-    public string GetJwtToken(ApplicationUser user, IEnumerable<IdentityRole<Guid>> roles)
+    public string GetJwtToken(User user, IEnumerable<IdentityRole<Guid>> roles)
         => new JwtSecurityTokenHandler().WriteToken(CreateJwtToken(CreateClaims(user, roles)));
 
     public JwtSecurityToken CreateToken(IEnumerable<Claim> authClaims) 
@@ -84,7 +84,7 @@ public class JwtService : IJwtService
         );
     }
 
-    private List<Claim> CreateClaims(ApplicationUser user, IEnumerable<IdentityRole<Guid>> roles)
+    private List<Claim> CreateClaims(User user, IEnumerable<IdentityRole<Guid>> roles)
     {
         var claims = new List<Claim>
         {

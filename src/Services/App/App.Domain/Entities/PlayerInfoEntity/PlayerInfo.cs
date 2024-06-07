@@ -1,10 +1,13 @@
 using App.Domain.DomainEvents.PlayerInfoDomainEvents;
 using App.Domain.Primitives;
+using Core;
 
 namespace App.Domain.Entities.PlayerInfoEntity;
 
 public sealed partial class PlayerInfo : Entity, IHasDomainEvent
 {
+    private const string DefaultAvatarUrl = "img/avatars/default_avatar.png";
+    
     private readonly List<DomainEvent> _domainEvents = new();
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents;
 
@@ -17,8 +20,8 @@ public sealed partial class PlayerInfo : Entity, IHasDomainEvent
     ) : base(id)
     {
         UserId = userId;
-        AvatarUrl = "img/avatars/default_avatar.png";
         PlayerName = playerName;
+        AvatarUrl = DefaultAvatarUrl;
         Matches = default;
         Loses = default;
         Wins = default;
