@@ -1,0 +1,6 @@
+@Harlok.Sphere.ApiGateway.API_HostAddress = http://localhost:5161
+
+GET {{Harlok.Sphere.ApiGateway.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
