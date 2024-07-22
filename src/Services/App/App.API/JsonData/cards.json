@@ -1,0 +1,166 @@
+{
+  "0": {
+    "frame": {"X": 0, "Y": 0, "Width": 225, "Height": 313, "Value": 11, "SuitValue": "Ace clubs"}
+  },
+  "1": {
+    "frame": {"X": 224, "Y": 0, "Width": 222, "Height": 313, "Value": 2, "SuitValue": "2 clubs"}
+  },
+  "2": {
+    "frame": {"X": 448, "Y": 0, "Width": 222, "Height": 313, "Value": 3, "SuitValue": "3 clubs"}
+  },
+  "3": {
+    "frame": {"X": 672, "Y": 0, "Width": 222, "Height": 313, "Value": 4, "SuitValue": "4 clubs"}
+  },
+  "4": {
+    "frame": {"X": 896, "Y": 0, "Width": 222, "Height": 313, "Value": 5, "SuitValue": "5 clubs"}
+  },
+  "5": {
+    "frame": {"X": 1119, "Y": 0, "Width": 222, "Height": 313, "Value": 6, "SuitValue": "6 clubs"}
+  },
+  "6": {
+    "frame": {"X": 1342, "Y": 0, "Width": 223, "Height": 313, "Value": 7, "SuitValue": "7 clubs"}
+  },
+  "7": {
+    "frame": {"X": 1565, "Y": 0, "Width": 223, "Height": 313, "Value": 8, "SuitValue": "8 clubs"}
+  },
+  "8": {
+    "frame": {"X": 1789, "Y": 0, "Width": 223, "Height": 313, "Value": 9, "SuitValue": "9 clubs"}
+  },
+  "9": {
+    "frame": {"X": 2012, "Y": 0, "Width": 223, "Height": 313, "Value": 10, "SuitValue": "10 clubs"}
+  },
+  "10": {
+    "frame": {"X": 2235, "Y": 0, "Width": 224, "Height": 313, "Value": 2, "SuitValue": "Jack clubs"}
+  },
+  "11": {
+    "frame": {"X": 2460, "Y": 0, "Width": 223, "Height": 313, "Value": 3, "SuitValue": "Queen clubs"}
+  },
+  "12": {
+    "frame": {"X": 2684, "Y": 0, "Width": 228, "Height": 313, "Value": 4, "SuitValue": "King clubs"}
+  },
+
+
+  "13": {
+    "frame": {"X": 0, "Y": 313, "Width": 225, "Height": 313, "Value": 11, "SuitValue": "Ace hearts"}
+  },
+  "14": {
+    "frame": {"X": 224, "Y": 313, "Width": 222, "Height": 313, "Value": 2, "SuitValue": "2 hearts"}
+  },
+  "15": {
+    "frame": {"X": 448, "Y": 313, "Width": 222, "Height": 313, "Value": 3, "SuitValue": "3 hearts"}
+  },
+  "16": {
+    "frame": {"X": 672, "Y": 313, "Width": 222, "Height": 313, "Value": 4, "SuitValue": "4 hearts"}
+  },
+  "17": {
+    "frame": {"X": 896, "Y": 313, "Width": 222, "Height": 313, "Value": 5, "SuitValue": "5 hearts"}
+  },
+  "18": {
+    "frame": {"X": 1119, "Y": 313, "Width": 222, "Height": 313, "Value": 6, "SuitValue": "6 hearts"}
+  },
+  "19": {
+    "frame": {"X": 1342, "Y": 313, "Width": 223, "Height": 313, "Value": 7, "SuitValue": "7 hearts"}
+  },
+  "20": {
+    "frame": {"X": 1565, "Y": 313, "Width": 223, "Height": 313, "Value": 8, "SuitValue": "8 hearts"}
+  },
+  "21": {
+    "frame": {"X": 1789, "Y": 313, "Width": 223, "Height": 313, "Value": 9, "SuitValue": "9 hearts"}
+  },
+  "22": {
+    "frame": {"X": 2012, "Y": 313, "Width": 223, "Height": 313, "Value": 10, "SuitValue": "10 hearts"}
+  },
+  "23": {
+    "frame": {"X": 2235, "Y": 313, "Width": 224, "Height": 313, "Value": 2, "SuitValue": "Jack hearts"}
+  },
+  "24": {
+    "frame": {"X": 2460, "Y": 313, "Width": 223, "Height": 313, "Value": 3, "SuitValue": "Queen hearts"}
+  },
+  "25": {
+    "frame": {"X": 2684, "Y": 313, "Width": 228, "Height": 313, "Value": 4, "SuitValue": "King hearts"}
+  },
+
+
+
+  "26": {
+    "frame": {"X": 0, "Y": 626, "Width": 225, "Height": 313, "Value": 11, "SuitValue": "Ace spades"}
+  },
+  "27": {
+    "frame": {"X": 224, "Y": 626, "Width": 222, "Height": 313, "Value": 2, "SuitValue": "2 spades"}
+  },
+  "28": {
+    "frame": {"X": 448, "Y": 626, "Width": 222, "Height": 313, "Value": 3, "SuitValue": "3 spades"}
+  },
+  "29": {
+    "frame": {"X": 672, "Y": 626, "Width": 222, "Height": 313, "Value": 4, "SuitValue": "4 spades"}
+  },
+  "30": {
+    "frame": {"X": 896, "Y": 626, "Width": 222, "Height": 313, "Value": 5, "SuitValue": "5 spades"}
+  },
+  "31": {
+    "frame": {"X": 1119, "Y": 626, "Width": 222, "Height": 313, "Value": 6, "SuitValue": "6 spades"}
+  },
+  "32": {
+    "frame": {"X": 1342, "Y": 626, "Width": 223, "Height": 313, "Value": 7, "SuitValue": "7 spades"}
+  },
+  "33": {
+    "frame": {"X": 1565, "Y": 626, "Width": 223, "Height": 313, "Value": 8, "SuitValue": "8 spades"}
+  },
+  "34": {
+    "frame": {"X": 1789, "Y": 626, "Width": 223, "Height": 313, "Value": 9, "SuitValue": "9 spades"}
+  },
+  "35": {
+    "frame": {"X": 2012, "Y": 626, "Width": 223, "Height": 313, "Value": 10, "SuitValue": "10 spades"}
+  },
+  "36": {
+    "frame": {"X": 2235, "Y": 626, "Width": 224, "Height": 313, "Value": 2, "SuitValue": "Jack spades"}
+  },
+  "37": {
+    "frame": {"X": 2460, "Y": 626, "Width": 223, "Height": 313, "Value": 3, "SuitValue": "Queen spades"}
+  },
+  "38": {
+    "frame": {"X": 2684, "Y": 626, "Width": 228, "Height": 313, "Value": 4, "SuitValue": "King spades"}
+  },
+
+
+
+  "39": {
+    "frame": {"X": 0, "Y": 939, "Width": 225, "Height": 313, "Value": 11, "SuitValue": "Ace diamonds"}
+  },
+  "40": {
+    "frame": {"X": 224, "Y": 939, "Width": 222, "Height": 313, "Value": 2, "SuitValue": "2 diamonds"}
+  },
+  "41": {
+    "frame": {"X": 448, "Y": 939, "Width": 222, "Height": 313, "Value": 3, "SuitValue": "3 diamonds"}
+  },
+  "42": {
+    "frame": {"X": 672, "Y": 939, "Width": 222, "Height": 313, "Value": 4, "SuitValue": "4 diamonds"}
+  },
+  "43": {
+    "frame": {"X": 896, "Y": 939, "Width": 222, "Height": 313, "Value": 5, "SuitValue": "5 diamonds"}
+  },
+  "44": {
+    "frame": {"X": 1119, "Y": 939, "Width": 222, "Height": 313, "Value": 6, "SuitValue": "6 diamonds"}
+  },
+  "45": {
+    "frame": {"X": 1342, "Y": 939, "Width": 223, "Height": 313, "Value": 7, "SuitValue": "7 diamonds"}
+  },
+  "46": {
+    "frame": {"X": 1565, "Y": 939, "Width": 223, "Height": 313, "Value": 8, "SuitValue": "8 diamonds"}
+  },
+  "47": {
+    "frame": {"X": 1789, "Y": 939, "Width": 223, "Height": 313, "Value": 9, "SuitValue": "9 diamonds"}
+  },
+  "48": {
+    "frame": {"X": 2012, "Y": 939, "Width": 223, "Height": 313, "Value": 10, "SuitValue": "10 diamonds"}
+  },
+  "49": {
+    "frame": {"X": 2235, "Y": 939, "Width": 224, "Height": 313, "Value": 2, "SuitValue": "Jack diamonds"}
+  },
+  "50": {
+    "frame": {"X": 2460, "Y": 939, "Width": 223, "Height": 313, "Value": 3, "SuitValue": "Queen diamonds"}
+  },
+  "51": {
+    "frame": {"X": 2684, "Y": 939, "Width": 228, "Height": 313, "Value": 4, "SuitValue": "King diamonds"}
+  }
+}

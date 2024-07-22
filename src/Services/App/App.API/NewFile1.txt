@@ -1,0 +1,9 @@
+{
+    "Name": "File",
+    "Args": {
+      "path": "/logs/log-.txt",
+      "rollingInterval": "Day",
+      "rollOnFileSizeLimit": true,
+      "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter"
+    }
+}
