@@ -1,0 +1,47 @@
+﻿version: "4.0"
+
+networks:
+  sphere-app-network:
+    driver: bridge
+
+services:
+  backend:
+    image: sphere-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./certs:/certs
+    networks:
+      - sphere-app-network
+    depends_on:
+      - sphere_db
+        
+  client:
+    image: sphere-client
+    build:
+      context: ./Web.ClientApp
+      dockerfile: Dockerfile
+    networks:
+      - sphere-app-network
+
+  proxy:
+    image: nginx:mainline
+    networks:
+      - sphere-app-network
+  
+  sphere_db:
+    image: postgres
+    container_name: sphere_db
+    hostname: sphere_db
+    ports:
+      - "5436:5432"
+    environment:
+      - POSTGRES_USER=harlok
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=inventory
+    #    volumes:
+    #      - .:/var/lib/postgresql
+    restart: always
+    networks:
+      - sphere-app-network

@@ -1,0 +1,86 @@
+.gameArea {
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+.container .raw {
+  width: 100%;
+  display: flex;
+  flex: 1 1 33.33333%;
+}
+.container .raw .cell {
+  flex: 1 1 33.33333%;
+  display: flex;
+  flex-direction: column;
+}
+.container .raw .cell .cardZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 60%;
+}
+.container .raw .cell .playerInfoZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40%;
+}
+.container .raw .cell .playerInfoZone .avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  margin-right: 1rem;
+}
+.container .raw .cell .playerInfoZone .avatar .img {
+  width: 4rem;
+  height: 4rem;
+}
+.container .raw .cell .playerInfoZone .avatar svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5rem;
+  height: 5rem;
+  transform: rotateY(-180deg) rotateZ(-90deg);
+}
+.container .raw .cell .playerInfoZone .avatar svg .timer {
+  stroke-dasharray: 220;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  stroke-width: 4px;
+  stroke: white;
+  fill: none;
+  transition: 1s linear;
+  transition: color 4s linear;
+}
+.container .raw .cell .playerInfoZone .playerInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 70%;
+}
+
+@keyframes countdown {
+  0% {
+    stroke-dashoffset: 0;
+    stroke: green;
+  }
+  50% {
+    stroke: yellow;
+  }
+  100% {
+    stroke-dashoffset: 220;
+    stroke: red;
+  }
+}
+
+/*# sourceMappingURL=GameArea.module.css.map */

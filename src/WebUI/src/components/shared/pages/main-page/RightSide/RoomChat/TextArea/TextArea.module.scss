@@ -1,0 +1,23 @@
+.textArea {
+  flex: 1;
+  max-height: 10rem;
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  padding: 0 1rem;
+
+  .input {
+    width: 100%;
+    min-height: 1.8rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    resize: none;
+  }
+
+  .iconSend {
+    margin: 0 .5rem 0 1rem;
+    cursor: pointer;
+  }
+}
+

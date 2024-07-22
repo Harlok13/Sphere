@@ -1,0 +1,22 @@
+.item {
+  margin-right: 1rem;
+}
+.item .link {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+}
+.item .link:hover .nav__label {
+  display: block;
+}
+.item .icon {
+  transition: all 0.3s ease;
+  font-size: 2rem;
+  margin-right: 0.5rem;
+}
+.item .label {
+  transition: all 0.3s ease;
+  display: none;
+}
+
+/*# sourceMappingURL=NavItem.module.css.map */

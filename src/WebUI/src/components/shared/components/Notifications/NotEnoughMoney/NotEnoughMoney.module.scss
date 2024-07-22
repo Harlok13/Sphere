@@ -1,0 +1,41 @@
+.body {
+  display: flex;
+  align-items: center;
+  top: 2.4rem;
+  right: 2rem;
+  z-index: 1;
+  width: 23rem;
+  height: 6rem;
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(196, 196, 196, 0.36);
+  padding: 1rem;
+  font-weight: 100;
+  font-size: 1rem;
+
+  &:hover .close{
+    display: inline-block;
+  }
+
+  .alert {
+    flex: 0 0 20%;
+    font-size: 4rem;
+    color: red;
+    margin-right: 1rem;
+  }
+
+  .notificationText {
+    flex: 1;
+  }
+
+  .close {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    opacity: .7;
+    cursor: pointer;
+    display: none;
+    font-size: 1.4rem;
+  }
+}

@@ -1,0 +1,8 @@
+.head {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+/*# sourceMappingURL=UserInfoHead.module.css.map */
